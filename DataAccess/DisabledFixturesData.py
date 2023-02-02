@@ -1,19 +1,17 @@
 import json
+from DataAccess.MainConfigData import MainConfigData
 
 
 class DisabledFixturesData:
-    DEFAULF_FILE_FULLPATH = "./disabled_fixtures.json"
-
     def __init__(self, fileFullPath=""):
         if fileFullPath != "":
             self.fileFullPath = fileFullPath
         else:
-            self.fileFullPath = DisabledFixturesData.DEFAULF_FILE_FULLPATH
+            self.fileFullPath = MainConfigData().get_disabled_fixture_fullpath()
 
     def save(self, fixtures):
         disabledFixtures = {}
         for fixture in fixtures:
             disabledFixtures[fixture.ip] = fixture.isDisabled()
-        json_string = json.dumps(disabledFixtures)
         with open(self.fileFullPath, "w") as outfile:
-            json.dump(json_string, outfile)
+            json.dump(disabledFixtures, outfile)

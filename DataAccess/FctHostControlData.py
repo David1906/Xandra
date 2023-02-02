@@ -1,4 +1,5 @@
 import json
+from DataAccess.MainConfigData import MainConfigData
 from DataAccess.YieldData import YieldData
 from Models.Fixture import Fixture
 
@@ -8,18 +9,23 @@ class FctHostControlData:
 
     def __init__(self):
         self._yieldData = YieldData()
+        self._mainConfigData = MainConfigData()
 
-        with open("config.json") as json_file:
+        with open(FctHostControlData.CONFIG_JSON_PATH) as json_file:
             self.data = json.load(json_file)
 
     def get_fixtures(self):
         fixtures = []
+        yieldErrorMin = self._mainConfigData.get_yield_error_min()
+        yieldWarningMin = self._mainConfigData.get_yield_warning_min()
         for fixture in self.data["fixtures"]:
             fixtures.append(
                 Fixture(
                     fixture["id"],
                     fixture["ip"],
-                    yieldRate=self.get_yield(fixture["id"]),
+                    self.get_yield(fixture["id"]),
+                    yieldErrorMin,
+                    yieldWarningMin,
                 )
             )
         return fixtures

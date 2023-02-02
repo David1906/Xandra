@@ -1,4 +1,7 @@
 import gi
+import subprocess
+
+from Controllers.FixtureController import FixtureController
 
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
@@ -9,6 +12,7 @@ class FixtureView(Gtk.Box):
         super().__init__(orientation=Gtk.Orientation.VERTICAL, spacing=10)
 
         self.fixture = fixture
+        self._fixtureController = FixtureController()
 
         self.get_style_context().add_class("FixtureView")
 
@@ -20,9 +24,9 @@ class FixtureView(Gtk.Box):
         self.lblId.get_style_context().add_class("h1")
         vBox.add(self.lblId)
 
-        self.button1 = Gtk.Button(label="Start")
-        self.button1.connect("clicked", self.on_button1_clicked)
-        vBox.add(self.button1)
+        self.btnStart = Gtk.Button(label="Start")
+        self.btnStart.connect("clicked", self.on_btnStart_clicked)
+        vBox.add(self.btnStart)
 
         boxTraceability = Gtk.Box(spacing=10)
         lblTraceability = Gtk.Label(label="Traceability")
@@ -46,6 +50,7 @@ class FixtureView(Gtk.Box):
         self.lblId.set_label(f"Fixture {fixture.id}")
         self.lblYield.set_label(f"Yield: {fixture.yieldRate}%")
         self.lblIp.set_label(f"Ip: {fixture.ip}")
+        self.btnStart.set_sensitive(fixture.isDisabled() == False)
 
         if fixture.isDisabled():
             self.get_style_context().add_class("error")
@@ -57,11 +62,8 @@ class FixtureView(Gtk.Box):
             self.get_style_context().remove_class("warning")
             self.get_style_context().remove_class("error")
 
-    def on_button1_clicked(self, widget):
-        cmd = f"XANDRA_FIXTURE_IP={self.fixture.ip} ./test.sh -f {self.fixture.id}"
-        if self.switch.get_state() == False:
-            cmd += " -m"
-        print(cmd)
+    def on_btnStart_clicked(self, widget):
+        self._fixtureController.launch_fct_host_control(self.fixture, self.switch.get_state())
 
     def equals(self, fixture):
         return fixture.id == self.fixture.id

@@ -1,12 +1,12 @@
-from gi.repository import GObject
 import gi
 from Views.FixtureGridView import FixtureGridView
 
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, Gdk
+from gi.repository import Gtk
 
 
 class MainWindow(Gtk.Window):
+    ICON_FULLPATH = "./Resources/icon.png"
     BOX_SPACING = 30
 
     def __init__(self):
@@ -22,4 +22,4 @@ class MainWindow(Gtk.Window):
         fixtureGridView = FixtureGridView()
         self.box.add(fixtureGridView)
         fixtureGridView.interact()
-        self.set_icon_from_file('./Resources/icon.png')
+        self.set_icon_from_file(MainWindow.ICON_FULLPATH)

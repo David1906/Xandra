@@ -16,7 +16,7 @@ class MainConfigData:
         return ""
 
     def get_disabled_fixture_fullpath(self):
-        return self._getValue("disabledFixtureJson")
+        return self._getValue("disabledFixturesJson")
 
     def get_fixture_ip_env_name(self):
         return self._getValue("fixtureIpEnvironmentName")
@@ -38,3 +38,6 @@ class MainConfigData:
     
     def get_yield_refresh_ms(self):
         return self._getValue("yieldRefreshSeconds") * 1000
+
+    def get_fct_host_config_fullpath(self):
+        return self._getValue("fctHostControlConfig")

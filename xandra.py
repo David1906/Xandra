@@ -6,7 +6,7 @@ from gi.repository import Gtk, Gdk
 
 
 style_provider = Gtk.CssProvider()
-style_provider.load_from_path("./styles.css")
+style_provider.load_from_path("./Resources/styles.css")
 Gtk.StyleContext.add_provider_for_screen(
     Gdk.Screen.get_default(), style_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
 )

@@ -28,13 +28,6 @@ class FixtureView(Gtk.Box):
         self.btnStart.connect("clicked", self.on_btnStart_clicked)
         vBox.add(self.btnStart)
 
-        boxTraceability = Gtk.Box(spacing=10)
-        lblTraceability = Gtk.Label(label="Traceability")
-        boxTraceability.pack_start(lblTraceability, True, True, 0)
-        self.switch = Gtk.Switch(state=True)
-        boxTraceability.pack_start(self.switch, True, True, 0)
-        vBox.add(boxTraceability)
-
         self.lblIp = Gtk.Label()
         self.lblIp.get_style_context().add_class("h4")
         vBox.add(self.lblIp)
@@ -42,6 +35,18 @@ class FixtureView(Gtk.Box):
         self.lblYield = Gtk.Label()
         self.lblYield.get_style_context().add_class("h4")
         vBox.add(self.lblYield)
+
+        hBoxSwitch = Gtk.HBox(spacing=10)
+        hBoxSwitch.add(Gtk.Label(label="Traceability            "))
+        self.switch = Gtk.Switch(state=True)
+        hBoxSwitch.add(self.switch)
+        vBox.add(hBoxSwitch)
+
+        hBoxSwitch = Gtk.HBox(spacing=10)
+        hBoxSwitch.add(Gtk.Label(label="Skip Low Yield Lock"))
+        self.swSkip = Gtk.Switch(state=False)
+        hBoxSwitch.add(self.swSkip)
+        vBox.add(hBoxSwitch)
 
         self.set_fixture(fixture)
 
@@ -51,6 +56,7 @@ class FixtureView(Gtk.Box):
         self.lblYield.set_label(f"Yield: {fixture.yieldRate}%")
         self.lblIp.set_label(f"Ip: {fixture.ip}")
         self.btnStart.set_sensitive(fixture.isDisabled() == False)
+        self.swSkip.set_sensitive(fixture.isDisabled())
 
         if fixture.isDisabled():
             self.get_style_context().add_class("error")
@@ -63,7 +69,9 @@ class FixtureView(Gtk.Box):
             self.get_style_context().remove_class("error")
 
     def on_btnStart_clicked(self, widget):
-        self._fixtureController.launch_fct_host_control(self.fixture, self.switch.get_state())
+        self._fixtureController.launch_fct_host_control(
+            self.fixture, self.switch.get_state()
+        )
 
     def equals(self, fixture):
         return fixture.id == self.fixture.id

@@ -3,7 +3,7 @@ import random
 
 
 class YieldData:
-    YIELD_JSON_PATH = "yield.json"
+    YIELD_JSON_PATH = "./Resources/yield.json"
 
     def get_yield(self, ip):
         return self._getValue(ip)

@@ -5,13 +5,11 @@ from Models.Fixture import Fixture
 
 
 class FctHostControlData:
-    CONFIG_JSON_PATH = "config.json"
-
     def __init__(self):
         self._yieldData = YieldData()
         self._mainConfigData = MainConfigData()
 
-        with open(FctHostControlData.CONFIG_JSON_PATH) as json_file:
+        with open(self._mainConfigData.get_fct_host_config_fullpath()) as json_file:
             self.data = json.load(json_file)
 
     def get_fixtures(self):

@@ -22,3 +22,4 @@ class MainWindow(Gtk.Window):
         fixtureGridView = FixtureGridView()
         self.box.add(fixtureGridView)
         fixtureGridView.interact()
+        self.set_icon_from_file('./Resources/icon.png')

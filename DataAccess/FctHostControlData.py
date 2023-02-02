@@ -23,7 +23,7 @@ class FctHostControlData:
                 Fixture(
                     fixture["id"],
                     fixture["ip"],
-                    self.get_yield(fixture["id"]),
+                    self.get_yield(fixture["ip"]),
                     yieldErrorMin,
                     yieldWarningMin,
                 )

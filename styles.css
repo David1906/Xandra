@@ -1,0 +1,35 @@
+.h1 {
+    margin: 1rem 0rem;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.h2 {
+    margin: 1rem 0rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.h3 {
+    margin: 1rem 0rem;
+    font-size: 1rem;
+}
+
+.h4 {
+    font-size: 1rem;
+}
+
+.FixtureView {
+    padding: 1rem;
+    background-color: lightgray;
+    color: black;
+    border-radius: 5px;
+}
+
+.FixtureView.error {
+    background-color: lightcoral;
+}
+
+.FixtureView.warning {
+    background-color: yellow;
+}

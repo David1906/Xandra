@@ -2,6 +2,7 @@ from gi.repository import GObject
 from DataAccess.DisabledFixturesData import DisabledFixturesData
 from DataAccess.FctHostControlData import FctHostControlData
 from DataAccess.MainConfigData import MainConfigData
+from DataAccess.YieldData import YieldData
 
 
 class FixtureGridController:
@@ -9,6 +10,7 @@ class FixtureGridController:
         self.isWatching = False
         self._fctHostControlData = FctHostControlData()
         self._disabledFixturesData = DisabledFixturesData()
+        self._yieldData = YieldData()
         self._mainConfigData = MainConfigData()
 
     def start_watch_yield(self, task):
@@ -24,6 +26,11 @@ class FixtureGridController:
 
     def periodic(self, task):
         fixtures = self.get_fixtures()
+
+        for fixture in fixtures:
+            if not fixture.hasLowYield():
+                self._yieldData.update_yield_lock_skipped(fixture)
+                fixture.isSkipped = False
         self._disabledFixturesData.save(fixtures)
         task(fixtures)
         return self.isWatching

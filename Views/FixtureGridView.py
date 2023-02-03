@@ -19,6 +19,7 @@ class FixtureGridView(Gtk.HBox):
         self.set_halign(Gtk.Align.CENTER)
         self.set_valign(Gtk.Align.START)
         self.set_spacing(FixtureGridView.BOX_SPACING)
+        self.get_style_context().add_class("FixtureGridView")
 
         self.set_fixtures(self._fixtureController.get_fixtures())
 

@@ -33,3 +33,7 @@
 .FixtureView.warning {
     background-color: yellow;
 }
+
+.FixtureGridView{
+    padding: 1rem;
+}

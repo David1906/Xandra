@@ -38,17 +38,22 @@ class FixtureView(Gtk.Box):
 
         hBoxSwitch = Gtk.HBox(spacing=10)
         hBoxSwitch.add(Gtk.Label(label="Traceability            "))
-        self.switch = Gtk.Switch(state=True)
-        hBoxSwitch.add(self.switch)
+        self.swTraceability = Gtk.Switch(state=True)
+        hBoxSwitch.add(self.swTraceability)
         vBox.add(hBoxSwitch)
 
         hBoxSwitch = Gtk.HBox(spacing=10)
         hBoxSwitch.add(Gtk.Label(label="Skip Low Yield Lock"))
         self.swSkip = Gtk.Switch(state=False)
+        self.swSkip.connect("state-set", self.onswSkipChange)
         hBoxSwitch.add(self.swSkip)
         vBox.add(hBoxSwitch)
-
         self.set_fixture(fixture)
+
+    def onswSkipChange(self, widget, value):
+        self.fixture.isSkipped = value
+        self.set_fixture(self.fixture)
+        self._fixtureController.update_yield_lock_skipped(self.fixture)
 
     def set_fixture(self, fixture):
         self.fixture = fixture
@@ -56,7 +61,8 @@ class FixtureView(Gtk.Box):
         self.lblYield.set_label(f"Yield: {fixture.yieldRate}%")
         self.lblIp.set_label(f"Ip: {fixture.ip}")
         self.btnStart.set_sensitive(fixture.isDisabled() == False)
-        self.swSkip.set_sensitive(fixture.isDisabled())
+        self.swSkip.set_sensitive(fixture.isDisabled() or fixture.isSkipped)
+        self.swSkip.set_state(fixture.isSkipped)
 
         if fixture.isDisabled():
             self.get_style_context().add_class("error")
@@ -70,7 +76,7 @@ class FixtureView(Gtk.Box):
 
     def on_btnStart_clicked(self, widget):
         self._fixtureController.launch_fct_host_control(
-            self.fixture, self.switch.get_state()
+            self.fixture, self.swTraceability.get_state()
         )
 
     def equals(self, fixture):

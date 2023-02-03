@@ -22,6 +22,7 @@ class FctHostControlData:
                     fixture["id"],
                     fixture["ip"],
                     self.get_yield(fixture["ip"]),
+                    self.get_isSkipped(fixture["ip"]),
                     yieldErrorMin,
                     yieldWarningMin,
                 )
@@ -30,3 +31,6 @@ class FctHostControlData:
 
     def get_yield(self, ip):
         return self._yieldData.get_yield(ip)
+
+    def get_isSkipped(self, ip):
+        return self._yieldData.get_isSkipped(ip)

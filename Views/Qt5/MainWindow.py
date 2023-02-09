@@ -14,3 +14,4 @@ class MainWindow(QMainWindow):
 
         self.fixtureView = FixtureGridView()
         self.setCentralWidget(self.fixtureView)
+        self.fixtureView.interact()

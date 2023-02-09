@@ -1,3 +1,4 @@
+from PyQt5 import QtCore
 from DataAccess.DisabledFixturesData import DisabledFixturesData
 from DataAccess.FctHostControlData import FctHostControlData
 from DataAccess.MainConfigData import MainConfigData
@@ -15,10 +16,13 @@ class FixtureGridController:
     def start_watch_yield(self, task):
         self.periodic(task)
         self.isWatching = True
-        #GObject.timeout_add(
-        #    self._mainConfigData.get_yield_refresh_ms(),
-        #    lambda: self.periodic(task),
-        #)
+        try:
+            self._updateTimer.stop()
+        except:
+            pass
+        self._updateTimer = QtCore.QTimer()
+        self._updateTimer.timeout.connect(lambda: self.periodic(task))
+        self._updateTimer.start(self._mainConfigData.get_yield_refresh_ms())
 
     def get_fixtures(self):
         return self._fctHostControlData.get_fixtures()

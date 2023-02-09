@@ -1,83 +1,116 @@
-import gi
-import subprocess
-
+from PyQt5.QtWidgets import QFrame, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
+from PyQt5 import QtCore
 from Controllers.FixtureController import FixtureController
-
-gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk
+from Views.Switch import Switch
 
 
-class FixtureView(Gtk.Box):
+class FixtureView(QFrame):
     def __init__(self, fixture):
-        super().__init__(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        super().__init__()
 
         self.fixture = fixture
         self._fixtureController = FixtureController()
 
-        self.get_style_context().add_class("FixtureView")
+        self.setProperty("cssClass", "large")
+        layout = QVBoxLayout()
 
-        vBox = Gtk.VBox(spacing=10)
-        vBox.set_halign(Gtk.Align.CENTER)
-        self.add(vBox)
+        self.lblId = QLabel("Id:")
+        self.lblId.setObjectName("h1")
+        self.lblId.setAlignment(QtCore.Qt.AlignCenter)
+        layout.addWidget(self.lblId)
 
-        self.lblId = Gtk.Label()
-        self.lblId.get_style_context().add_class("h1")
-        vBox.add(self.lblId)
+        self.btnStart = QPushButton("Start")
+        self.btnStart.clicked.connect(self.on_btnStart_clicked)
+        layout.addWidget(self.btnStart)
 
-        self.btnStart = Gtk.Button(label="Start")
-        self.btnStart.connect("clicked", self.on_btnStart_clicked)
-        vBox.add(self.btnStart)
+        self.lblIp = QLabel("IP:")
+        self.lblIp.setObjectName("h2")
+        self.lblIp.setAlignment(QtCore.Qt.AlignCenter)
+        layout.addWidget(self.lblIp)
 
-        self.lblIp = Gtk.Label()
-        self.lblIp.get_style_context().add_class("h4")
-        vBox.add(self.lblIp)
+        self.lblYield = QLabel("Yield:")
+        self.lblYield.setObjectName("h2")
+        self.lblYield.setAlignment(QtCore.Qt.AlignCenter)
+        layout.addWidget(self.lblYield)
 
-        self.lblYield = Gtk.Label()
-        self.lblYield.get_style_context().add_class("h4")
-        vBox.add(self.lblYield)
+        hBoxSwitch = QHBoxLayout()
+        hBoxSwitch.addWidget(QLabel("Traceability"))
+        self.swTraceability = Switch()
+        self.swTraceability.setChecked(True)
+        hBoxSwitch.addWidget(self.swTraceability)
+        layout.addLayout(hBoxSwitch)
 
-        hBoxSwitch = Gtk.HBox(spacing=10)
-        hBoxSwitch.add(Gtk.Label(label="Traceability            "))
-        self.swTraceability = Gtk.Switch(state=True)
-        hBoxSwitch.add(self.swTraceability)
-        vBox.add(hBoxSwitch)
+        hBoxSwitch = QHBoxLayout()
+        hBoxSwitch.addWidget(QLabel("Skip Low Yield Lock"))
+        self.swSkip = Switch()
+        self.swSkip.toggled.connect(self.onswSkipChange)
+        hBoxSwitch.addWidget(self.swSkip)
+        layout.addLayout(hBoxSwitch)
 
-        hBoxSwitch = Gtk.HBox(spacing=10)
-        hBoxSwitch.add(Gtk.Label(label="Skip Low Yield Lock"))
-        self.swSkip = Gtk.Switch(state=False)
-        self.swSkip.connect("state-set", self.onswSkipChange)
-        hBoxSwitch.add(self.swSkip)
-        vBox.add(hBoxSwitch)
-        self.set_fixture(fixture)
+        self.setLayout(layout)
+        self.__update()
 
-    def onswSkipChange(self, widget, value):
-        self.fixture.isSkipped = value
-        self.set_fixture(self.fixture)
+    def onswSkipChange(self, checked):
+        self.fixture.isSkipped = checked
         self._fixtureController.update_yield_lock_skipped(self.fixture)
+        self.__update()
 
     def set_fixture(self, fixture):
         self.fixture = fixture
-        self.lblId.set_label(f"Fixture {fixture.id}")
-        self.lblYield.set_label(f"Yield: {fixture.yieldRate}%")
-        self.lblIp.set_label(f"Ip: {fixture.ip}")
-        self.btnStart.set_sensitive(fixture.isDisabled() == False)
-        self.swSkip.set_sensitive(fixture.isDisabled() or fixture.isSkipped)
-        self.swSkip.set_state(fixture.isSkipped)
+        self.__update()
 
-        if fixture.isDisabled():
-            self.get_style_context().add_class("error")
-            self.get_style_context().remove_class("warning")
-        elif fixture.isWarning():
-            self.get_style_context().add_class("warning")
-            self.get_style_context().remove_class("error")
-        else:
-            self.get_style_context().remove_class("warning")
-            self.get_style_context().remove_class("error")
+    def __update(self):
+        self.lblId.setText(f"Fixture {self.fixture.id}")
+        self.lblYield.setText(f"Yield: {self.fixture.yieldRate}%")
+        self.lblIp.setText(f"Ip: {self.fixture.ip}")
+        self.btnStart.setEnabled(self.fixture.isDisabled() == False)
+        self.swSkip.setEnabled(self.fixture.isDisabled() or self.fixture.isSkipped)
+        self.swSkip.setChecked(self.fixture.isSkipped)
 
-    def on_btnStart_clicked(self, widget):
-        self._fixtureController.launch_fct_host_control(
-            self.fixture, self.swTraceability.get_state()
+        objectName = ""
+        if self.fixture.isDisabled():
+            objectName = "error"
+        elif self.fixture.isWarning():
+            objectName = "warning"
+        self.setObjectName(objectName)
+        self.__setStyle()
+
+    def __setStyle(self):
+        self.setStyleSheet(
+            """
+            QWidget:disabled{
+                opacity: 0.5;
+            }
+            QFrame[cssClass="large"] {
+                padding: 4px;
+                margin: 4px;
+                color: black;
+                border-radius: 5px;
+                border: 1px solid gray;
+            }
+            QFrame#error {
+                background-color: lightcoral;
+            }
+            QFrame#warning {
+                background-color: yellow;
+            }
+            QLabel#h1{
+                margin: 16px 0x;
+                font-size: 24px;
+                font-weight: bold;
+            }
+            QLabel#h2{
+                margin: 8px 0px;
+                font-size: 16px;
+            }
+         """
         )
+
+    def on_btnStart_clicked(self):
+        self._fixtureController.launch_fct_host_control(
+            self.fixture, self.swTraceability.getChecked()
+        )
+        self.swTraceability.setChecked(True)
 
     def equals(self, fixture):
         return fixture.id == self.fixture.id

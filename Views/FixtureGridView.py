@@ -1,12 +1,9 @@
-import gi
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
 from Controllers.FixtureGridController import FixtureGridController
 from Views.FixtureView import FixtureView
 
-gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk
 
-
-class FixtureGridView(Gtk.HBox):
+class FixtureGridView(QWidget):
     BOX_SPACING = 30
     ROW_NUMBER = 3
 
@@ -14,14 +11,11 @@ class FixtureGridView(Gtk.HBox):
         super().__init__()
 
         self._fixtureViews = []
-        self._fixtureController = FixtureGridController()
+        self._fixtureGridController = FixtureGridController()
 
-        self.set_halign(Gtk.Align.CENTER)
-        self.set_valign(Gtk.Align.START)
-        self.set_spacing(FixtureGridView.BOX_SPACING)
-        self.get_style_context().add_class("FixtureGridView")
-
-        self.set_fixtures(self._fixtureController.get_fixtures())
+        self.hBox = QHBoxLayout()
+        self.setLayout(self.hBox)
+        self.set_fixtures(self._fixtureGridController.get_fixtures())
 
     def set_fixtures(self, fixtures):
         self.create_fixture_views(fixtures)
@@ -37,12 +31,12 @@ class FixtureGridView(Gtk.HBox):
         for fixture in fixtures:
             self._fixtureViews.append(FixtureView(fixture))
 
-        vBox = Gtk.VBox()
+        vBox = QVBoxLayout()
         for i in range(len(self._fixtureViews)):
             if i % FixtureGridView.ROW_NUMBER == 0:
-                vBox = Gtk.VBox(spacing=30)
-                self.add(vBox)
-            vBox.add(self._fixtureViews[i])
+                vBox = QVBoxLayout()
+                self.hBox.addLayout(vBox)
+            vBox.addWidget(self._fixtureViews[i])
 
     def interact(self):
-        self._fixtureController.start_watch_yield(self.set_fixtures)
+        self._fixtureGridController.start_watch_yield(self.set_fixtures)

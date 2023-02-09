@@ -19,18 +19,18 @@
     font-size: 1rem;
 }
 
-.FixtureView {
+QFrame#FixtureView {
     padding: 1rem;
     background-color: lightgray;
     color: black;
     border-radius: 5px;
 }
 
-.FixtureView.error {
+QFrame#FixtureViewError {
     background-color: lightcoral;
 }
 
-.FixtureView.warning {
+QFrame#FixtureViewWarning {
     background-color: yellow;
 }
 

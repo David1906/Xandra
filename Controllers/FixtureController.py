@@ -1,8 +1,8 @@
 import subprocess
 from DataAccess.DisabledFixturesData import DisabledFixturesData
-
 from DataAccess.MainConfigData import MainConfigData
 from DataAccess.YieldData import YieldData
+from Models.Fixture import Fixture
 
 
 class FixtureController:
@@ -10,16 +10,14 @@ class FixtureController:
         self._yieldData = YieldData()
         self._disabledFixturesData = DisabledFixturesData()
 
-    def launch_fct_host_control(self, fixture, stateTraceability):
+    def launch_fct_host_control(self, fixture: Fixture, hasTraceability: bool):
         mainConfigData = MainConfigData()
         cmd = f"{mainConfigData.get_fixture_ip_env_name()}={fixture.ip} {mainConfigData.get_fct_host_control_fullpath()} -f {fixture.id}"
-        if stateTraceability == False:
+        if hasTraceability == False:
             cmd += " -m"
         print(cmd)
-        subprocess.call(["gnome-terminal", "--", "bash", "-c", cmd])
+        subprocess.call([mainConfigData.get_terminal(), "--", "bash", "-c", cmd])
 
-    def update_yield_lock_skipped(self, fixture):
+    def update_yield_lock_skipped(self, fixture: Fixture):
         self._yieldData.update_yield_lock_skipped(fixture)
         self._disabledFixturesData.update(fixture)
-        # TODO: Update disabled_fixtures.json from DisabledFixturesData.update(fuxture)
-        # TODO: Al subir el yield al warning remover skip low yield

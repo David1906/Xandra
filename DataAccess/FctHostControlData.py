@@ -17,7 +17,7 @@ class FctHostControlData:
             config = re.sub(r"\s*\/\*.*\*\/", " ", json_file.read())
             self.data = json.loads(config)
 
-    def get_fixtures(self):
+    def get_fixtures(self) -> "list[Fixture]":
         fixtures = []
         yieldErrorMin = self._mainConfigData.get_yield_error_min()
         yieldWarningMin = self._mainConfigData.get_yield_warning_min()
@@ -34,8 +34,8 @@ class FctHostControlData:
             )
         return fixtures
 
-    def get_yield(self, ip):
+    def get_yield(self, ip) -> float:
         return self._yieldData.get_yield(ip)
 
-    def get_isSkipped(self, ip):
+    def get_isSkipped(self, ip) -> bool:
         return self._yieldData.get_isSkipped(ip)

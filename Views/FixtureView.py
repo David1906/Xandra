@@ -1,11 +1,12 @@
 from PyQt5.QtWidgets import QFrame, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
 from PyQt5 import QtCore
 from Controllers.FixtureController import FixtureController
+from Models.Fixture import Fixture
 from Views.Switch import Switch
 
 
 class FixtureView(QFrame):
-    def __init__(self, fixture):
+    def __init__(self, fixture: Fixture):
         super().__init__()
 
         self.fixture = fixture
@@ -50,12 +51,12 @@ class FixtureView(QFrame):
         self.setLayout(layout)
         self.__update()
 
-    def onswSkipChange(self, checked):
+    def onswSkipChange(self, checked: bool):
         self.fixture.isSkipped = checked
         self._fixtureController.update_yield_lock_skipped(self.fixture)
         self.__update()
 
-    def set_fixture(self, fixture):
+    def set_fixture(self, fixture: Fixture):
         self.fixture = fixture
         self.__update()
 
@@ -112,5 +113,5 @@ class FixtureView(QFrame):
         )
         self.swTraceability.setChecked(True)
 
-    def equals(self, fixture):
+    def equals(self, fixture) -> bool:
         return fixture.id == self.fixture.id

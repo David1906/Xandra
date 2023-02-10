@@ -7,7 +7,7 @@ class MainWindow(QMainWindow):
     ICON_FULLPATH = "./Resources/icon.png"
     BOX_SPACING = 30
 
-    def __init__(self, title="Xandra - FBT"):
+    def __init__(self, title: str = "Xandra - FBT"):
         super().__init__()
 
         self.setWindowTitle(title)

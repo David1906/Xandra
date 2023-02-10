@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
 from Controllers.FixtureGridController import FixtureGridController
+from Models.Fixture import Fixture
 from Views.FixtureView import FixtureView
 
 
@@ -17,14 +18,14 @@ class FixtureGridView(QWidget):
         self.setLayout(self.hBox)
         self.set_fixtures(self._fixtureGridController.get_fixtures())
 
-    def set_fixtures(self, fixtures):
+    def set_fixtures(self, fixtures: "list[Fixture]"):
         self.create_fixture_views(fixtures)
         for fixtureView in self._fixtureViews:
             for fixture in fixtures:
                 if fixtureView.equals(fixture):
                     fixtureView.set_fixture(fixture)
 
-    def create_fixture_views(self, fixtures):
+    def create_fixture_views(self, fixtures: "list[Fixture]"):
         if len(self._fixtureViews) > 0:
             return
 

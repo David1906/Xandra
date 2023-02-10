@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QSize
+from PyQt5 import QtGui
 from PyQt5.QtWidgets import QMainWindow
 from Views.FixtureGridView import FixtureGridView
 
@@ -11,6 +11,7 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.setWindowTitle(title)
+        self.setWindowIcon(QtGui.QIcon(MainWindow.ICON_FULLPATH))
 
         self.fixtureView = FixtureGridView()
         self.setCentralWidget(self.fixtureView)

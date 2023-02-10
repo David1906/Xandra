@@ -42,5 +42,5 @@ class MainConfigData:
     def get_fct_host_config_fullpath(self) -> str:
         return self._getValue("fctHostControlConfig")
 
-    def get_terminal(self) -> str:
-        return self._getValue("terminal")
+    def get_launch_terminal_cmd(self) -> "list[str]":
+        return self._getValue("launchTerminalCmd")

@@ -1,4 +1,5 @@
 import json
+import numbers
 
 from DataAccess.MainConfigData import MainConfigData
 from Models.Fixture import Fixture
@@ -14,7 +15,7 @@ class YieldData:
 
     def get_yield(self, ip: str) -> float:
         yieldRate = self._getValue(ip, YieldData.YIELD_JSON_PATH)
-        if not yieldRate.isnumeric():
+        if not isinstance(yieldRate, numbers.Number):
             return YieldData.DEFAULT_YIELD
         return yieldRate
 

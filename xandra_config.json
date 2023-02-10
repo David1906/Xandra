@@ -5,5 +5,10 @@
     "fctHostControlConfig": "./Resources/FCTHostControl.config",
     "yieldErrorThreshold": 80,
     "yieldRefreshSeconds": 2,
-    "terminal": "gnome-terminal"
+    "launchTerminalCmd": [
+        "gnome-terminal",
+        "--",
+        "bash",
+        "-c"
+    ]
 }

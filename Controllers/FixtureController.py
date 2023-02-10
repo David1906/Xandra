@@ -16,7 +16,9 @@ class FixtureController:
         if hasTraceability == False:
             cmd += " -m"
         print(cmd)
-        subprocess.call([mainConfigData.get_terminal(), "--", "bash", "-c", cmd])
+        callArgs = mainConfigData.get_launch_terminal_cmd()
+        callArgs.append(cmd)
+        subprocess.call(callArgs)
 
     def update_yield_lock_skipped(self, fixture: Fixture):
         self._yieldData.update_yield_lock_skipped(fixture)

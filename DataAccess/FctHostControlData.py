@@ -22,12 +22,13 @@ class FctHostControlData:
         yieldErrorMin = self._mainConfigData.get_yield_error_min()
         yieldWarningMin = self._mainConfigData.get_yield_warning_min()
         for fixture in self.data[FctHostControlData.FIXTURES_ARRAY_KEY]:
+            plcIp = fixture[FctHostControlData.PLC_IP_KEY]
             fixtures.append(
                 Fixture(
                     fixture[FctHostControlData.ID_KEY],
-                    fixture[FctHostControlData.PLC_IP_KEY],
-                    self.get_yield(FctHostControlData.PLC_IP_KEY),
-                    self.get_isSkipped(FctHostControlData.PLC_IP_KEY),
+                    plcIp,
+                    self.get_yield(plcIp),
+                    self.get_isSkipped(plcIp),
                     yieldErrorMin,
                     yieldWarningMin,
                 )

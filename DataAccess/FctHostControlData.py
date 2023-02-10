@@ -1,28 +1,33 @@
-import json
+import json, re
 from DataAccess.MainConfigData import MainConfigData
 from DataAccess.YieldData import YieldData
 from Models.Fixture import Fixture
 
 
 class FctHostControlData:
+    FIXTURES_ARRAY_KEY = "Fixtures"
+    ID_KEY = "ID"
+    PLC_IP_KEY = "PLC_IP"
+
     def __init__(self):
         self._yieldData = YieldData()
         self._mainConfigData = MainConfigData()
 
         with open(self._mainConfigData.get_fct_host_config_fullpath()) as json_file:
-            self.data = json.load(json_file)
+            config = re.sub(r"\s*\/\*.*\*\/", " ", json_file.read())
+            self.data = json.loads(config)
 
     def get_fixtures(self):
         fixtures = []
         yieldErrorMin = self._mainConfigData.get_yield_error_min()
         yieldWarningMin = self._mainConfigData.get_yield_warning_min()
-        for fixture in self.data["fixtures"]:
+        for fixture in self.data[FctHostControlData.FIXTURES_ARRAY_KEY]:
             fixtures.append(
                 Fixture(
-                    fixture["id"],
-                    fixture["ip"],
-                    self.get_yield(fixture["ip"]),
-                    self.get_isSkipped(fixture["ip"]),
+                    fixture[FctHostControlData.ID_KEY],
+                    fixture[FctHostControlData.PLC_IP_KEY],
+                    self.get_yield(FctHostControlData.PLC_IP_KEY),
+                    self.get_isSkipped(FctHostControlData.PLC_IP_KEY),
                     yieldErrorMin,
                     yieldWarningMin,
                 )

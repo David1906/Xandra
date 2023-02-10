@@ -23,7 +23,7 @@ class FixtureYieldChecker:
         with open(FixtureYieldChecker.DISABLED_FIXTURES_JSON) as json_file:
             disabledFixtures = json.load(json_file)
             fixtureIp = os.getenv("XANDRA_FIXTURE_IP")
-            if disabledFixtures[fixtureIp] == True:
+            if fixtureIp in disabledFixtures and disabledFixtures[fixtureIp] == True:
                 self.outputFail()
             else:
                 self.outputPass()
@@ -43,7 +43,7 @@ class FixtureYieldChecker:
         self.outputResultFile("FAIL")
 
     def printHeader(self, text, color, length=65):
-        HEADER_CHAR="*"
+        HEADER_CHAR = "*"
         sideSize = math.ceil(((length - len(text)) / 2) - 1)
         fullText = HEADER_CHAR * sideSize + " " + text + " " + HEADER_CHAR * sideSize
         fullText = fullText.ljust(length, HEADER_CHAR)

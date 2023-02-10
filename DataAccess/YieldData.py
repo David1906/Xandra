@@ -5,6 +5,7 @@ from Models.Fixture import Fixture
 
 
 class YieldData:
+    DEFAULT_YIELD = 100
     YIELD_JSON_PATH = "./Resources/yield.json"
     YIELD_LOCK_SKIPED_JSON_PATH = "./Resources/yield_lock_skipped.json"
 
@@ -12,7 +13,10 @@ class YieldData:
         self._mainConfigData = MainConfigData()
 
     def get_yield(self, ip):
-        return self._getValue(ip, YieldData.YIELD_JSON_PATH)
+        yieldRate = self._getValue(ip, YieldData.YIELD_JSON_PATH)
+        if not yieldRate.isnumeric():
+            return YieldData.DEFAULT_YIELD
+        return yieldRate
 
     def get_isSkipped(self, ip):
         return self._getValue(ip, YieldData.YIELD_LOCK_SKIPED_JSON_PATH) == True

@@ -9,5 +9,5 @@ styleSheet = "Resources/styles.css"
 with open(styleSheet, "r") as fh:
     app.setStyleSheet(fh.read())
 window = MainWindow()
-window.show()
+window.showMaximized()
 app.exec()

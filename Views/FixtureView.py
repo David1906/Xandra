@@ -1,7 +1,8 @@
-from PyQt5.QtWidgets import QFrame, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
+from PyQt5.QtWidgets import QFrame, QLabel, QPushButton, QGridLayout, QMessageBox
 from PyQt5 import QtCore
 from Controllers.FixtureController import FixtureController
 from Models.Fixture import Fixture
+from Views.EmbededTerminal import EmbededTerminal
 from Views.Switch import Switch
 
 
@@ -13,42 +14,39 @@ class FixtureView(QFrame):
         self._fixtureController = FixtureController()
 
         self.setProperty("cssClass", "large")
-        layout = QVBoxLayout()
+        gridLayout = QGridLayout()
 
         self.lblId = QLabel("Id:")
         self.lblId.setObjectName("h1")
-        self.lblId.setAlignment(QtCore.Qt.AlignCenter)
-        layout.addWidget(self.lblId)
+        gridLayout.addWidget(self.lblId, 0, 0, 1, 5, QtCore.Qt.AlignCenter)
 
         self.btnStart = QPushButton("Start")
         self.btnStart.clicked.connect(self.on_btnStart_clicked)
-        layout.addWidget(self.btnStart)
+        gridLayout.addWidget(self.btnStart, 1, 0, 1, 5, QtCore.Qt.AlignCenter)
 
         self.lblIp = QLabel("IP:")
-        self.lblIp.setObjectName("h2")
-        self.lblIp.setAlignment(QtCore.Qt.AlignCenter)
-        layout.addWidget(self.lblIp)
+        gridLayout.addWidget(self.lblIp, 2, 0, 1, 2)
 
         self.lblYield = QLabel("Yield:")
-        self.lblYield.setObjectName("h2")
-        self.lblYield.setAlignment(QtCore.Qt.AlignCenter)
-        layout.addWidget(self.lblYield)
+        gridLayout.addWidget(self.lblYield, 3, 0, 1, 2)
 
-        hBoxSwitch = QHBoxLayout()
-        hBoxSwitch.addWidget(QLabel("Traceability"))
+        self.lblTraceability = QLabel("Traceability")
+        gridLayout.addWidget(self.lblTraceability, 2, 3)
         self.swTraceability = Switch()
         self.swTraceability.setChecked(True)
-        hBoxSwitch.addWidget(self.swTraceability)
-        layout.addLayout(hBoxSwitch)
+        gridLayout.addWidget(self.swTraceability, 2, 4)
 
-        hBoxSwitch = QHBoxLayout()
-        hBoxSwitch.addWidget(QLabel("Skip Low Yield Lock"))
+        self.lblSkip = QLabel("Skip Low Yield Lock")
+        gridLayout.addWidget(self.lblSkip, 3, 3)
         self.swSkip = Switch()
         self.swSkip.toggled.connect(self.onswSkipChange)
-        hBoxSwitch.addWidget(self.swSkip)
-        layout.addLayout(hBoxSwitch)
+        gridLayout.addWidget(self.swSkip, 3, 4)
 
-        self.setLayout(layout)
+        self.terminal = EmbededTerminal()
+        self.terminal.finished.connect(self.onTerminalFinished)
+        gridLayout.addWidget(self.terminal, 4, 0, 6, 5)
+
+        self.setLayout(gridLayout)
         self.__update()
 
     def onswSkipChange(self, checked: bool):
@@ -83,8 +81,7 @@ class FixtureView(QFrame):
                 opacity: 0.5;
             }
             QFrame[cssClass="large"] {
-                padding: 4px;
-                margin: 4px;
+                margin: 2px;
                 color: black;
                 border-radius: 5px;
                 border: 1px solid gray;
@@ -96,22 +93,40 @@ class FixtureView(QFrame):
                 background-color: yellow;
             }
             QLabel#h1{
-                margin: 16px 0x;
+                margin: 5px 0x;
                 font-size: 24px;
                 font-weight: bold;
             }
             QLabel#h2{
-                margin: 8px 0px;
+                margin: 2px 0px;
                 font-size: 16px;
             }
          """
         )
 
     def on_btnStart_clicked(self):
-        self._fixtureController.launch_fct_host_control(
-            self.fixture, self.swTraceability.getChecked()
-        )
-        self.swTraceability.setChecked(True)
+        if self.btnStart.text() == "Start":
+            self.swTraceability.setChecked(True)
+            cmd = self._fixtureController.get_launch_fct_host_cmd(
+                self.fixture, self.swTraceability.getChecked()
+            )
+            print(cmd)
+            self.terminal.start([cmd])
+            self.btnStart.setText("Stop")
+        else:
+            reply = QMessageBox.question(
+                self,
+                "Stop Fixture",
+                f"Are you sure to stop fixture {self.fixture.id}?",
+                QMessageBox.Yes | QMessageBox.No,
+                QMessageBox.No,
+            )
+            if reply == QMessageBox.Yes:
+                self.terminal.Stop()
+                self.btnStart.setText("Start")
+
+    def onTerminalFinished(self, exitStatus):
+        self.btnStart.setText("Start")
 
     def equals(self, fixture) -> bool:
         return fixture.id == self.fixture.id

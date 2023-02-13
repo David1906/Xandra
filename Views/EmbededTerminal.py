@@ -14,8 +14,6 @@ class EmbededTerminal(QtWidgets.QWidget):
         self.terminal = QtWidgets.QFrame()
         gridLayout.addWidget(self.terminal, 0, 0)
         self.setLayout(gridLayout)
-        # self.terminal.setMinimumHeight(180)
-        # self.terminal.setMinimumWidth(600)
         self.terminal.setStyleSheet(
             "border: 1px solid gray; background-color: lightgray;"
         )

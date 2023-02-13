@@ -4,11 +4,5 @@
     "fctHostControl": "/home/david/Xandra/Resources/chk_station_yield.sh",
     "fctHostControlConfig": "./Resources/FCTHostControl.config",
     "yieldErrorThreshold": 80,
-    "yieldRefreshSeconds": 2,
-    "launchTerminalCmd": [
-        "gnome-terminal",
-        "--",
-        "bash",
-        "-c"
-    ]
+    "yieldRefreshSeconds": 2
 }

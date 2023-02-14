@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QFrame, QLabel, QPushButton, QGridLayout, QMessageBo
 from PyQt5 import QtCore
 from Controllers.FixtureController import FixtureController
 from Models.Fixture import Fixture
-from Views.EmbededTerminal import EmbededTerminal
+from Views.EmbeddedTerminal import EmbeddedTerminal
 from Views.Switch import Switch
 
 
@@ -42,7 +42,7 @@ class FixtureView(QFrame):
         self.swSkip.toggled.connect(self.onswSkipChange)
         gridLayout.addWidget(self.swSkip, 3, 4)
 
-        self.terminal = EmbededTerminal()
+        self.terminal = EmbeddedTerminal()
         self.terminal.finished.connect(self.onTerminalFinished)
         gridLayout.addWidget(self.terminal, 4, 0, 6, 5)
 

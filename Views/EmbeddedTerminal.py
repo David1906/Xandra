@@ -2,11 +2,11 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import pyqtSignal
 
 
-class EmbededTerminal(QtWidgets.QWidget):
+class EmbeddedTerminal(QtWidgets.QWidget):
     finished = pyqtSignal(int)
 
     def __init__(self):
-        super(EmbededTerminal, self).__init__()
+        super(EmbeddedTerminal, self).__init__()
         self.process = QtCore.QProcess(self)
         self.process.finished.connect(self.onFinished)
 
@@ -19,9 +19,17 @@ class EmbededTerminal(QtWidgets.QWidget):
         )
 
     def start(self, args: "list[str]" = []):
-        fullArgs = ["-embed", self.getTerminalWinId(), "-e", "sh", "-c"]
+        fullArgs = [
+            "-into",
+            self.getTerminalWinId(),
+            "-geometry",
+            "120x30",
+            "-sl",
+            "512",
+            "-e",
+        ]
         fullArgs = fullArgs + args
-        self.process.start("rxvt-unicode", fullArgs)
+        self.process.start("xterm", fullArgs)
 
     def onFinished(self, exitCode, exitStatus):
         self.finished.emit(exitCode)

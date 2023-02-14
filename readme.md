@@ -17,4 +17,4 @@
 ## Dependencias
 -Python 3.8+
 -PyQt5 5.15.9+
--rxvt-unicode
+-xterm

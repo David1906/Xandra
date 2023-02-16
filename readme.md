@@ -19,4 +19,4 @@
 -PyQt5 5.15.9+
 -xterm
 -tmux
--xampp
+-pip install requests

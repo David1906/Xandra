@@ -41,3 +41,9 @@ class MainConfigData:
 
     def get_fct_host_config_fullpath(self) -> str:
         return self._getValue("fctHostControlConfig")
+
+    def get_xandra_api_url(self) -> str:
+        return self._getValue("xandraApiUrl")
+
+    def get_last_test_pass_qty(self) -> str:
+        return self._getValue("lastTestPassQty")

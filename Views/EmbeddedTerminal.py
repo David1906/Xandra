@@ -26,6 +26,10 @@ class EmbeddedTerminal(QtWidgets.QWidget):
             "120x30",
             "-sl",
             "512",
+            "-bg",
+            "black",
+            "-fg",
+            "white",
             "-e",
         ]
         fullArgs = fullArgs + args

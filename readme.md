@@ -19,4 +19,12 @@
 -PyQt5 5.15.9+
 -xterm
 -tmux
--pip install requests
+pip install requests-futures
+
+## shortcut
+[Desktop Entry]
+Name=Xandra
+Exec=tmux new -d "cd /usr/local/Foxconn/automation/Xandra && python3 /usr/local/Foxconn/automation/Xandra/xandra.py"
+Terminal=true
+Type=Application
+Icon=/usr/local/Foxconn/automation/Xandra/Resources/icon.png

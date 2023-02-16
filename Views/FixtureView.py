@@ -34,11 +34,13 @@ class FixtureView(QFrame):
         gridLayout.addWidget(self.lblTraceability, 2, 3)
         self.swTraceability = Switch()
         self.swTraceability.setChecked(True)
+        self.swTraceability.toggled.connect(self.onSwTraceabilityChange)
         gridLayout.addWidget(self.swTraceability, 2, 4)
 
         self.lblSkip = QLabel("Skip Low Yield Lock")
         gridLayout.addWidget(self.lblSkip, 3, 3)
         self.swSkip = Switch()
+        self.swSkip.setEnabled(False)
         self.swSkip.toggled.connect(self.onswSkipChange)
         gridLayout.addWidget(self.swSkip, 3, 4)
 
@@ -48,6 +50,9 @@ class FixtureView(QFrame):
 
         self.setLayout(gridLayout)
         self.__update()
+
+    def onSwTraceabilityChange(self, checked: bool):
+        self.swSkip.setChecked(not checked)
 
     def onswSkipChange(self, checked: bool):
         self.fixture.isSkipped = checked
@@ -63,8 +68,6 @@ class FixtureView(QFrame):
         self.lblYield.setText(f"Yield: {self.fixture.yieldRate}%")
         self.lblIp.setText(f"Ip: {self.fixture.ip}")
         self.btnStart.setEnabled(self.fixture.isDisabled() == False)
-        self.swSkip.setEnabled(self.fixture.isDisabled() or self.fixture.isSkipped)
-        self.swSkip.setChecked(self.fixture.isSkipped)
 
         objectName = ""
         if self.fixture.isDisabled():

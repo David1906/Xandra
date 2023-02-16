@@ -22,6 +22,7 @@ class EmbeddedTerminal(QtWidgets.QWidget):
         fullArgs = [
             "-into",
             self.getTerminalWinId(),
+            "-si",
             "-geometry",
             "120x30",
             "-sl",

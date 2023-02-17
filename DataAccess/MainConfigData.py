@@ -58,5 +58,8 @@ class MainConfigData:
     def get_xandra_api_url(self) -> str:
         return self._getValue("xandraApiUrl")
 
+    def get_yield_calc_qty(self) -> int:
+        return self._getValue("yieldCalcQty")
+
     def get_last_test_pass_qty(self) -> str:
         return self._getValue("lastTestPassQty")

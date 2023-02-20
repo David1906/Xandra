@@ -1,11 +1,11 @@
 {
     "fixtureIpEnvironmentName": "XANDRA_FIXTURE_IP",
     "disabledFixturesJson": "./Resources/disabled_fixtures.json",
-    "fctHostControl": "/home/david/Xandra/Resources/chk_station_yield.sh",
-    "fctHostControlConfig": "./Resources/FCTHostControl.config",
-    "yieldErrorThreshold": 70,
+    "fctHostControl": "/usr/local/Foxconn/DA194/Bahubali_Sparrow_C3/FCTHostControl",
+    "fctHostControlConfig": "/usr/local/Foxconn/DA194/Bahubali_Sparrow_C3/FCTHostControl.config",
+    "xandraApiUrl": "http://10.12.206.107:5000",
     "yieldRefreshSeconds": 5,
-    "xandraApiUrl": "http://127.0.0.1:5000",
+    "yieldErrorThreshold": 70,
     "yieldCalcQty": 10,
     "lastTestPassQty": 3
 }

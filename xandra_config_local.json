@@ -1,0 +1,11 @@
+{
+    "fixtureIpEnvironmentName": "XANDRA_FIXTURE_IP",
+    "disabledFixturesJson": "./Resources/disabled_fixtures.json",
+    "fctHostControl": "/home/david/Xandra/Resources/chk_station_yield.sh",
+    "fctHostControlConfig": "./Resources/FCTHostControl.config",
+    "yieldErrorThreshold": 70,
+    "yieldRefreshSeconds": 5,
+    "xandraApiUrl": "http://127.0.0.1:5000",
+    "yieldCalcQty": 10,
+    "lastTestPassQty": 3
+}

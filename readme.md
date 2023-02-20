@@ -20,6 +20,7 @@
 -xterm
 -tmux
 pip install requests-futures
+pip3 install -r requirements.txt
 
 ## shortcut
 [Desktop Entry]

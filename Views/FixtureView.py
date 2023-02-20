@@ -3,6 +3,7 @@ from PyQt5 import QtCore
 from Controllers.FixtureController import FixtureController
 from Models.Fixture import Fixture
 from Views.EmbeddedTerminal import EmbeddedTerminal
+from Views.LedIndicator import LedIndicator
 from Views.Switch import Switch
 
 
@@ -30,6 +31,12 @@ class FixtureView(QFrame):
         self.lblYield = QLabel("Yield:")
         gridLayout.addWidget(self.lblYield, 3, 0, 1, 2)
 
+        self.lblPassed = QLabel("Passed Last 3 Tests :")
+        gridLayout.addWidget(self.lblPassed, 3, 3, 1, 1)
+        self.led = LedIndicator()
+        self.led.setEnabled(False)
+        gridLayout.addWidget(self.led, 3, 4, 1, 1)
+
         self.lblTraceability = QLabel("Traceability")
         gridLayout.addWidget(self.lblTraceability, 2, 3)
         self.swTraceability = Switch()
@@ -38,15 +45,15 @@ class FixtureView(QFrame):
         gridLayout.addWidget(self.swTraceability, 2, 4)
 
         self.lblSkip = QLabel("Skip Low Yield Lock")
-        gridLayout.addWidget(self.lblSkip, 3, 3)
+        # gridLayout.addWidget(self.lblSkip, 3, 3)
         self.swSkip = Switch()
         self.swSkip.setEnabled(False)
         self.swSkip.toggled.connect(self.onswSkipChange)
-        gridLayout.addWidget(self.swSkip, 3, 4)
+        # gridLayout.addWidget(self.swSkip, 3, 4)
 
         self.terminal = EmbeddedTerminal()
         self.terminal.finished.connect(self.onTerminalFinished)
-        gridLayout.addWidget(self.terminal, 4, 0, 6, 5)
+        gridLayout.addWidget(self.terminal, 5, 0, 8, 5)
 
         self.setLayout(gridLayout)
         self.__update()
@@ -67,6 +74,10 @@ class FixtureView(QFrame):
         self.lblId.setText(f"Fixture {self.fixture.id}")
         self.lblYield.setText(f"Yield: {self.fixture.yieldRate}%")
         self.lblIp.setText(f"Ip: {self.fixture.ip}")
+        self.lblPassed.setText(
+            f"Passed Last {self._fixtureController.get_last_test_pass_qty()} Tests:"
+        )
+        self.led.setChecked(self.fixture.areLastTestPass)
         self.btnStart.setEnabled(self.fixture.isDisabled() == False)
 
         objectName = ""

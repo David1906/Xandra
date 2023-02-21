@@ -26,7 +26,7 @@ class EmbeddedTerminal(QtWidgets.QWidget):
             "-geometry",
             "120x30",
             "-sl",
-            "512",
+            "2000",
             "-bg",
             "black",
             "-fg",

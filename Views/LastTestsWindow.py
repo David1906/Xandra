@@ -26,7 +26,7 @@ class LastTestsWindow(QtWidgets.QWidget):
         self.layout.addWidget(chartview)
 
         self.table = QtWidgets.QTableWidget()
-        self.table.setMinimumWidth(1150)
+        self.table.setMinimumWidth(1250)
         header = self.table.horizontalHeader()
         header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
         self.layout.addWidget(self.table, alignment=QtCore.Qt.AlignCenter)

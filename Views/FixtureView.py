@@ -3,6 +3,8 @@ from PyQt5 import QtCore
 from Controllers.FixtureController import FixtureController
 from Models.Fixture import Fixture
 from Views.EmbeddedTerminal import EmbeddedTerminal
+from Views.LastFailuresWindow import LastFailuresWindow
+from Views.LastTestsWindow import LastTestsWindow
 from Views.LedIndicator import LedIndicator
 from Views.Switch import Switch
 
@@ -13,6 +15,7 @@ class FixtureView(QFrame):
 
         self.fixture = fixture
         self._fixtureController = FixtureController()
+        self.w = None
 
         self.setProperty("cssClass", "large")
         gridLayout = QGridLayout()
@@ -55,8 +58,24 @@ class FixtureView(QFrame):
         self.terminal.finished.connect(self.onTerminalFinished)
         gridLayout.addWidget(self.terminal, 5, 0, 8, 5)
 
+        self.btnLastTests = QPushButton("Last Tests")
+        self.btnLastTests.clicked.connect(self.on_btnLastTests_clicked)
+        gridLayout.addWidget(self.btnLastTests, 16, 0)
+
+        self.btnLastFailures = QPushButton("Last Failures")
+        self.btnLastFailures.clicked.connect(self.on_btnLastFailures_clicked)
+        gridLayout.addWidget(self.btnLastFailures, 16, 1)
+
         self.setLayout(gridLayout)
         self.__update()
+
+    def on_btnLastTests_clicked(self):
+        self.w = LastTestsWindow(self.fixture.ip)
+        self.w.showMaximized()
+
+    def on_btnLastFailures_clicked(self):
+        self.w = LastFailuresWindow(self.fixture.ip)
+        self.w.showMaximized()
 
     def onSwTraceabilityChange(self, checked: bool):
         self.swSkip.setChecked(not checked)

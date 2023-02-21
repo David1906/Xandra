@@ -26,7 +26,10 @@ class LastFailuresWindow(QtWidgets.QWidget):
         self.layout.addWidget(chartview)
 
         self.table = QtWidgets.QTableWidget()
-        self.layout.addWidget(self.table)
+        self.table.setMinimumWidth(1150)
+        header = self.table.horizontalHeader()
+        header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+        self.layout.addWidget(self.table, alignment=QtCore.Qt.AlignCenter)
 
         self.label = QtWidgets.QLabel("No Data Found")
         self.label.setStyleSheet(

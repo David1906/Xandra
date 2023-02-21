@@ -4,7 +4,7 @@
     "fctHostControl": "/usr/local/Foxconn/DA194/Bahubali_Sparrow_C3/FCTHostControl",
     "fctHostControlConfig": "/usr/local/Foxconn/DA194/Bahubali_Sparrow_C3/FCTHostControl.config",
     "xandraApiUrl": "http://10.12.206.107:5000",
-    "yieldRefreshSeconds": 5,
+    "yieldRefreshSeconds": 10,
     "yieldErrorThreshold": 70,
     "yieldCalcQty": 10,
     "lastTestPassQty": 3

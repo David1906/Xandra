@@ -29,3 +29,7 @@ Exec=tmux new -d "cd /usr/local/Foxconn/automation/Xandra && python3 /usr/local/
 Terminal=true
 Type=Application
 Icon=/usr/local/Foxconn/automation/Xandra/Resources/icon.png
+
+
+## Script x permissions
+sed -i -e 's/\r$//' Resources/chk_station_yield.sh

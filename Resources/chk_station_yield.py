@@ -4,7 +4,9 @@ import json
 
 
 class FixtureYieldChecker:
-    DISABLED_FIXTURES_JSON = "/home/david/Xandra/Resources/disabled_fixtures.json"
+    DISABLED_FIXTURES_JSON = (
+        "/usr/local/Foxconn/automation/Xandra/Resources/disabled_fixtures.json"
+    )
     GREEN_COLOR = "\033[92m"
     RED_COLOR = "\033[91m"
     END_COLOR = "\033[0m"

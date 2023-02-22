@@ -4,20 +4,16 @@ import json
 
 
 class FixtureYieldChecker:
-    DISABLED_FIXTURES_JSON = (
-        "/usr/local/Foxconn/automation/Xandra/Resources/disabled_fixtures.json"
-    )
+    BASE_PATH = "/usr/local/Foxconn/automation/Xandra/Resources"
+    DISABLED_FIXTURES_JSON = f"{BASE_PATH}/disabled_fixtures.json"
     GREEN_COLOR = "\033[92m"
     RED_COLOR = "\033[91m"
     END_COLOR = "\033[0m"
 
     def __init__(self):
-        self._script_path = os.getenv("SCRIPTPATH")
-        if self._script_path == None:
-            self._script_path = "."
-        self._result_file = f"{self._script_path}/station_yield.result"
+        self._result_file = f"{FixtureYieldChecker.BASE_PATH}/chk_station_yield.result"
         os.environ["RESULTFILE"] = self._result_file
-
+        print(f"Result file path: {self._result_file}")
         if os.path.exists(self._result_file):
             os.remove(self._result_file)
 

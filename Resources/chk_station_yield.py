@@ -17,14 +17,16 @@ class FixtureYieldChecker:
         if os.path.exists(self._result_file):
             os.remove(self._result_file)
 
-    def check(self):
+    def check(self) -> bool:
         with open(FixtureYieldChecker.DISABLED_FIXTURES_JSON) as json_file:
             disabledFixtures = json.load(json_file)
             fixtureIp = os.getenv("XANDRA_FIXTURE_IP")
             if fixtureIp in disabledFixtures and disabledFixtures[fixtureIp] == True:
                 self.outputFail()
+                return False
             else:
                 self.outputPass()
+                return True
 
     def outputPass(self):
         self.printHeader(
@@ -66,4 +68,7 @@ class FixtureYieldChecker:
             outfile.write(result)
 
 
-FixtureYieldChecker().check()
+if FixtureYieldChecker().check() == False:
+    exit(1)
+else:
+    exit(0)

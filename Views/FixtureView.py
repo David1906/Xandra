@@ -97,6 +97,9 @@ class FixtureView(QFrame):
             f"Passed Last {self._fixtureController.get_last_test_pass_qty()} Tests:"
         )
         self.led.setChecked(self.fixture.areLastTestPass)
+        self.btnStart.setEnabled(
+            not self.fixture.isDisabled() or self.btnStart.text() == "Stop"
+        )
 
         objectName = ""
         if self.fixture.isDisabled():

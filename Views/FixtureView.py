@@ -137,8 +137,9 @@ class FixtureView(QFrame):
         )
 
     def on_btnStart_clicked(self):
-        if self.btnStart.text() == "Start":
-            self.swTraceability.setChecked(True)
+        isStart = self.btnStart.text() == "Start"
+        self.swTraceability.setEnabled(not isStart)
+        if isStart:
             cmd = self._fixtureController.get_launch_fct_host_cmd(
                 self.fixture, self.swTraceability.getChecked()
             )
@@ -159,6 +160,7 @@ class FixtureView(QFrame):
 
     def onTerminalFinished(self, exitStatus):
         self.btnStart.setText("Start")
+        self.swTraceability.setEnabled(True)
 
     def equals(self, fixture) -> bool:
         return fixture.id == self.fixture.id

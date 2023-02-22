@@ -32,7 +32,7 @@ class FixtureYieldChecker:
 
     def outputPass(self):
         self.printHeader(
-            "Yield OK",
+            "Fixture Enabled",
             FixtureYieldChecker.GREEN_COLOR,
         )
         self.outputResultFile("PASS")

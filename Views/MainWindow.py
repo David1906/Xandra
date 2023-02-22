@@ -1,5 +1,5 @@
 from PyQt5 import QtGui
-from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtWidgets import QMainWindow, QMessageBox
 from Views.FixtureGridView import FixtureGridView
 
 
@@ -16,3 +16,16 @@ class MainWindow(QMainWindow):
         self.fixtureView = FixtureGridView()
         self.setCentralWidget(self.fixtureView)
         self.fixtureView.interact()
+
+    def closeEvent(self, event):
+        reply = QMessageBox.question(
+                self,
+                "Exit Xandra",
+                f"Are you sure to exit Xandra? it will stop all fixtures",
+                QMessageBox.Yes | QMessageBox.No,
+                QMessageBox.No,
+            )
+        if reply == QMessageBox.Yes:
+            event.accept()
+        else:
+            event.ignore()

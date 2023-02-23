@@ -1,8 +1,8 @@
 {
     "fixtureIpEnvironmentName": "XANDRA_FIXTURE_IP",
     "disabledFixturesJson": "./Resources/disabled_fixtures.json",
-    "fctHostControl": "/usr/local/Foxconn/DA194/Bahubali_Sparrow_C3/FCTHostControl",
-    "fctHostControlConfig": "/usr/local/Foxconn/DA194/Bahubali_Sparrow_C3/FCTHostControl.config",
+    "fctHostControl": "/usr/local/Foxconn/automation/DA194/Bahubali_Sparrow_C3/FCTHostControl",
+    "fctHostControlConfig": "/usr/local/Foxconn/automation/DA194/Bahubali_Sparrow_C3/FCTHostControl.config",
     "xandraApiUrl": "http://10.12.206.107:5000",
     "yieldRefreshSeconds": 10,
     "yieldErrorThreshold": 70,

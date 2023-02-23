@@ -1,10 +1,11 @@
+#!/usr/bin/env python
 import math
 import os
 import json
 
 
 class FixtureYieldChecker:
-    BASE_PATH = "/usr/local/Foxconn/automation/Xandra/Resources"
+    BASE_PATH = os.path.dirname(os.path.abspath(__file__))
     DISABLED_FIXTURES_JSON = f"{BASE_PATH}/disabled_fixtures.json"
     GREEN_COLOR = "\033[92m"
     RED_COLOR = "\033[91m"

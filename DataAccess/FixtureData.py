@@ -1,4 +1,5 @@
 from automapper import mapper
+from sqlalchemy import update
 from DataAccess.FctHostControlData import FctHostControlData
 from DataAccess.MainConfigData import MainConfigData
 from DataAccess.SqlAlchemyBase import Session
@@ -26,9 +27,18 @@ class FixtureData:
             fixtureDTO = mapper.to(FixtureDTO).map(fixture)
             session.add(fixtureDTO)
         else:
-            fixtureDTO.ip = fixture.ip
-            fixtureDTO.areLastTestPass = fixture.areLastTestPass
-            fixtureDTO.isSkipped = fixture.isSkipped
+            session.execute(
+                update(FixtureDTO)
+                .where(FixtureDTO.ip == fixture.ip)
+                .values(
+                    ip=fixture.ip,
+                    areLastTestPass=fixture.areLastTestPass,
+                    isSkipped=fixture.isSkipped,
+                )
+            )
+            # fixtureDTO.ip = fixture.ip
+            # fixtureDTO.areLastTestPass = fixture.areLastTestPass
+            # fixtureDTO.isSkipped = fixture.isSkipped
         session.commit()
         Session.remove()
 

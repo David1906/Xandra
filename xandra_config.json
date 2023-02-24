@@ -3,6 +3,7 @@
     "disabledFixturesJson": "./Resources/disabled_fixtures.json",
     "fctHostControl": "/usr/local/Foxconn/automation/DA194/Bahubali_Sparrow_C3/FCTHostControl",
     "fctHostControlConfig": "/usr/local/Foxconn/automation/DA194/Bahubali_Sparrow_C3/FCTHostControl.config",
+    "logsPath": "/home/david/Documents/logs",
     "xandraApiUrl": "http://10.12.206.107:5000",
     "yieldRefreshSeconds": 10,
     "yieldErrorThreshold": 70,

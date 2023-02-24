@@ -21,6 +21,8 @@
 -tmux
 pip install requests-futures
 pip3 install -r requirements.txt
+pip install pymysql
+alembic
 
 ## shortcut
 [Desktop Entry]
@@ -33,3 +35,7 @@ Icon=/usr/local/Foxconn/automation/Xandra/Resources/icon.png
 
 ## Script x permissions
 sed -i -e 's/\r$//' Resources/chk_station_yield.sh
+
+## Migrations
+alembic revision --autogenerate -m ""
+alembic upgrade head

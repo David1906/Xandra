@@ -2,6 +2,7 @@ from typing import Callable
 from PyQt5 import QtCore
 from DataAccess.DisabledFixturesData import DisabledFixturesData
 from DataAccess.FctHostControlData import FctHostControlData
+from DataAccess.FixtureData import FixtureData
 from DataAccess.MainConfigData import MainConfigData
 from DataAccess.YieldData import YieldData
 from Models.Fixture import Fixture
@@ -9,15 +10,15 @@ from Models.Fixture import Fixture
 
 class FixtureGridController:
     def __init__(self):
-        self.isWatching = False
+        self._isWatching = False
         self._fctHostControlData = FctHostControlData()
         self._disabledFixturesData = DisabledFixturesData()
-        self._yieldData = YieldData()
+        self._fixtureData = FixtureData()
         self._mainConfigData = MainConfigData()
 
     def start_watch_yield(self, task: Callable[["list[Fixture]"], None]):
         self.periodic(task)
-        self.isWatching = True
+        self._isWatching = True
         try:
             self._updateTimer.stop()
         except:
@@ -34,11 +35,11 @@ class FixtureGridController:
 
         for fixture in fixtures:
             if not fixture.hasLowYield():
-                self._yieldData.update_yield_lock_skipped(fixture)
                 fixture.isSkipped = False
+                self._fixtureData.createOrUpdate(fixture)
         self._disabledFixturesData.save(fixtures)
         task(fixtures)
-        return self.isWatching
+        return self._isWatching
 
     def stop_watch_yield(self):
-        self.isWatching = False
+        self._isWatching = False

@@ -1,6 +1,5 @@
 import json
 import numbers
-
 from DataAccess.MainConfigData import MainConfigData
 from Models.Fixture import Fixture
 

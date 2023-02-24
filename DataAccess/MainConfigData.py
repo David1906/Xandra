@@ -3,7 +3,7 @@ import os
 
 
 class MainConfigData:
-    MAIN_CONFIG_JSON_PATH = "xandra_config.json"
+    MAIN_CONFIG_JSON_PATH = "xandra_config_local.json"
     YIELD_WARNING_MAX = 99
     YIELD_WARNING_THRESHOLD_FROM_ERROR = 10
     JSON_DATA = {}
@@ -63,3 +63,6 @@ class MainConfigData:
 
     def get_last_test_pass_qty(self) -> str:
         return self._getValue("lastTestPassQty")
+    
+    def get_logs_path(self) -> str:
+        return self._getValue("logsPath")

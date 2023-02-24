@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "yield-bahubali",
+  "private_key_id": "f20f62671db6a24e439be6f6873acdf03e37932b",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCksV0pBTBklKGe\no/I8sEg+OaaRGeE7c8LA6cRFlKkWa2ExcDKv573aB8wwRkH7RvyYRERf2kPDistG\nu5GVzv8RsJ3DIMVE7SlTle54XiZRG50qMwzkwwv2LATye023vr44NBjdPx1OJ0j3\nJNIU9S6CAeVE8VsUKc8y/Xln5lmWFKGTacfMd8v1HYls3FR2YphV7V5/uGLbJvpu\nNT7tiYI/jybpsWi08/xIL8c3aHns+jPTMVbvIQwuylJPGh29EKDpegmsEmqJCLvX\nH/yw5lzNW6ei7/K5ggfVdG/jq4gYksczceOSw4SZLStCaqk18rgCWGvgcZKIcsJw\nGztfisXtAgMBAAECggEAH+rTsCh2SXfYnqMNRh+v0IdhtYs7cEct/i8Pv6Bg6Jxk\n2Kzy1c5mp8ONGenzzZvjRissyRrGuTXD0XB2dX8JRcdhu7g1IveHY9CRx7gPWvas\nDcqY/Bikz8+WIdwtoqePu9q02uPpbQUGCgeTw0YE/mMZqLPRv+WeZzZiefVVdVU4\neSe1io2paA8Jm5E8RSUQDjX0yS4Z4DssXtMq+EdrkOH8aZj5Fc/36r+jUMBFeGZA\nsZ2Izy4BKdtxzO8jGZ5w8607L5KnqLj8NDP2Q3Zb4mROgyZYBRM44mgVQsf7st5J\nC0zkAYaFEyVOFlrarvsDvr2ltyytgBTk+32oF7mVYQKBgQDb14CQJX0l/g2pVe+y\nle12nbLi4CPAkklq9iPHu6oAhC9KaAuwea6bY0bPw0h10hBtjZcGXZx5cOOCuPhv\noN2n/6UOLFnmsz4DivDXk8cSzgpEfLjPPVZg95cI+UB2lnruUKA+PYeknSi87gs9\nlSUfeZWen6LoYQj3Zf27wwgqmQKBgQC/x8yfTwjrYzrQao3nJRoQOAQ+U5hclC/i\nl4p3L5FDxECIfCMTVypqVTUdQhtBOXR3H1J4dnPGxFbYH/qeB9nU2iWhAL3pfmxZ\n/AAsHpTAJ/0Y5+qab8o4E8Mqbjucm2Odbznn9b6sscaHDCzt29NdrxbsW3cx1AAN\n1BB8dZh+dQKBgQCEtnyjCC6bn9mJbxprebzHjX2vHlYW63isvHhvG+gNtb6CsXrV\nBzAUGANoauA0WCKYsBAKxLowSajegmFfqgIFZ/uxKa7/6Ra3tsmbqldUD9P88jny\nyXl6whyIS0fSDxeZBE0oJabcBg/QtfdNLtshPBnJj18d3241Q3nAPoWQiQKBgBbx\nL+le6xI9rKuCE7ezGIsYKGnMVk287H2O42GeryIMOCwbrZaCtvBBgTkez2PeG7Ck\nbpk6kl8U3c69BJ4jEkwETLwV+qIUHaImI18jyWezYPO5yrbu6KIMuyw4Q6lYbXJH\n/AVjwIuoOLevHTDXO1HZwERGLNwpIFiHJfG9n6CBAoGBAJjTJZvZxM8vbGpof8nM\nZwEKxcIiKfk4fawazgEMlLo+D1f4H16psP8xaehGwf81HLwxik+rju9VFGbtJUA2\nUXA568VaUrJ155xMbxFVi+OjOfOlce9+94wZV4h7KLZsxP5NAuIvQIuXh808x/rk\nvDnkP/gDWqzZZaoF5KNAF/0c\n-----END PRIVATE KEY-----\n",
+  "client_email": "yield-bahubali@yield-bahubali.iam.gserviceaccount.com",
+  "client_id": "110817359006350669299",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/yield-bahubali%40yield-bahubali.iam.gserviceaccount.com"
+}

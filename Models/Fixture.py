@@ -1,13 +1,13 @@
 class Fixture:
     def __init__(
         self,
-        id: int,
-        ip: int,
-        yieldRate: float,
-        areLastTestPass: bool,
-        isSkipped: bool,
-        yieldErrorMin: float,
-        yieldWarningMin: float,
+        id: int = 0,
+        ip: int = 0,
+        yieldRate: float = 0,
+        areLastTestPass: bool = False,
+        isSkipped: bool = False,
+        yieldErrorMin: float = 0,
+        yieldWarningMin: float = 0,
     ):
         self.id = id
         self.ip = ip

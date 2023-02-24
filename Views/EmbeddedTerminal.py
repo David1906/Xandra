@@ -15,7 +15,7 @@ class EmbeddedTerminal(QtWidgets.QWidget):
         gridLayout.addWidget(self.terminal, 0, 0)
         self.setLayout(gridLayout)
         self.terminal.setStyleSheet(
-            "border: 1px solid gray; background-color: lightgray;"
+            "border: 1px solid gray; background-color: lightgray; margin: 0;"
         )
 
     def start(self, args: "list[str]" = []):

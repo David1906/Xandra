@@ -1,5 +1,4 @@
 from datetime import datetime
-import re
 
 
 class Test:
@@ -37,3 +36,9 @@ class Test:
             and self.stepLabel != None
             and self.operator != None
         )
+
+    def getResultString(self) -> str:
+        if self.status:
+            return "PASS"
+        else:
+            return f"FAIL - {self.stepLabel}"

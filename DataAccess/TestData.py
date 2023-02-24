@@ -1,10 +1,10 @@
-import logging, re
-from datetime import datetime
+from automapper import mapper
 from DataAccess.GoogleSheet import GoogleSheet
+from DataAccess.SqlAlchemyBase import Session
+from datetime import datetime
 from Models.DTO.TestDTO import TestDTO
 from Models.Test import Test
-from DataAccess.SqlAlchemyBase import Session
-from automapper import mapper
+import logging, re
 
 # TODO SEPARAR TEST PARSER
 
@@ -83,6 +83,7 @@ class TestData:
         session.add(mapper.to(TestDTO).map(test))
         session.commit()
         session.close()
+        Session.remove()
         self.find(test.fixtureIp)
         self.findFailures(test.fixtureIp)
         if addToGoogleSheets:
@@ -113,7 +114,7 @@ class TestData:
         query = (
             session.query(TestDTO)
             .filter(TestDTO.fixtureIp == fixtureIp)
-            .order_by(TestDTO.endTime.desc())
+            .order_by(TestDTO.id.desc())
         )
         if onlyFailures:
             query = query.filter(TestDTO.status == False)
@@ -122,6 +123,7 @@ class TestData:
         for testDTO in query:
             tests.append(mapper.to(Test).map(testDTO))
         session.close()
+        Session.remove()
         return tests
 
     def findFailures(self, fixtureIp: str, qty: int = 10) -> "list[Test]":

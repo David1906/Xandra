@@ -1,45 +1,35 @@
-from typing import Callable
-from PyQt5 import QtCore
 from DataAccess.DisabledFixturesData import DisabledFixturesData
-from DataAccess.FctHostControlData import FctHostControlData
 from DataAccess.FixtureData import FixtureData
-from DataAccess.MainConfigData import MainConfigData
-from DataAccess.YieldData import YieldData
 from Models.Fixture import Fixture
+from Models.Test import Test
+from PyQt5 import QtCore
+from Utils.FileWatchdog import FileWatchdog
+from Utils.SfcEventHandler import SfcEventHandler
+import atexit
 
 
-class FixtureGridController:
+class FixtureGridController(QtCore.QThread):
+    updated = QtCore.pyqtSignal(Test, Fixture)
+
     def __init__(self):
+        QtCore.QThread.__init__(self)
         self._isWatching = False
-        self._fctHostControlData = FctHostControlData()
         self._disabledFixturesData = DisabledFixturesData()
         self._fixtureData = FixtureData()
-        self._mainConfigData = MainConfigData()
+        self._sfcEventHandler = SfcEventHandler()
+        self._sfcEventHandler.updated.connect(self.update)
+        self._fileWatchdog = FileWatchdog(self._sfcEventHandler)
+        atexit.register(lambda: self._fileWatchdog.stop())
 
-    def start_watch_yield(self, task: Callable[["list[Fixture]"], None]):
-        self.periodic(task)
-        self._isWatching = True
-        try:
-            self._updateTimer.stop()
-        except:
-            pass
-        self._updateTimer = QtCore.QTimer()
-        self._updateTimer.timeout.connect(lambda: self.periodic(task))
-        self._updateTimer.start(self._mainConfigData.get_yield_refresh_ms())
+    def update(self, test: Test, fixture: Fixture):
+        self._disabledFixturesData.save(fixture)
+        self.updated.emit(test, fixture)
 
-    def get_fixtures(self) -> "list[Fixture]":
-        return self._fctHostControlData.get_fixtures()
+    def getAllFixtures(self) -> "list[Fixture]":
+        return self._fixtureData.findAll()
 
-    def periodic(self, task: Callable[["list[Fixture]"], None]) -> bool:
-        fixtures = self.get_fixtures()
+    def startWatchLogs(self):
+        self._fileWatchdog.start()
 
-        for fixture in fixtures:
-            if not fixture.hasLowYield():
-                fixture.isSkipped = False
-                self._fixtureData.createOrUpdate(fixture)
-        self._disabledFixturesData.save(fixtures)
-        task(fixtures)
-        return self._isWatching
-
-    def stop_watch_yield(self):
-        self._isWatching = False
+    def stopWatchLogs(self):
+        self._fileWatchdog.stop()

@@ -1,3 +1,6 @@
+from Models.Test import Test
+
+
 class Fixture:
     def __init__(
         self,

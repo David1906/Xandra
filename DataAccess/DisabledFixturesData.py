@@ -12,10 +12,9 @@ class DisabledFixturesData:
         else:
             self.fileFullPath = self._mainConfigData.get_disabled_fixture_fullpath()
 
-    def save(self, fixtures: "list[Fixture]"):
+    def save(self, fixture: Fixture):
         disabledFixtures = {}
-        for fixture in fixtures:
-            disabledFixtures[fixture.ip] = fixture.isDisabled()
+        disabledFixtures[fixture.ip] = fixture.isDisabled()
         with open(self.fileFullPath, "w") as outfile:
             json.dump(disabledFixtures, outfile)
 

@@ -12,16 +12,15 @@ class TestData:
         self._googleSheet = GoogleSheet()
         self._mainConfigData = MainConfigData()
 
-    def add(self, test: Test, addToGoogleSheets: bool = True):
+    def add(self, test: Test):
         if test.fixtureIp == None:
             return
         session = Session()
         session.add(mapper.to(TestDTO).map(test))
         session.commit()
         session.close()
-        Session.remove()
-        if addToGoogleSheets:
-            self._googleSheet.add(test)
+        Session.remove()        
+        self._googleSheet.add(test)
 
     def get_yield(self, fixtureIp: str) -> float:
         tests = self.find_last(fixtureIp)

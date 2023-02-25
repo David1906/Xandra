@@ -1,9 +1,12 @@
 import json
 import os
 
+from Utils.PathHelper import PathHelper
+
 
 class MainConfigData:
-    MAIN_CONFIG_JSON_PATH = "xandra_config_local.json"
+    MAIN_CONFIG_JSON_PATH = PathHelper().get_root_path() + \
+        "/xandra_config_local.json"
     YIELD_WARNING_MAX = 99
     YIELD_WARNING_THRESHOLD_FROM_ERROR = 10
     JSON_DATA = {}
@@ -28,41 +31,38 @@ class MainConfigData:
                 return value
         return ""
 
-    def get_disabled_fixture_fullpath(self) -> str:
-        return self._get_value("disabledFixturesJson")
-
     def get_fixture_ip_env_name(self) -> str:
         return self._get_value("fixtureIpEnvironmentName")
 
     def get_fct_host_control_fullpath(self) -> str:
         return self._get_value("fctHostControl")
 
-    def get_yield_error_min(self) -> float:
-        return self._get_value("yieldErrorThreshold")
-
-    def get_yield_warning_min(self) -> float:
-        yieldMax = (
-            self.get_yield_error_min()
-            + MainConfigData.YIELD_WARNING_THRESHOLD_FROM_ERROR
-        )
-        if yieldMax > MainConfigData.YIELD_WARNING_MAX:
-            return MainConfigData.YIELD_WARNING_MAX
-        return yieldMax
-
-    def get_yield_refresh_ms(self) -> int:
-        return self._get_value("yieldRefreshSeconds") * 1000
-
     def get_fct_host_config_fullpath(self) -> str:
         return self._get_value("fctHostControlConfig")
 
-    def get_xandra_api_url(self) -> str:
-        return self._get_value("xandraApiUrl")
+    def get_logs_path(self) -> str:
+        return self._get_value("logsPath")
+
+    def get_yield_error_threshold(self) -> float:
+        return self._get_value("yieldErrorThreshold")
+
+    def get_yield_warning_threshold(self) -> float:
+        yieldWarning = self._get_value("yieldWarningThreshold")
+        if yieldWarning > MainConfigData.YIELD_WARNING_MAX:
+            return MainConfigData.YIELD_WARNING_MAX
+        return yieldWarning
 
     def get_yield_calc_qty(self) -> int:
         return self._get_value("yieldCalcQty")
 
-    def get_last_test_pass_qty(self) -> str:
-        return self._get_value("lastTestPassQty")
+    def get_unlock_pass_qty(self) -> str:
+        return self._get_value("unlockPassQty")
 
-    def get_logs_path(self) -> str:
-        return self._get_value("logsPath")
+    def get_google_isActivated(self):
+        return self._get_value("googleSheets")["isActivated"]
+
+    def get_google_sheetName(self):
+        return self._get_value("googleSheets")["sheetName"]
+
+    def get_google_keyfilePath(self):
+        return self._get_value("googleSheets")["keyfilePath"]

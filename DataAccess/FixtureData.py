@@ -73,6 +73,6 @@ class FixtureData:
                     self._testData.get_yield(fixtureIp),
                     self._testData.are_last_test_pass(fixtureIp),
                     self.is_skipped(fixtureIp),
-                    self._mainConfigData.get_yield_error_min(),
-                    self._mainConfigData.get_yield_warning_min(),
+                    self._mainConfigData.get_yield_error_threshold(),
+                    self._mainConfigData.get_yield_warning_threshold(),
                 )

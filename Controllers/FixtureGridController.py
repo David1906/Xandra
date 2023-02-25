@@ -3,7 +3,7 @@ from Models.Fixture import Fixture
 from Models.Test import Test
 from PyQt5 import QtCore
 from Utils.FileWatchdog import FileWatchdog
-from Utils.SfcEventHandler import SfcEventHandler
+from Utils.LogEventHandler import LogEventHandler
 import atexit
 
 
@@ -14,7 +14,7 @@ class FixtureGridController(QtCore.QThread):
         QtCore.QThread.__init__(self)
         self._isWatching = False
         self._fixtureData = FixtureData()
-        self._sfcEventHandler = SfcEventHandler()
+        self._sfcEventHandler = LogEventHandler()
         self._sfcEventHandler.updated.connect(self.update)
         self._fileWatchdog = FileWatchdog(self._sfcEventHandler)
         atexit.register(lambda: self._fileWatchdog.stop())

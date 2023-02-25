@@ -7,7 +7,7 @@ from watchdog.events import FileSystemEventHandler
 import logging
 
 
-class SfcEventHandler(FileSystemEventHandler, QtCore.QThread):
+class LogEventHandler(FileSystemEventHandler, QtCore.QThread):
     updated = QtCore.pyqtSignal(Fixture)
 
     def __init__(self) -> None:
@@ -20,7 +20,7 @@ class SfcEventHandler(FileSystemEventHandler, QtCore.QThread):
     def on_created(self, event):
         try:
             test = self._testParser.parse(event.src_path)
-            self._testData.add(test, addToGoogleSheets=False)
+            self._testData.add(test)
             fixture = self._fixtureData.find(test.fixtureIp)
             fixture.set_test(test)
             self.updated.emit(fixture)

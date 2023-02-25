@@ -1,12 +1,32 @@
 {
     "fixtureIpEnvironmentName": "XANDRA_FIXTURE_IP",
-    "disabledFixturesJson": "./Resources/disabled_fixtures.json",
+    "fixtureIpEnvironmentName_description":"Varible del entorno en la cuál se inyectará la ip de la fixtura",
+
     "fctHostControl": "./Resources/chk_station_yield.sh",
+    "fctHostControl_description":"Ruta completa al ejecutable de FCTHostControl",
+
     "fctHostControlConfig": "./Resources/FCTHostControl.config",
+    "fctHostControlConfig_description":"Ruta completa al archivo de configuración de FCTHostControl.config",
+
     "logsPath": "/home/david/Documents/logs",
+    "logsPath_description":"Ruta donde se guardan los logs de las pruebas realizadas",
+
     "yieldErrorThreshold": 70,
-    "yieldRefreshSeconds": 5,
-    "xandraApiUrl": "http://127.0.0.1:5000",
+    "yieldErrorThreshold_description": "Porcentaje de yield el cual una vez alcanzado bloqueará la fixtura y lo pintará de color rojo en la interfaz",
+
+    "yieldWarningThreshold": 80,
+    "yieldWarningThreshold_description": "Porcentaje de yield el cual una vez alcanzado pintará la fixtuae de color amarillo en la interfaz",
+
     "yieldCalcQty": 10,
-    "lastTestPassQty": 3
+    "yieldCalcQty_description" : "Cantidad de pruebas con las que se calculará el yield",
+
+    "unlockPassQty": 3,
+    "unlockPassQty_description" : "Cantidad de pruebas consecutivas con estatus PASS necesarias para desbloquear la fixtura",
+
+    "googleSheets": {
+        "isActivated" : true,
+        "sheetName": "Test FBT Bahubali",
+        "keyfilePath": "/home/david/Documents/Xandra/Static/yield-bahubali-f20f62671db6.json"
+    },
+    "googleSheets_description":"Configuración para subir resultados de las pruebas realizadas a google sheets"
 }

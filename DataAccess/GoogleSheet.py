@@ -1,3 +1,4 @@
+from DataAccess.MainConfigData import MainConfigData
 from Models.Test import Test
 from oauth2client.service_account import ServiceAccountCredentials
 import gspread
@@ -7,21 +8,24 @@ import sys
 
 
 class GoogleSheet:
-    SHEET_NAME = "FBT Bahubali"
     SCOPE = [
         "https://spreadsheets.google.com/feeds",
         "https://www.googleapis.com/auth/drive",
     ]
-    CREDENTIALS = ServiceAccountCredentials.from_json_keyfile_name(
-        os.path.abspath(os.path.dirname(sys.argv[0]))
-        + "/Static/yield-bahubali-f20f62671db6.json",
-        SCOPE,
-    )
+
+    def __init__(self) -> None:
+        self._mainConfigData = MainConfigData()
+        self.credentials = ServiceAccountCredentials.from_json_keyfile_name(
+            self._mainConfigData.get_google_keyfilePath(),
+            GoogleSheet.SCOPE,
+        )
 
     def add(self, test: Test):
         try:
-            client = gspread.authorize(GoogleSheet.CREDENTIALS)
-            sheet = client.open(GoogleSheet.SHEET_NAME).sheet1
+            if not self._mainConfigData.get_google_isActivated():
+                return
+            client = gspread.authorize(self.credentials)
+            sheet = client.open(self._mainConfigData.get_google_sheetName()).sheet1
             sheet.append_row(
                 [
                     "",

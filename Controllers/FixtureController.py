@@ -18,4 +18,4 @@ class FixtureController:
         self._fixtureData.create_or_update(fixture)
 
     def get_last_test_pass_qty(self):
-        return self._mainConfigData.get_last_test_pass_qty()
+        return self._mainConfigData.get_unlock_pass_qty()

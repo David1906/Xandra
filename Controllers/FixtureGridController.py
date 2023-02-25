@@ -20,7 +20,6 @@ class FixtureGridController(QtCore.QThread):
         atexit.register(lambda: self._fileWatchdog.stop())
 
     def update(self, test: Test, fixture: Fixture):
-        self._disabledFixturesData.save(fixture)
         self.updated.emit(test, fixture)
 
     def get_all_fixtures(self) -> "list[Fixture]":

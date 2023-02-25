@@ -100,7 +100,7 @@ class LastFailuresWindow(QtWidgets.QWidget):
         my_slice.setExploded(True)
         my_slice.setLabelVisible(True)
         my_slice.setPen(QPen(Qt.white, 4))
-        my_slice.setBrush(Qt.green)
+        my_slice.setBrush(Qt.red)
 
         for slice in self.series.slices():
             txt = f"{slice.label()} - {100 * slice.percentage() :.2f}%"

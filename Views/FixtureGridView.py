@@ -26,6 +26,9 @@ class FixtureGridView(QWidget):
         self.msgSc = QShortcut(QKeySequence('Ctrl+Shift+A'), self)
         self.msgSc.activated.connect(self.start_all_fixtures)
 
+        self.msgSt = QShortcut(QKeySequence('Ctrl+Shift+S'), self)
+        self.msgSt.activated.connect(self.stop_all_fixtures)
+
     def create_fixtureViews(self):
         fixtures = self._fixtureGridController.get_all_fixtures()
         for fixture in fixtures:
@@ -56,3 +59,7 @@ class FixtureGridView(QWidget):
     def start_all_fixtures(self):
         for fixtureView in self._fixtureViews:
             fixtureView.start()
+
+    def stop_all_fixtures(self):
+        for fixtureView in self._fixtureViews:
+            fixtureView.stop()

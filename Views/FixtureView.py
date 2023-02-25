@@ -138,4 +138,9 @@ class FixtureView(QGroupBox):
         self._update()
 
     def start(self):
-        self.on_btnStart_clicked()
+        if self.btnStart.text() == "Start":
+            self.on_btnStart_clicked()
+
+    def stop(self):
+        if self.btnStart.text() == "Stop":
+            self.on_btnStart_clicked()

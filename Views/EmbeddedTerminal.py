@@ -2,20 +2,17 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import pyqtSignal
 
 
-class EmbeddedTerminal(QtWidgets.QWidget):
+class EmbeddedTerminal(QtWidgets.QFrame):
     finished = pyqtSignal(int)
 
     def __init__(self):
-        super(EmbeddedTerminal, self).__init__()
+        super().__init__()
         self.process = QtCore.QProcess(self)
         self.process.finished.connect(self.on_finished)
 
-        gridLayout = QtWidgets.QGridLayout()
         self.terminal = QtWidgets.QFrame()
-        gridLayout.addWidget(self.terminal, 0, 0)
-        self.setLayout(gridLayout)
-        self.terminal.setStyleSheet(
-            "border: 1px solid gray; background-color: lightgray; margin: 0;"
+        self.setStyleSheet(
+            "border: 1px solid gray; background-color: lightgray;"
         )
 
     def start(self, args: "list[str]" = []):
@@ -43,4 +40,4 @@ class EmbeddedTerminal(QtWidgets.QWidget):
         self.process.kill()
 
     def get_terminal_winId(self) -> str:
-        return str(int(self.terminal.winId()))
+        return str(int(self.winId()))

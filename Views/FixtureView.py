@@ -23,32 +23,32 @@ class FixtureView(QGroupBox):
         gridLayout = QGridLayout()
         self.setLayout(gridLayout)
 
+        self.lblIp = QLabel("IP:")
+        gridLayout.addWidget(self.lblIp, 0, 0, 1, 2, QtCore.Qt.AlignLeft)
+
         self.btnStart = QPushButton("Start")
         self.btnStart.clicked.connect(self.on_btnStart_clicked)
-        gridLayout.addWidget(self.btnStart, 0, 0, 1, 5, QtCore.Qt.AlignCenter)
-
-        self.lblIp = QLabel("IP:")
-        gridLayout.addWidget(self.lblIp, 1, 0, 1, 2)
+        gridLayout.addWidget(self.btnStart, 0, 3, 1, 2, QtCore.Qt.AlignLeft)
 
         self.lblTraceability = QLabel("Traceability")
-        gridLayout.addWidget(self.lblTraceability, 1, 3)
+        gridLayout.addWidget(self.lblTraceability, 0, 5)
         self.swTraceability = Switch()
         self.swTraceability.setChecked(True)
         self.swTraceability.toggled.connect(self.on_swTraceability_change)
-        gridLayout.addWidget(self.swTraceability, 1, 4)
+        gridLayout.addWidget(self.swTraceability, 0, 6)
 
         self.lblYield = QLabel("Yield:")
         gridLayout.addWidget(self.lblYield, 2, 0, 1, 2)
 
         self.lblPassed = QLabel("Passed Last 3 Tests :")
-        gridLayout.addWidget(self.lblPassed, 2, 3, 1, 1)
+        gridLayout.addWidget(self.lblPassed, 2, 5, 1, 1)
         self.led = LedIndicator()
         self.led.setEnabled(False)
-        gridLayout.addWidget(self.led, 2, 4, 1, 1)
+        gridLayout.addWidget(self.led, 2, 6, 1, 1, QtCore.Qt.AlignRight)
 
         self.terminal = EmbeddedTerminal()
         self.terminal.finished.connect(self.on_terminal_finished)
-        gridLayout.addWidget(self.terminal, 3, 0, 8, 5)
+        gridLayout.addWidget(self.terminal, 3, 0, 8, 7)
 
         self.btnLastTests = QPushButton("Last Tests")
         self.btnLastTests.clicked.connect(self.on_btnLastTests_clicked)
@@ -59,7 +59,7 @@ class FixtureView(QGroupBox):
         gridLayout.addWidget(self.btnLastFailures, 11, 1)
 
         self.lblResult = QLabel("Status: IDLE")
-        gridLayout.addWidget(self.lblResult, 11, 2, 1, 3, QtCore.Qt.AlignRight)
+        gridLayout.addWidget(self.lblResult, 11, 2, 1, 5, QtCore.Qt.AlignRight)
 
         self.set_fixture(fixture)
 
@@ -97,7 +97,10 @@ class FixtureView(QGroupBox):
         self.btnStart.setEnabled(
             not self.fixture.is_disabled() or self.btnStart.text() == "Stop"
         )
-
+# Establecer color en base a la prueba
+# Embeber prueba en fixtura (relacion de uso)
+# Reiniciar color al iniciar prueba nueva
+# Cambiar Resourses a static
         background = ""
         if self.fixture.is_disabled():
             background = "background-color: lightcoral;"

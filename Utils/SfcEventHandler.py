@@ -2,14 +2,13 @@ from DataAccess.FixtureData import FixtureData
 from DataAccess.TestData import TestData
 from DataAccess.TestParser import TestParser
 from Models.Fixture import Fixture
-from Models.Test import Test
 from PyQt5 import QtCore
 from watchdog.events import FileSystemEventHandler
 import logging
 
 
 class SfcEventHandler(FileSystemEventHandler, QtCore.QThread):
-    updated = QtCore.pyqtSignal(Test, Fixture)
+    updated = QtCore.pyqtSignal(Fixture)
 
     def __init__(self) -> None:
         super().__init__()
@@ -23,6 +22,7 @@ class SfcEventHandler(FileSystemEventHandler, QtCore.QThread):
             test = self._testParser.parse(event.src_path)
             self._testData.add(test, addToGoogleSheets=False)
             fixture = self._fixtureData.find(test.fixtureIp)
-            self.updated.emit(test, fixture)
+            fixture.set_test(test)
+            self.updated.emit(fixture)
         except Exception as e:
             logging.error(str(e))

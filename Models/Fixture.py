@@ -11,6 +11,7 @@ class Fixture:
         isSkipped: bool = False,
         yieldErrorMin: float = 0,
         yieldWarningMin: float = 0,
+        status: str = "IDLE",
     ):
         self.id = id
         self.ip = ip
@@ -19,6 +20,7 @@ class Fixture:
         self.isSkipped = isSkipped
         self.yieldErrorMin = yieldErrorMin
         self.yieldWarningMin = yieldWarningMin
+        self.status = status
         self._test: Test = None
 
     def is_disabled(self) -> bool:
@@ -32,3 +34,8 @@ class Fixture:
 
     def set_test(self, test: Test):
         self._test = test
+
+    def get_status_string(self):
+        if self._test == None:
+            return f"Status: {self.status}"
+        return "Result: " + self._test.get_result_string()

@@ -42,7 +42,7 @@ class TestData:
         return True
 
     def find_last(
-        self, fixtureIp: str, onlyFailures: bool = False
+        self, fixtureIp: str, qty: int = 0, onlyFailures: bool = False
     ) -> "list[Test]":
         session = Session()
         query = (
@@ -52,7 +52,8 @@ class TestData:
         )
         if onlyFailures:
             query = query.filter(TestDTO.status == False)
-        query = query.limit(self._mainConfigData.get_yield_calc_qty())
+        query = query.limit(
+            self._mainConfigData.get_yield_calc_qty() if qty == 0 else qty)
         tests: "list[Test]" = []
         for testDTO in query:
             tests.append(mapper.to(Test).map(testDTO))

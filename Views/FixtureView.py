@@ -15,7 +15,6 @@ class FixtureView(QGroupBox):
         super().__init__()
 
         self.fixture = fixture
-        self.test = None
         self.w = None
         self._fixtureController = FixtureController()
 
@@ -80,14 +79,8 @@ class FixtureView(QGroupBox):
         self.fixture = fixture
         self._updateFixture()
 
-    def set_test(self, test: Test):
-        self.test = test
-        self._updateTest()
-
-    def _updateTest(self):
-        self.lblResult.setText(f"Result: {self.test.get_result_string()}")
-
     def _updateFixture(self):
+        self.lblResult.setText(self.fixture.get_status_string())
         self.lblYield.setText(f"Yield: {self.fixture.yieldRate}%")
         self.lblIp.setText(f"Ip: {self.fixture.ip}")
         self.lblPassed.setText(
@@ -97,16 +90,16 @@ class FixtureView(QGroupBox):
         self.btnStart.setEnabled(
             not self.fixture.is_disabled() or self.btnStart.text() == "Stop"
         )
-# Establecer color en base a la prueba
 # Embeber prueba en fixtura (relacion de uso)
+# Establecer color en base a la prueba
 # Reiniciar color al iniciar prueba nueva
 # Cambiar Resourses a static
+# Add to ggogle sheets
         background = ""
         if self.fixture.is_disabled():
             background = "background-color: lightcoral;"
         elif self.fixture.is_warning():
             background = "background-color: yellow;"
-
         self.setStyleSheet(
             f"""
             QGroupBox#fixture{{

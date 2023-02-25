@@ -8,7 +8,7 @@ import atexit
 
 
 class FixtureGridController(QtCore.QThread):
-    updated = QtCore.pyqtSignal(Test, Fixture)
+    updated = QtCore.pyqtSignal(Fixture)
 
     def __init__(self):
         QtCore.QThread.__init__(self)
@@ -19,8 +19,8 @@ class FixtureGridController(QtCore.QThread):
         self._fileWatchdog = FileWatchdog(self._sfcEventHandler)
         atexit.register(lambda: self._fileWatchdog.stop())
 
-    def update(self, test: Test, fixture: Fixture):
-        self.updated.emit(test, fixture)
+    def update(self, fixture: Fixture):
+        self.updated.emit(fixture)
 
     def get_all_fixtures(self) -> "list[Fixture]":
         return self._fixtureData.find_all()

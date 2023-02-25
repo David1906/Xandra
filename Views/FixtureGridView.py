@@ -35,9 +35,8 @@ class FixtureGridView(QWidget):
         self._fixtureGridController.updated.connect(self.update_fixture)
         self._fixtureGridController.start_watch_logs()
 
-    def update_fixture(self, test: Test, fixture: Fixture):
+    def update_fixture(self, fixture: Fixture):
         for fixtureView in self._fixtureViews:
             if fixtureView.equals(fixture):
                 fixtureView.set_fixture(fixture)
-                fixtureView.set_test(test)
                 return

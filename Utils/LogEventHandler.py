@@ -22,6 +22,7 @@ class LogEventHandler(FileSystemEventHandler, QtCore.QThread):
             test = self._testParser.parse(event.src_path)
             self._testData.add(test)
             fixture = self._fixtureData.find(test.fixtureIp)
+            self._fixtureData.create_or_update(fixture)
             fixture.set_test(test)
             self.updated.emit(fixture)
         except Exception as e:

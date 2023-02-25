@@ -33,12 +33,7 @@ class FixtureGridView(QWidget):
 
     def interact(self):
         self._fixtureGridController.updated.connect(self.update_fixture)
-        self._fixtureGridController.configUpdated.connect(self.update_all)
         self._fixtureGridController.start_watch_logs()
-
-    def update_all(self, event):
-        for fixture in self._fixtureGridController.get_all_fixtures():
-            self.update_fixture(fixture)
 
     def update_fixture(self, fixture: Fixture):
         for fixtureView in self._fixtureViews:

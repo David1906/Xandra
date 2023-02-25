@@ -19,7 +19,7 @@ class TestData:
         session.add(mapper.to(TestDTO).map(test))
         session.commit()
         session.close()
-        Session.remove()        
+        Session.remove()
         self._googleSheet.add(test)
 
     def get_yield(self, fixtureIp: str) -> float:
@@ -33,7 +33,10 @@ class TestData:
         return round((passTests / len(tests)) * 100, 2)
 
     def are_last_test_pass(self, fixtureIp: str, qty: int = 0) -> bool:
-        tests = self.find_last(fixtureIp, self._mainConfigData.get_unlock_pass_qty() if qty == 0 else qty)
+        configUnlockQty = self._mainConfigData.get_unlock_pass_qty()
+        if configUnlockQty == 0:
+            return True
+        tests = self.find_last(fixtureIp, configUnlockQty if qty == 0 else qty)
         if len(tests) == 0:
             return False
         for test in tests:

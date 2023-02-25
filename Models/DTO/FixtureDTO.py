@@ -7,19 +7,17 @@ class FixtureDTO(Base):
 
     id = Column(Integer, primary_key=True)
     ip = Column(String(64))
-    areLastTestPass = Column(Boolean)
+    isDisabled = Column(Boolean)
     isSkipped = Column(Boolean)
 
     def __init__(
         self,
         id: int = 0,
         ip: str = "",
-        yieldRate: float = 0,
-        areLastTestPass: bool = False,
+        isDisabled: bool = False,
         isSkipped: bool = False,
     ):
         self.id = id
         self.ip = ip
-        self.yieldRate = yieldRate
-        self.areLastTestPass = areLastTestPass
+        self.isDisabled = isDisabled
         self.isSkipped = isSkipped

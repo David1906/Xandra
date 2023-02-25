@@ -25,7 +25,8 @@ class FixtureData:
                 FixtureDTO.ip == fixture.ip).first()
         )
         if fixtureDTO == None:
-            fixtureDTO = mapper.to(FixtureDTO).map(fixture)
+            fixtureDTO = FixtureDTO(
+                ip=fixture.ip, isDisabled=fixture.is_disabled(), isSkipped=fixture.isSkipped)
             session.add(fixtureDTO)
         else:
             session.execute(
@@ -33,13 +34,10 @@ class FixtureData:
                 .where(FixtureDTO.ip == fixture.ip)
                 .values(
                     ip=fixture.ip,
-                    areLastTestPass=fixture.areLastTestPass,
+                    isDisabled=fixture.is_disabled(),
                     isSkipped=fixture.isSkipped,
                 )
             )
-            # fixtureDTO.ip = fixture.ip
-            # fixtureDTO.areLastTestPass = fixture.areLastTestPass
-            # fixtureDTO.isSkipped = fixture.isSkipped
         session.commit()
         Session.remove()
 
@@ -57,6 +55,10 @@ class FixtureData:
         session.close()
         Session.remove()
         return data
+
+    def refresh(self):
+        for fixture in self.find_all():
+            self.create_or_update(fixture)
 
     def find_all(self) -> "list[Fixture]":
         fixtures = []

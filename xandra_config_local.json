@@ -17,7 +17,7 @@
     "yieldWarningThreshold": 80,
     "yieldWarningThreshold_description": "Porcentaje de yield el cual una vez alcanzado pintará la fixtuae de color amarillo en la interfaz",
 
-    "yieldCalcQty": 20,
+    "yieldCalcQty": 10,
     "yieldCalcQty_description" : "Cantidad de pruebas con las que se calculará el yield",
 
     "unlockPassQty": 3,

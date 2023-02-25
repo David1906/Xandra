@@ -39,3 +39,8 @@ sed -i -e 's/\r$//' Resources/chk_station_yield.sh
 ## Migrations
 alembic revision --autogenerate -m ""
 alembic upgrade head
+
+## SCRIPT CMDS
+yum install -y tmux xterm
+pip3 install --upgrade pip
+pip3 install -r requirements.txt

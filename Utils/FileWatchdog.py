@@ -5,9 +5,8 @@ import time
 
 class FileWatchdog:
     def __init__(self, eventHandler):
-        self.observer = PollingObserver()
-        self.eventHandler = eventHandler
-        self.mainConfigData = MainConfigData()
+        self._observer = PollingObserver()
+        self._eventHandler = eventHandler
 
     def run(self):
         self.start()
@@ -16,13 +15,12 @@ class FileWatchdog:
                 time.sleep(5)
         except:
             self.stop()
-        self.observer.join()
+        self._observer.join()
 
-    def start(self):
-        path = self.mainConfigData.get_logs_path()
+    def start(self, path):
         print(f"Watching {path}...")
-        self.observer.schedule(self.eventHandler, path, recursive=False)
-        self.observer.start()
+        self._observer.schedule(self._eventHandler, path, recursive=False)
+        self._observer.start()
 
     def stop(self):
-        self.observer.stop()
+        self._observer.stop()

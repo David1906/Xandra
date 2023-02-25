@@ -32,8 +32,8 @@ class TestData:
                 passTests += 1
         return round((passTests / len(tests)) * 100, 2)
 
-    def are_last_test_pass(self, fixtureIp: str, qty: int = 3) -> bool:
-        tests = self.find_last(fixtureIp, qty)
+    def are_last_test_pass(self, fixtureIp: str, qty: int = 0) -> bool:
+        tests = self.find_last(fixtureIp, self._mainConfigData.get_unlock_pass_qty() if qty == 0 else qty)
         if len(tests) == 0:
             return False
         for test in tests:

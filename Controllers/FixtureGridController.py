@@ -1,7 +1,8 @@
 from DataAccess.FixtureData import FixtureData
+from DataAccess.MainConfigData import MainConfigData
 from Models.Fixture import Fixture
-from Models.Test import Test
 from PyQt5 import QtCore
+from Utils.BaseEventHandler import BaseEventHandler
 from Utils.FileWatchdog import FileWatchdog
 from Utils.LogEventHandler import LogEventHandler
 import atexit
@@ -9,24 +10,32 @@ import atexit
 
 class FixtureGridController(QtCore.QThread):
     updated = QtCore.pyqtSignal(Fixture)
+    configUpdated = QtCore.pyqtSignal(object)
 
     def __init__(self):
         QtCore.QThread.__init__(self)
         self._isWatching = False
         self._fixtureData = FixtureData()
+        self._mainConfigData = MainConfigData()
+
         self._sfcEventHandler = LogEventHandler()
-        self._sfcEventHandler.updated.connect(self.update)
+        self._sfcEventHandler.updated.connect(
+            lambda fixture: self.updated.emit(fixture))
         self._fileWatchdog = FileWatchdog(self._sfcEventHandler)
         atexit.register(lambda: self._fileWatchdog.stop())
 
-    def update(self, fixture: Fixture):
-        self.updated.emit(fixture)
+        self._baseEventHandler = BaseEventHandler()
+        self._baseEventHandler.modified.connect(
+            lambda event: self.configUpdated.emit(event))
+        self._configWatchdog = FileWatchdog(self._baseEventHandler)
+        self._configWatchdog.start(MainConfigData.MAIN_CONFIG_JSON_PATH)
+        atexit.register(lambda: self._configWatchdog.stop())
 
     def get_all_fixtures(self) -> "list[Fixture]":
         return self._fixtureData.find_all()
 
     def start_watch_logs(self):
-        self._fileWatchdog.start()
+        self._fileWatchdog.start(self._mainConfigData.get_logs_path())
 
     def stop_watch_logs(self):
         self._fileWatchdog.stop()

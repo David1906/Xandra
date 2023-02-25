@@ -30,7 +30,8 @@ class LastFailuresWindow(QtWidgets.QWidget):
         header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
         self.table.setSizeAdjustPolicy(
             QtWidgets.QAbstractScrollArea.AdjustToContents)
-        self.gridLayout.addWidget(self.table, 1, 0)
+        self.gridLayout.addWidget(
+            self.table, 1, 0, alignment=QtCore.Qt.AlignCenter)
 
         self.label = QtWidgets.QLabel("No Data Found")
         self.label.setStyleSheet(

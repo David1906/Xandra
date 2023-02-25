@@ -32,7 +32,7 @@ class FixtureView(QGroupBox):
         self.lblTraceability = QLabel("Traceability")
         gridLayout.addWidget(self.lblTraceability, 0, 5)
         self.swTraceability = Switch()
-        self.swTraceability.setChecked(True)
+        self.swTraceability.setChecked(not fixture.isSkipped)
         self.swTraceability.toggled.connect(self.on_swTraceability_change)
         gridLayout.addWidget(self.swTraceability, 0, 6)
 
@@ -90,22 +90,13 @@ class FixtureView(QGroupBox):
         self.btnStart.setEnabled(
             not self.fixture.is_disabled() or self.btnStart.text() == "Stop"
         )
-# Embeber prueba en fixtura (relacion de uso)
-# Establecer color en base a la prueba
-# Reiniciar color al iniciar prueba nueva
-# Cambiar Resourses a static
-# Add to ggogle sheets
-        background = ""
-        if self.fixture.is_disabled():
-            background = "background-color: lightcoral;"
-        elif self.fixture.is_warning():
-            background = "background-color: yellow;"
+
         self.setStyleSheet(
             f"""
             QGroupBox#fixture{{
                 border-radius: 5px;
                 border: 1px solid gray;
-                {background}
+                background-color: {self.fixture.get_status_color()};
             }}
             """
         )

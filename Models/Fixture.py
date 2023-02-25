@@ -11,7 +11,7 @@ class Fixture:
         isSkipped: bool = False,
         yieldErrorMin: float = 0,
         yieldWarningMin: float = 0,
-        status: str = "IDLE",
+        isTesting: bool = False,
     ):
         self.id = id
         self.ip = ip
@@ -20,7 +20,7 @@ class Fixture:
         self.isSkipped = isSkipped
         self.yieldErrorMin = yieldErrorMin
         self.yieldWarningMin = yieldWarningMin
-        self.status = status
+        self.isTesting = isTesting
         self._test: Test = None
 
     def is_disabled(self) -> bool:
@@ -30,12 +30,28 @@ class Fixture:
         return self.yieldRate <= self.yieldErrorMin
 
     def is_warning(self) -> bool:
-        return self.yieldRate <= self.yieldWarningMin or self.isSkipped
+        return self.yieldRate <= self.yieldWarningMin
 
     def set_test(self, test: Test):
         self._test = test
 
+    def set_isTesting(self, isTesting: bool):
+        self.isTesting = isTesting
+        self._test = None
+
     def get_status_string(self):
         if self._test == None:
-            return f"Status: {self.status}"
+            return f"Status: {self.get_status_text()}"
         return "Result: " + self._test.get_result_string()
+
+    def get_status_text(self):
+        return "Testing" if self.isTesting else "IDLE"
+
+    def get_status_color(self) -> str:
+        if self.isSkipped:
+            return "gray"
+        if self.is_disabled():
+            return "lightcoral"
+        elif self.is_warning():
+            return "yellow"
+        return ""

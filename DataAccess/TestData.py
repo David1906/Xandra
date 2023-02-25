@@ -35,10 +35,11 @@ class TestData:
 
     def are_last_test_pass(self, fixtureIp: str, qty: int = 3) -> bool:
         tests = self.find_last(fixtureIp, qty)
-        if len(tests) > 0:
-            for test in tests:
-                if not test.status:
-                    return False
+        if len(tests) == 0:
+            return False
+        for test in tests:
+            if not test.status:
+                return False
         return True
 
     def find_last(

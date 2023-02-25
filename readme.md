@@ -9,7 +9,13 @@
 - En el archivo FCTHostControl.config, en la sección "Check_Station" escribir lo siguiente:
 "Check_Station": {
     "Enable": true,
-    "App_Path": "**-Path al script chk_station_yield.sh dentro de la carpeta Xandra/Resources-**",
+    "App_Path": "/usr/local/Foxconn/automation/Xandra/chk_station_is_disabled.py",
+    "App_Args": "",
+    "Delay": 2000
+},
+"Test_End_Call": {
+    "Enable": true,
+    "App_Path": "/usr/local/Foxconn/automation/Xandra/chk_station_test_finished.py",
     "App_Args": "",
     "Delay": 2000
 },
@@ -30,11 +36,11 @@ Name=Xandra
 Exec=tmux new -d "cd /usr/local/Foxconn/automation/Xandra && python3 /usr/local/Foxconn/automation/Xandra/xandra.py"
 Terminal=true
 Type=Application
-Icon=/usr/local/Foxconn/automation/Xandra/Resources/icon.png
+Icon=/usr/local/Foxconn/automation/Xandra/Static/icon.png
 
 
 ## Script x permissions
-sed -i -e 's/\r$//' Resources/chk_station_yield.sh
+sed -i -e 's/\r$//' Resources/chk_station_is_disabled.sh
 
 ## Migrations
 alembic revision --autogenerate -m ""

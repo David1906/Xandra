@@ -73,13 +73,13 @@ class FixtureView(QGroupBox):
     def on_swTraceability_change(self, checked: bool):
         self.fixture.isSkipped = not checked
         self._fixtureController.update(self.fixture)
-        self._updateFixture()
+        self._update()
 
     def set_fixture(self, fixture: Fixture):
         self.fixture = fixture
-        self._updateFixture()
+        self._update()
 
-    def _updateFixture(self):
+    def _update(self):
         self.lblResult.setText(self.fixture.get_status_string())
         self.lblYield.setText(f"Yield: {self.fixture.yieldRate}%")
         self.lblIp.setText(f"Ip: {self.fixture.ip}")
@@ -127,5 +127,13 @@ class FixtureView(QGroupBox):
         self.btnStart.setText("Start")
         self.swTraceability.setEnabled(True)
 
-    def equals(self, fixture) -> bool:
+    def equals(self, fixture: Fixture) -> bool:
         return fixture.id == self.fixture.id
+
+    def equalsIp(self, fixtureIp: str) -> bool:
+        return self.fixture.ip == fixtureIp
+
+    def set_fixture_isTesting (self, value: bool):
+        self.fixture.set_isTesting(value)
+        self._update()
+ 

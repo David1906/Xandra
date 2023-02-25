@@ -4,12 +4,14 @@ from Models.Fixture import Fixture
 from PyQt5 import QtCore
 from Utils.BaseEventHandler import BaseEventHandler
 from Utils.FileWatchdog import FileWatchdog
+from Utils.FixtureSocket import FixtureSocket
 from Utils.LogEventHandler import LogEventHandler
 import atexit
 
 
 class FixtureGridController(QtCore.QThread):
     updated = QtCore.pyqtSignal(Fixture)
+    testing_status_changed = QtCore.pyqtSignal(str, bool)
 
     def __init__(self):
         QtCore.QThread.__init__(self)
@@ -31,6 +33,13 @@ class FixtureGridController(QtCore.QThread):
         atexit.register(lambda: self._configWatchdog.stop())
 
         self._fixtureData.refresh()
+
+        self._socket = FixtureSocket()
+        self._socket.testing_status_changed.connect(self.on_testing_status_change)
+        self._socket.start()
+
+    def on_testing_status_change(self, fixtureIp: str, isTesting: bool):
+        self.testing_status_changed.emit(fixtureIp, isTesting)
 
     def on_config_change(self, event):
         for fixture in self.get_all_fixtures():

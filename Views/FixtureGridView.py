@@ -14,6 +14,9 @@ class FixtureGridView(QWidget):
 
         self._fixtureViews: "list[FixtureView]" = []
         self._fixtureGridController = FixtureGridController()
+        self._fixtureGridController.updated.connect(self.update_fixture)
+        self._fixtureGridController.testing_status_changed.connect(
+            self.on_testing_status_changed)
 
         self.hBox = QHBoxLayout()
         self.setLayout(self.hBox)
@@ -32,8 +35,13 @@ class FixtureGridView(QWidget):
             vBox.addWidget(self._fixtureViews[i])
 
     def interact(self):
-        self._fixtureGridController.updated.connect(self.update_fixture)
         self._fixtureGridController.start_watch_logs()
+
+    def on_testing_status_changed(self, fixtureIp: str, isTesting: bool):
+        for fixtureView in self._fixtureViews:
+            if fixtureView.equalsIp(fixtureIp):
+                fixtureView.set_fixture_isTesting(isTesting)
+                return
 
     def update_fixture(self, fixture: Fixture):
         for fixtureView in self._fixtureViews:

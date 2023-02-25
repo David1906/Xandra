@@ -42,7 +42,7 @@ class Fixture:
     def get_status_string(self):
         if self._test == None:
             return f"Status: {self.get_status_text()}"
-        return "Result: " + self._test.get_result_string()
+        return f"SN: {self._test.serialNumber}      Result: {self._test.get_result_string()}"
 
     def get_status_text(self):
         return "Testing" if self.isTesting else "IDLE"

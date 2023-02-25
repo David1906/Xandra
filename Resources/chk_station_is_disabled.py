@@ -1,33 +1,42 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import math
 import os
-import json
+from SocketClient import SocketClient
 
 
 class FixtureYieldChecker:
     BASE_PATH = os.path.dirname(os.path.abspath(__file__))
-    DISABLED_FIXTURES_JSON = f"{BASE_PATH}/disabled_fixtures.json"
     GREEN_COLOR = "\033[92m"
     RED_COLOR = "\033[91m"
     END_COLOR = "\033[0m"
 
     def __init__(self):
+        self._socketClient = SocketClient()
         self._result_file = f"{FixtureYieldChecker.BASE_PATH}/chk_station_yield.result"
         os.environ["RESULTFILE"] = self._result_file
-        print(f"Result file path: {self._result_file}")
         if os.path.exists(self._result_file):
             os.remove(self._result_file)
 
     def check(self) -> bool:
-        with open(FixtureYieldChecker.DISABLED_FIXTURES_JSON) as json_file:
-            disabledFixtures = json.load(json_file)
+        try:
             fixtureIp = os.getenv("XANDRA_FIXTURE_IP")
-            if fixtureIp in disabledFixtures and disabledFixtures[fixtureIp] == True:
+            isDisabled = self._socketClient.get_is_disabled(fixtureIp)
+            if isDisabled:
                 self.outputFail()
                 return False
             else:
                 self.outputPass()
                 return True
+        except:
+            self.outputNoConnection()
+            return False
+
+    def outputNoConnection(self):
+        self.printHeader(
+            "Connection Error With Xandra",
+            FixtureYieldChecker.RED_COLOR,
+        )
+        self.outputResultFile("FAIL")
 
     def outputPass(self):
         self.printHeader(
@@ -69,7 +78,7 @@ class FixtureYieldChecker:
             outfile.write(result)
 
 
-if FixtureYieldChecker().check() == False:
-    exit(1)
-else:
+if FixtureYieldChecker().check():
     exit(0)
+else:
+    exit(1)

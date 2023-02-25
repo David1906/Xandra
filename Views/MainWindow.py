@@ -1,10 +1,11 @@
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import QMainWindow, QMessageBox
+from Utils.PathHelper import PathHelper
 from Views.FixtureGridView import FixtureGridView
 
 
 class MainWindow(QMainWindow):
-    ICON_FULLPATH = "./Resources/icon.png"
+    ICON_FULLPATH = PathHelper().get_root_path() + "/Static/icon.png"
     BOX_SPACING = 30
 
     def __init__(self, title: str = "Xandra - FBT"):

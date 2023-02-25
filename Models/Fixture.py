@@ -19,12 +19,16 @@ class Fixture:
         self.isSkipped = isSkipped
         self.yieldErrorMin = yieldErrorMin
         self.yieldWarningMin = yieldWarningMin
+        self._test: Test = None
 
-    def isDisabled(self) -> bool:
-        return self.hasLowYield() and not self.isSkipped and not self.areLastTestPass
+    def is_disabled(self) -> bool:
+        return self.has_low_yield() and not self.isSkipped and not self.areLastTestPass
 
-    def hasLowYield(self) -> bool:
+    def has_low_yield(self) -> bool:
         return self.yieldRate <= self.yieldErrorMin
 
-    def isWarning(self) -> bool:
+    def is_warning(self) -> bool:
         return self.yieldRate <= self.yieldWarningMin or self.isSkipped
+
+    def set_test(self, test: Test):
+        self._test = test

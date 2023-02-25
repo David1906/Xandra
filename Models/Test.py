@@ -24,7 +24,7 @@ class Test:
         self.stepLabel = stepLabel
         self.operator = operator
 
-    def isComplete(self) -> bool:
+    def is_complete(self) -> bool:
         return (
             self.serialNumber != None
             and self.project != None
@@ -37,7 +37,7 @@ class Test:
             and self.operator != None
         )
 
-    def getResultString(self) -> str:
+    def get_result_string(self) -> str:
         if self.status:
             return "PASS"
         else:

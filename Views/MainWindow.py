@@ -19,12 +19,12 @@ class MainWindow(QMainWindow):
 
     def closeEvent(self, event):
         reply = QMessageBox.question(
-                self,
-                "Exit Xandra",
-                f"Are you sure to exit Xandra? it will stop all fixtures",
-                QMessageBox.Yes | QMessageBox.No,
-                QMessageBox.No,
-            )
+            self,
+            "Exit Xandra",
+            f"Are you sure to exit Xandra? it will stop all fixtures",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No,
+        )
         if reply == QMessageBox.Yes:
             event.accept()
         else:

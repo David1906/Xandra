@@ -8,7 +8,7 @@ class EmbeddedTerminal(QtWidgets.QWidget):
     def __init__(self):
         super(EmbeddedTerminal, self).__init__()
         self.process = QtCore.QProcess(self)
-        self.process.finished.connect(self.onFinished)
+        self.process.finished.connect(self.on_finished)
 
         gridLayout = QtWidgets.QGridLayout()
         self.terminal = QtWidgets.QFrame()
@@ -21,7 +21,7 @@ class EmbeddedTerminal(QtWidgets.QWidget):
     def start(self, args: "list[str]" = []):
         fullArgs = [
             "-into",
-            self.getTerminalWinId(),
+            self.get_terminal_winId(),
             "-si",
             "-geometry",
             "120x30",
@@ -36,11 +36,11 @@ class EmbeddedTerminal(QtWidgets.QWidget):
         fullArgs = fullArgs + args
         self.process.start("xterm", fullArgs)
 
-    def onFinished(self, exitCode, exitStatus):
+    def on_finished(self, exitCode, exitStatus):
         self.finished.emit(exitCode)
 
     def Stop(self):
         self.process.kill()
 
-    def getTerminalWinId(self) -> str:
+    def get_terminal_winId(self) -> str:
         return str(int(self.terminal.winId()))

@@ -1,6 +1,9 @@
-import logging, gspread, os, sys
-from oauth2client.service_account import ServiceAccountCredentials
 from Models.Test import Test
+from oauth2client.service_account import ServiceAccountCredentials
+import gspread
+import logging
+import os
+import sys
 
 
 class GoogleSheet:

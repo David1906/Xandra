@@ -1,11 +1,11 @@
 from automapper import mapper
-from sqlalchemy import update
 from DataAccess.FctHostControlData import FctHostControlData
 from DataAccess.MainConfigData import MainConfigData
 from DataAccess.SqlAlchemyBase import Session
 from DataAccess.TestData import TestData
 from Models.DTO.FixtureDTO import FixtureDTO
 from Models.Fixture import Fixture
+from sqlalchemy import update
 
 
 class FixtureData:
@@ -16,12 +16,13 @@ class FixtureData:
 
     def save(self, fixtures: "list[Fixture]"):
         for fixture in fixtures:
-            self.createOrUpdate(fixture)
+            self.create_or_update(fixture)
 
-    def createOrUpdate(self, fixture: Fixture):
+    def create_or_update(self, fixture: Fixture):
         session = Session()
         fixtureDTO = (
-            session.query(FixtureDTO).where(FixtureDTO.ip == fixture.ip).first()
+            session.query(FixtureDTO).where(
+                FixtureDTO.ip == fixture.ip).first()
         )
         if fixtureDTO == None:
             fixtureDTO = mapper.to(FixtureDTO).map(fixture)
@@ -42,35 +43,36 @@ class FixtureData:
         session.commit()
         Session.remove()
 
-    def isSkipped(self, fixtureIp: str) -> bool:
-        fixtureDTO = self.findDTO(fixtureIp)
+    def is_skipped(self, fixtureIp: str) -> bool:
+        fixtureDTO = self.find_DTO(fixtureIp)
         if fixtureDTO == None:
             return False
         else:
             return fixtureDTO.isSkipped
 
-    def findDTO(self, fixtureIp: str) -> FixtureDTO:
+    def find_DTO(self, fixtureIp: str) -> FixtureDTO:
         session = Session()
-        data = session.query(FixtureDTO).where(FixtureDTO.ip == fixtureIp).first()
+        data = session.query(FixtureDTO).where(
+            FixtureDTO.ip == fixtureIp).first()
         session.close()
         Session.remove()
         return data
 
-    def findAll(self) -> "list[Fixture]":
+    def find_all(self) -> "list[Fixture]":
         fixtures = []
-        for fixture in self._fctHostControlData.getAllFixtureConfigs():
+        for fixture in self._fctHostControlData.get_all_fixture_configs():
             fixtures.append(self.find(fixture[FctHostControlData.PLC_IP_KEY]))
         return fixtures
 
     def find(self, fixtureIp: str) -> Fixture:
-        for fixture in self._fctHostControlData.getAllFixtureConfigs():
+        for fixture in self._fctHostControlData.get_all_fixture_configs():
             if fixtureIp == fixture[FctHostControlData.PLC_IP_KEY]:
                 return Fixture(
                     fixture[FctHostControlData.PLC_ID_KEY],
                     fixtureIp,
-                    self._testData.getYield(fixtureIp),
-                    self._testData.areLastTestPass(fixtureIp),
-                    self.isSkipped(fixtureIp),
+                    self._testData.get_yield(fixtureIp),
+                    self._testData.are_last_test_pass(fixtureIp),
+                    self.is_skipped(fixtureIp),
                     self._mainConfigData.get_yield_error_min(),
                     self._mainConfigData.get_yield_warning_min(),
                 )

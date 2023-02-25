@@ -17,10 +17,10 @@ class FixtureGridView(QWidget):
 
         self.hBox = QHBoxLayout()
         self.setLayout(self.hBox)
-        self.createFixtureViews()
+        self.create_fixtureViews()
 
-    def createFixtureViews(self):
-        fixtures = self._fixtureGridController.getAllFixtures()
+    def create_fixtureViews(self):
+        fixtures = self._fixtureGridController.get_all_fixtures()
         for fixture in fixtures:
             self._fixtureViews.append(FixtureView(fixture))
 
@@ -32,12 +32,12 @@ class FixtureGridView(QWidget):
             vBox.addWidget(self._fixtureViews[i])
 
     def interact(self):
-        self._fixtureGridController.updated.connect(self.updateFixture)
-        self._fixtureGridController.startWatchLogs()
+        self._fixtureGridController.updated.connect(self.update_fixture)
+        self._fixtureGridController.start_watch_logs()
 
-    def updateFixture(self, test: Test, fixture: Fixture):
+    def update_fixture(self, test: Test, fixture: Fixture):
         for fixtureView in self._fixtureViews:
             if fixtureView.equals(fixture):
-                fixtureView.setFixture(fixture)
-                fixtureView.setTest(test)
+                fixtureView.set_fixture(fixture)
+                fixtureView.set_test(test)
                 return

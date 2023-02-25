@@ -1,18 +1,22 @@
 from automapper import mapper
 from DataAccess.GoogleSheet import GoogleSheet
+from DataAccess.MainConfigData import MainConfigData
 from DataAccess.SqlAlchemyBase import Session
 from datetime import datetime
 from Models.DTO.TestDTO import TestDTO
 from Models.Test import Test
-import logging, re
+import logging
+import re
 
 # TODO SEPARAR TEST PARSER
+
 
 class TestData:
     REGEX_RESULT = "^result\s*:(pass|failed)+\s*"
 
     def __init__(self) -> None:
-        self.googleSheet = GoogleSheet()
+        self._googleSheet = GoogleSheet()
+        self._mainConfigData = MainConfigData()
 
     def parse(self, fullPath: str) -> Test:
         try:
@@ -20,29 +24,29 @@ class TestData:
                 test = Test()
                 for l_no, line in enumerate(fp):
                     if test.serialNumber == None and self.search("Board\s*SN", line):
-                        test.serialNumber = self.extractValue(line)
+                        test.serialNumber = self.extract_value(line)
                         continue
 
                     if test.project == None and self.search("Project\s*Name", line):
-                        test.project = self.extractValue(line)
+                        test.project = self.extract_value(line)
                         continue
 
                     if test.startTime == None and self.search("Start\s*Time", line):
-                        test.startTime = self.extractDateTime(line)
+                        test.startTime = self.extract_date_time(line)
                         continue
 
                     if test.endTime == None and self.search("End\s*Time", line):
-                        test.endTime = self.extractDateTime(line)
+                        test.endTime = self.extract_date_time(line)
                         continue
 
                     if test.codeVersion == None and self.search(
                         "test\s*code\s*ver", line
                     ):
-                        test.codeVersion = self.extractValue(line)
+                        test.codeVersion = self.extract_value(line)
                         continue
 
                     if test.fixtureIp == None and self.search("FixtureIP", line):
-                        value = self.extractValue(line)
+                        value = self.extract_value(line)
                         if value != "":
                             test.fixtureIp = value
                         continue
@@ -55,10 +59,10 @@ class TestData:
                         continue
 
                     if test.operator == None and self.search("OperatorID", line):
-                        test.operator = self.extractValue(line)
+                        test.operator = self.extract_value(line)
                         continue
 
-                    if test.isComplete():
+                    if test.is_complete():
                         break
                 return test
         except Exception as e:
@@ -68,12 +72,12 @@ class TestData:
     def search(self, pattern: str, string: str) -> bool:
         return re.search(pattern, string, re.IGNORECASE) != None
 
-    def extractDateTime(self, line: str) -> datetime:
-        value = self.extractValue(line)
+    def extract_date_time(self, line: str) -> datetime:
+        value = self.extract_value(line)
         dt = datetime.strptime(value, "%Y%m%d_%H%M%S")
         return dt
 
-    def extractValue(self, line: str) -> str:
+    def extract_value(self, line: str) -> str:
         return line.split(":")[1].strip()
 
     def add(self, test: Test, addToGoogleSheets: bool = True):
@@ -84,13 +88,11 @@ class TestData:
         session.commit()
         session.close()
         Session.remove()
-        self.find(test.fixtureIp)
-        self.findFailures(test.fixtureIp)
         if addToGoogleSheets:
-            self.googleSheet.add(test)
+            self._googleSheet.add(test)
 
-    def getYield(self, fixtureIp: str, qty: int = 10) -> float:
-        tests = self.find(fixtureIp, qty)
+    def get_yield(self, fixtureIp: str, qty: int = 10) -> float:
+        tests = self.find_last(fixtureIp, qty)
         if len(tests) == 0:
             return 100
         passTests = 0
@@ -99,16 +101,16 @@ class TestData:
                 passTests += 1
         return round((passTests / len(tests)) * 100, 2)
 
-    def areLastTestPass(self, fixtureIp: str, qty: int = 3) -> bool:
-        tests = self.find(fixtureIp, qty)
+    def are_last_test_pass(self, fixtureIp: str, qty: int = 3) -> bool:
+        tests = self.find_last(fixtureIp, qty)
         if len(tests) > 0:
             for test in tests:
                 if not test.status:
                     return False
         return True
 
-    def find(
-        self, fixtureIp: str, qty: int = 10, onlyFailures: bool = False
+    def find_last(
+        self, fixtureIp: str, onlyFailures: bool = False
     ) -> "list[Test]":
         session = Session()
         query = (
@@ -118,7 +120,7 @@ class TestData:
         )
         if onlyFailures:
             query = query.filter(TestDTO.status == False)
-        query = query.limit(qty)
+        query = query.limit(self._mainConfigData.get_yield_calc_qty())
         tests: "list[Test]" = []
         for testDTO in query:
             tests.append(mapper.to(Test).map(testDTO))
@@ -126,5 +128,5 @@ class TestData:
         Session.remove()
         return tests
 
-    def findFailures(self, fixtureIp: str, qty: int = 10) -> "list[Test]":
-        return self.find(fixtureIp, qty, onlyFailures=True)
+    def find_last_failures(self, fixtureIp: str) -> "list[Test]":
+        return self.find_last(fixtureIp, onlyFailures=True)

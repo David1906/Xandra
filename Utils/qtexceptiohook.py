@@ -45,7 +45,10 @@ __author__ = "Stephan Sokolow; Filip Van Raemdonck; Gustavo J A M Carneiro"
 __license__ = "Public Domain"
 
 
-import getpass, socket, sys, traceback
+import getpass
+import socket
+import sys
+import traceback
 from gettext import gettext as _
 from smtplib import SMTP, SMTPException
 from typing import Callable
@@ -190,7 +193,8 @@ class QtExceptHook(object):
         t_exception = traceback.TracebackException(
             exc_type, exc_value, exc_traceback, capture_locals=True
         )
-        traceback_text = t_exception._str + "\n\n" + "\n".join(t_exception.format())
+        traceback_text = t_exception._str + \
+            "\n\n" + "\n".join(t_exception.format())
         if self._extra_info:
             traceback_text += "\n{}".format(self._extra_info)
 

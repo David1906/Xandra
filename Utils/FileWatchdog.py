@@ -1,6 +1,6 @@
-import time
-from watchdog.observers.polling import PollingObserver
 from DataAccess.MainConfigData import MainConfigData
+from watchdog.observers.polling import PollingObserver
+import time
 
 
 class FileWatchdog:

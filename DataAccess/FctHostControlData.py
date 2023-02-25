@@ -1,6 +1,6 @@
-import json, re
-
 from DataAccess.MainConfigData import MainConfigData
+import json
+import re
 
 
 class FctHostControlData:
@@ -14,5 +14,5 @@ class FctHostControlData:
             config = re.sub(r"\s*\/\*.*\*\/", " ", json_file.read())
             self.data = json.loads(config)
 
-    def getAllFixtureConfigs(self) -> "list[{}]":
+    def get_all_fixture_configs(self) -> "list[{}]":
         return self.data[FctHostControlData.FIXTURES_ARRAY_KEY]

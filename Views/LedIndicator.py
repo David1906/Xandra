@@ -32,7 +32,8 @@ class LedIndicator(QAbstractButton):
         painter.translate(self.width() / 2, self.height() / 2)
         painter.scale(realSize / self.scaledSize, realSize / self.scaledSize)
 
-        gradient = QRadialGradient(QPointF(-500, -500), 1500, QPointF(-500, -500))
+        gradient = QRadialGradient(
+            QPointF(-500, -500), 1500, QPointF(-500, -500))
         gradient.setColorAt(0, QColor(224, 224, 224))
         gradient.setColorAt(1, QColor(28, 28, 28))
         painter.setPen(pen)
@@ -48,11 +49,13 @@ class LedIndicator(QAbstractButton):
 
         painter.setPen(pen)
         if self.isChecked():
-            gradient = QRadialGradient(QPointF(-500, -500), 1500, QPointF(-500, -500))
+            gradient = QRadialGradient(
+                QPointF(-500, -500), 1500, QPointF(-500, -500))
             gradient.setColorAt(0, self.on_color_1)
             gradient.setColorAt(1, self.on_color_2)
         else:
-            gradient = QRadialGradient(QPointF(500, 500), 1500, QPointF(500, 500))
+            gradient = QRadialGradient(
+                QPointF(500, 500), 1500, QPointF(500, 500))
             gradient.setColorAt(0, self.off_color_1)
             gradient.setColorAt(1, self.off_color_2)
 

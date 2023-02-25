@@ -5,8 +5,7 @@ import sys
 
 app = QApplication(sys.argv)
 QtExceptHook().enable()
-styleSheet = "Resources/styles.css"
-with open(styleSheet, "r") as fh:
+with open("Resources/styles.css", "r") as fh:
     app.setStyleSheet(fh.read())
 window = MainWindow()
 window.showMaximized()

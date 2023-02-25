@@ -1,4 +1,3 @@
-from DataAccess.DisabledFixturesData import DisabledFixturesData
 from DataAccess.FixtureData import FixtureData
 from Models.Fixture import Fixture
 from Models.Test import Test
@@ -14,7 +13,6 @@ class FixtureGridController(QtCore.QThread):
     def __init__(self):
         QtCore.QThread.__init__(self)
         self._isWatching = False
-        self._disabledFixturesData = DisabledFixturesData()
         self._fixtureData = FixtureData()
         self._sfcEventHandler = SfcEventHandler()
         self._sfcEventHandler.updated.connect(self.update)
@@ -25,11 +23,11 @@ class FixtureGridController(QtCore.QThread):
         self._disabledFixturesData.save(fixture)
         self.updated.emit(test, fixture)
 
-    def getAllFixtures(self) -> "list[Fixture]":
-        return self._fixtureData.findAll()
+    def get_all_fixtures(self) -> "list[Fixture]":
+        return self._fixtureData.find_all()
 
-    def startWatchLogs(self):
+    def start_watch_logs(self):
         self._fileWatchdog.start()
 
-    def stopWatchLogs(self):
+    def stop_watch_logs(self):
         self._fileWatchdog.stop()

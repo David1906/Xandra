@@ -9,7 +9,7 @@ class MainConfigData:
     JSON_DATA = {}
     JSON_LAST_MODIFIED = None
 
-    def _getJsonData(self):
+    def _get_json_data(self):
         modifiedDate = os.path.getctime(MainConfigData.MAIN_CONFIG_JSON_PATH)
         if (
             MainConfigData.JSON_LAST_MODIFIED == None
@@ -20,8 +20,8 @@ class MainConfigData:
                 MainConfigData.JSON_LAST_MODIFIED = modifiedDate
         return MainConfigData.JSON_DATA
 
-    def _getValue(self, key: str):
-        data = self._getJsonData()
+    def _get_value(self, key: str):
+        data = self._get_json_data()
         if type(data) is dict:
             value = data[key]
             if value != None:
@@ -29,16 +29,16 @@ class MainConfigData:
         return ""
 
     def get_disabled_fixture_fullpath(self) -> str:
-        return self._getValue("disabledFixturesJson")
+        return self._get_value("disabledFixturesJson")
 
     def get_fixture_ip_env_name(self) -> str:
-        return self._getValue("fixtureIpEnvironmentName")
+        return self._get_value("fixtureIpEnvironmentName")
 
     def get_fct_host_control_fullpath(self) -> str:
-        return self._getValue("fctHostControl")
+        return self._get_value("fctHostControl")
 
     def get_yield_error_min(self) -> float:
-        return self._getValue("yieldErrorThreshold")
+        return self._get_value("yieldErrorThreshold")
 
     def get_yield_warning_min(self) -> float:
         yieldMax = (
@@ -50,19 +50,19 @@ class MainConfigData:
         return yieldMax
 
     def get_yield_refresh_ms(self) -> int:
-        return self._getValue("yieldRefreshSeconds") * 1000
+        return self._get_value("yieldRefreshSeconds") * 1000
 
     def get_fct_host_config_fullpath(self) -> str:
-        return self._getValue("fctHostControlConfig")
+        return self._get_value("fctHostControlConfig")
 
     def get_xandra_api_url(self) -> str:
-        return self._getValue("xandraApiUrl")
+        return self._get_value("xandraApiUrl")
 
     def get_yield_calc_qty(self) -> int:
-        return self._getValue("yieldCalcQty")
+        return self._get_value("yieldCalcQty")
 
     def get_last_test_pass_qty(self) -> str:
-        return self._getValue("lastTestPassQty")
-    
+        return self._get_value("lastTestPassQty")
+
     def get_logs_path(self) -> str:
-        return self._getValue("logsPath")
+        return self._get_value("logsPath")

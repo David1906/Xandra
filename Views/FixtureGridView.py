@@ -1,7 +1,8 @@
 from Controllers.FixtureGridController import FixtureGridController
 from Models.Fixture import Fixture
 from Models.Test import Test
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QShortcut, QMessageBox
+from PyQt5.QtGui import QKeySequence
 from Views.FixtureView import FixtureView
 
 
@@ -21,6 +22,9 @@ class FixtureGridView(QWidget):
         self.hBox = QHBoxLayout()
         self.setLayout(self.hBox)
         self.create_fixtureViews()
+
+        self.msgSc = QShortcut(QKeySequence('Ctrl+Shift+A'), self)
+        self.msgSc.activated.connect(self.start_all_fixtures)
 
     def create_fixtureViews(self):
         fixtures = self._fixtureGridController.get_all_fixtures()
@@ -48,3 +52,7 @@ class FixtureGridView(QWidget):
             if fixtureView.equals(fixture):
                 fixtureView.set_fixture(fixture)
                 return
+
+    def start_all_fixtures(self):
+        for fixtureView in self._fixtureViews:
+            fixtureView.start()

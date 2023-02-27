@@ -11,6 +11,7 @@ class TestParser:
         try:
             with open(fullPath, "r") as fp:
                 test = Test()
+                test.fullPath = fullPath
                 for l_no, line in enumerate(fp):
                     if test.serialNumber == None and self.search("Board\s*SN", line):
                         test.serialNumber = self.extract_value(line)

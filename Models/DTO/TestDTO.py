@@ -16,6 +16,7 @@ class TestDTO(Base):
     status = Column(Boolean)
     stepLabel = Column(String(512))
     operator = Column(String(512))
+    fullPath = Column(String(2048))
 
     def __init__(
         self,
@@ -28,6 +29,7 @@ class TestDTO(Base):
         status: bool = None,
         stepLabel: str = None,
         operator: str = None,
+        fullPath: str = None,
     ) -> None:
         self.serialNumber = serialNumber
         self.project = project
@@ -38,3 +40,4 @@ class TestDTO(Base):
         self.status = status
         self.stepLabel = stepLabel
         self.operator = operator
+        self.fullPath = fullPath

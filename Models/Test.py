@@ -13,6 +13,7 @@ class Test:
         status: bool = None,
         stepLabel: str = None,
         operator: str = None,
+        fullPath: str = None,
     ) -> None:
         self.serialNumber = serialNumber
         self.project = project
@@ -23,6 +24,7 @@ class Test:
         self.status = status
         self.stepLabel = stepLabel
         self.operator = operator
+        self.fullPath = fullPath
 
     def is_complete(self) -> bool:
         return (

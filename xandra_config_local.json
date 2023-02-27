@@ -26,7 +26,7 @@
     "googleSheets": {
         "isActivated" : false,
         "sheetName": "Test FBT Bahubali",
-        "keyfilePath": "/home/david/Documents/Xandra/Static/yield-bahubali-f20f62671db6.json"
+        "keyfilePath": "./Static/yield-bahubali-f20f62671db6.json"
     },
     "googleSheets_description":"Configuración para subir resultados de las pruebas realizadas a google sheets"
 }

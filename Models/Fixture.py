@@ -37,7 +37,8 @@ class Fixture:
 
     def set_isTesting(self, isTesting: bool):
         self.isTesting = isTesting
-        self._test = None
+        if isTesting:
+            self._test = None
 
     def get_status_string(self):
         if self._test == None:

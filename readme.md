@@ -9,13 +9,13 @@
 - En el archivo FCTHostControl.config, en la sección "Check_Station" escribir lo siguiente:
 "Check_Station": {
     "Enable": true,
-    "App_Path": "/usr/local/Foxconn/automation/Xandra/chk_station_is_disabled.py",
+    "App_Path": "/usr/local/Foxconn/automation/Xandra/Resources/chk_station_is_disabled.py",
     "App_Args": "",
     "Delay": 5000
 },
 "Test_End_Call": {
     "Enable": true,
-    "App_Path": "/usr/local/Foxconn/automation/Xandra/chk_station_test_finished.py",
+    "App_Path": "/usr/local/Foxconn/automation/Xandra/Resources/chk_station_test_finished.py",
     "App_Args": "",
     "Delay": 5000
 },

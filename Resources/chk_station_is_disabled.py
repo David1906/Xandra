@@ -23,6 +23,7 @@ class FixtureYieldChecker:
             isDisabled = self._socketClient.get_is_disabled(fixtureIp)
             if isDisabled:
                 self.outputFail()
+                self._socketClient.notify_test_end(fixtureIp)
                 return False
             else:
                 self.outputPass()

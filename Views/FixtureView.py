@@ -126,6 +126,7 @@ class FixtureView(QGroupBox):
     def on_terminal_finished(self, exitStatus):
         self.btnStart.setText("Start")
         self.swTraceability.setEnabled(True)
+        self.set_fixture_isTesting(False)
 
     def equals(self, fixture: Fixture) -> bool:
         return fixture.id == self.fixture.id

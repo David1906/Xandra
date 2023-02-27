@@ -8,7 +8,7 @@
     "fctHostControlConfig": "/usr/local/Foxconn/automation/DA194/Bahubali_Sparrow_C3/FCTHostControl.config",
     "fctHostControlConfig_description":"Ruta completa al archivo de configuración de FCTHostControl.config",
 
-    "logsPath": "/home/david/Documents/logs",
+    "logsPath": "/log/diag",
     "logsPath_description":"Ruta donde se guardan los logs de las pruebas realizadas",
 
     "yieldErrorThreshold": 70,

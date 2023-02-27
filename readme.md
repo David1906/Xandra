@@ -11,13 +11,13 @@
     "Enable": true,
     "App_Path": "/usr/local/Foxconn/automation/Xandra/chk_station_is_disabled.py",
     "App_Args": "",
-    "Delay": 2000
+    "Delay": 5000
 },
 "Test_End_Call": {
     "Enable": true,
     "App_Path": "/usr/local/Foxconn/automation/Xandra/chk_station_test_finished.py",
     "App_Args": "",
-    "Delay": 2000
+    "Delay": 5000
 },
 
 ## Dependencias
@@ -37,6 +37,25 @@ Exec=tmux new -d "cd /usr/local/Foxconn/automation/Xandra && python3 /usr/local/
 Terminal=true
 Type=Application
 Icon=/usr/local/Foxconn/automation/Xandra/Static/icon.png
+
+## Xampp
+https://cytranet.dl.sourceforge.net/project/xampp/XAMPP%20Linux/8.2.0/xampp-linux-x64-8.2.0-0-installer.run
+
+cd /etc/systemd/system/
+systemctl enable xampp.service
+systemctl start xampp.service
+
+## xampp.service
+[Unit]
+Description = Xampp server
+
+[Service]
+ExecStart =/opt/lampp/lampp start
+ExecStop =/opt/lampp/lampp stop
+Type=forking
+  
+[Install]
+WantedBy = multi-user.target
 
 
 ## Script x permissions

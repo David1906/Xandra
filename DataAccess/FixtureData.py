@@ -3,7 +3,7 @@ from DataAccess.FctHostControlData import FctHostControlData
 from DataAccess.MainConfigData import MainConfigData
 from DataAccess.SqlAlchemyBase import Session
 from DataAccess.TestData import TestData
-from Models.DTO.FixtureDTO import FixtureDTO
+from Models.DAO.FixtureDAO import FixtureDAO
 from Models.Fixture import Fixture
 from sqlalchemy import update
 
@@ -20,18 +20,20 @@ class FixtureData:
 
     def create_or_update(self, fixture: Fixture):
         session = Session()
-        fixtureDTO = (
-            session.query(FixtureDTO).where(
-                FixtureDTO.ip == fixture.ip).first()
+        fixtureDAO = (
+            session.query(FixtureDAO).where(FixtureDAO.ip == fixture.ip).first()
         )
-        if fixtureDTO == None:
-            fixtureDTO = FixtureDTO(
-                ip=fixture.ip, isDisabled=fixture.is_disabled(), isSkipped=fixture.isSkipped)
-            session.add(fixtureDTO)
+        if fixtureDAO == None:
+            fixtureDAO = FixtureDAO(
+                ip=fixture.ip,
+                isDisabled=fixture.is_disabled(),
+                isSkipped=fixture.isSkipped,
+            )
+            session.add(fixtureDAO)
         else:
             session.execute(
-                update(FixtureDTO)
-                .where(FixtureDTO.ip == fixture.ip)
+                update(FixtureDAO)
+                .where(FixtureDAO.ip == fixture.ip)
                 .values(
                     ip=fixture.ip,
                     isDisabled=fixture.is_disabled(),
@@ -42,16 +44,15 @@ class FixtureData:
         Session.remove()
 
     def is_skipped(self, fixtureIp: str) -> bool:
-        fixtureDTO = self.find_DTO(fixtureIp)
-        if fixtureDTO == None:
+        fixtureDAO = self.find_DTO(fixtureIp)
+        if fixtureDAO == None:
             return False
         else:
-            return fixtureDTO.isSkipped
+            return fixtureDAO.isSkipped
 
-    def find_DTO(self, fixtureIp: str) -> FixtureDTO:
+    def find_DTO(self, fixtureIp: str) -> FixtureDAO:
         session = Session()
-        data = session.query(FixtureDTO).where(
-            FixtureDTO.ip == fixtureIp).first()
+        data = session.query(FixtureDAO).where(FixtureDAO.ip == fixtureIp).first()
         session.close()
         Session.remove()
         return data

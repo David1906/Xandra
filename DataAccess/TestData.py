@@ -2,7 +2,7 @@ from automapper import mapper
 from DataAccess.GoogleSheet import GoogleSheet
 from DataAccess.MainConfigData import MainConfigData
 from DataAccess.SqlAlchemyBase import Session
-from Models.DTO.TestDTO import TestDTO
+from Models.DAO.TestDAO import TestDAO
 from Models.Test import Test
 
 
@@ -16,7 +16,7 @@ class TestData:
         if test.fixtureIp == None:
             return
         session = Session()
-        session.add(mapper.to(TestDTO).map(test))
+        session.add(mapper.to(TestDAO).map(test))
         session.commit()
         session.close()
         Session.remove()
@@ -49,12 +49,12 @@ class TestData:
     ) -> "list[Test]":
         session = Session()
         query = (
-            session.query(TestDTO)
-            .filter(TestDTO.fixtureIp == fixtureIp)
-            .order_by(TestDTO.endTime.desc(), TestDTO.id.desc())
+            session.query(TestDAO)
+            .filter(TestDAO.fixtureIp == fixtureIp)
+            .order_by(TestDAO.endTime.desc(), TestDAO.id.desc())
         )
         if onlyFailures:
-            query = query.filter(TestDTO.status == False)
+            query = query.filter(TestDAO.status == False)
         query = query.limit(
             self._mainConfigData.get_yield_calc_qty() if qty == 0 else qty)
         tests: "list[Test]" = []

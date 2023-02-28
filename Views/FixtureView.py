@@ -1,6 +1,5 @@
 from Controllers.FixtureController import FixtureController
 from Models.Fixture import Fixture
-from Models.Test import Test
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QGroupBox, QLabel, QPushButton, QGridLayout, QMessageBox
 from Views.EmbeddedTerminal import EmbeddedTerminal

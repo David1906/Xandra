@@ -14,6 +14,7 @@ class Test:
         stepLabel: str = None,
         operator: str = None,
         fullPath: str = None,
+        isOnlineMode: bool = False,
     ) -> None:
         self.serialNumber = serialNumber
         self.project = project
@@ -25,6 +26,7 @@ class Test:
         self.stepLabel = stepLabel
         self.operator = operator
         self.fullPath = fullPath
+        self.isOnlineMode = isOnlineMode
 
     def is_complete(self) -> bool:
         return (
@@ -40,7 +42,8 @@ class Test:
         )
 
     def get_result_string(self) -> str:
+        mode = "" if self.isOnlineMode else " (OFFLINE)"
         if self.status:
-            return "PASS"
+            return "PASS" + mode
         else:
-            return f"FAIL - {self.stepLabel}"
+            return f"FAIL - {self.stepLabel}" + mode

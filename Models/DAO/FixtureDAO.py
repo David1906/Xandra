@@ -9,6 +9,7 @@ class FixtureDAO(Base):
     ip = Column(String(64))
     isDisabled = Column(Boolean)
     isSkipped = Column(Boolean)
+    isRetestMode = Column(Boolean)
 
     def __init__(
         self,
@@ -16,8 +17,10 @@ class FixtureDAO(Base):
         ip: str = "",
         isDisabled: bool = False,
         isSkipped: bool = False,
+        isRetestMode: bool = False,
     ):
         self.id = id
         self.ip = ip
         self.isDisabled = isDisabled
         self.isSkipped = isSkipped
+        self.isRetestMode = isRetestMode

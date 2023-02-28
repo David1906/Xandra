@@ -4,10 +4,10 @@ from DataAccess.MainConfigData import MainConfigData
 from DataAccess.SqlAlchemyBase import Session
 from Models.DAO.TestDAO import TestDAO
 from Models.Test import Test
+from sqlalchemy import or_
 
 
 class TestData:
-
     def __init__(self) -> None:
         self._googleSheet = GoogleSheet()
         self._mainConfigData = MainConfigData()
@@ -23,7 +23,7 @@ class TestData:
         self._googleSheet.add(test)
 
     def get_yield(self, fixtureIp: str) -> float:
-        tests = self.find_last(fixtureIp)
+        tests = self.find_last(fixtureIp, ignoreOfflineFailures=True)
         if len(tests) == 0:
             return 100
         passTests = 0
@@ -45,7 +45,11 @@ class TestData:
         return True
 
     def find_last(
-        self, fixtureIp: str, qty: int = 0, onlyFailures: bool = False
+        self,
+        fixtureIp: str,
+        qty: int = 0,
+        onlyFailures: bool = False,
+        ignoreOfflineFailures: bool = False,
     ) -> "list[Test]":
         session = Session()
         query = (
@@ -53,10 +57,18 @@ class TestData:
             .filter(TestDAO.fixtureIp == fixtureIp)
             .order_by(TestDAO.endTime.desc(), TestDAO.id.desc())
         )
+
         if onlyFailures:
             query = query.filter(TestDAO.status == False)
+
+        if ignoreOfflineFailures:
+            query = query.filter(
+                or_(TestDAO.isOnlineMode == True, TestDAO.status == True)
+            )
+
         query = query.limit(
-            self._mainConfigData.get_yield_calc_qty() if qty == 0 else qty)
+            self._mainConfigData.get_yield_calc_qty() if qty == 0 else qty
+        )
         tests: "list[Test]" = []
         for testDTO in query:
             tests.append(mapper.to(Test).map(testDTO))

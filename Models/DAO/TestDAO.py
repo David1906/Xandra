@@ -17,6 +17,7 @@ class TestDAO(Base):
     stepLabel = Column(String(512))
     operator = Column(String(512))
     fullPath = Column(String(2048))
+    isOnlineMode = Column(Boolean)
 
     def __init__(
         self,
@@ -26,10 +27,11 @@ class TestDAO(Base):
         endTime: datetime = None,
         codeVersion: str = None,
         fixtureIp: str = None,
-        status: bool = None,
+        status: bool = False,
         stepLabel: str = None,
         operator: str = None,
         fullPath: str = None,
+        isOnlineMode: bool = False,
     ) -> None:
         self.serialNumber = serialNumber
         self.project = project
@@ -41,3 +43,4 @@ class TestDAO(Base):
         self.stepLabel = stepLabel
         self.operator = operator
         self.fullPath = fullPath
+        self.isOnlineMode = isOnlineMode

@@ -24,11 +24,8 @@ class FixtureData:
             session.query(FixtureDAO).where(FixtureDAO.ip == fixture.ip).first()
         )
         if fixtureDAO == None:
-            fixtureDAO = FixtureDAO(
-                ip=fixture.ip,
-                isDisabled=fixture.is_disabled(),
-                isSkipped=fixture.isSkipped,
-            )
+            fixtureDAO = mapper.to(FixtureDAO).map(fixture)
+            fixtureDAO.isDisabled = (fixture.is_disabled(),)
             session.add(fixtureDAO)
         else:
             session.execute(
@@ -38,6 +35,7 @@ class FixtureData:
                     ip=fixture.ip,
                     isDisabled=fixture.is_disabled(),
                     isSkipped=fixture.isSkipped,
+                    isRetestMode=fixture.isRetestMode,
                 )
             )
         session.commit()

@@ -1,3 +1,4 @@
+from time import sleep
 from DataAccess.FixtureData import FixtureData
 from DataAccess.TestData import TestData
 from DataAccess.TestParser import TestParser
@@ -20,10 +21,14 @@ class LogEventHandler(FileSystemEventHandler, QtCore.QThread):
     def on_created(self, event):
         try:
             test = self._testParser.parse(event.src_path)
-            self._testData.add(test)
             fixture = self._fixtureData.find(test.fixtureIp)
-            self._fixtureData.create_or_update(fixture)
             fixture.set_test(test)
+            fixture.configure(test)
+
+            self._testData.add(test)
+            self._fixtureData.create_or_update(fixture)
+
+            fixture = self._fixtureData.find(test.fixtureIp)
             self.updated.emit(fixture)
         except Exception as e:
             logging.error(str(e))

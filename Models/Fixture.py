@@ -12,6 +12,7 @@ class Fixture:
         yieldErrorMin: float = 0,
         yieldWarningMin: float = 0,
         isTesting: bool = False,
+        isRetestMode: bool = False,
     ):
         self.id = id
         self.ip = ip
@@ -21,6 +22,7 @@ class Fixture:
         self.yieldErrorMin = yieldErrorMin
         self.yieldWarningMin = yieldWarningMin
         self.isTesting = isTesting
+        self.isRetestMode = isRetestMode
         self._test: Test = None
 
     def is_disabled(self) -> bool:
@@ -56,3 +58,10 @@ class Fixture:
         elif self.is_warning():
             return "yellow"
         return ""
+
+    def configure(self, test: Test):
+        test.isOnlineMode = self.is_online_mode()
+
+    def is_online_mode(self) -> bool:
+        testStatus = False if self._test == None else self._test.status
+        return not self.isSkipped or (self.isRetestMode and testStatus)

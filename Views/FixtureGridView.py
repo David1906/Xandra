@@ -1,7 +1,6 @@
 from Controllers.FixtureGridController import FixtureGridController
 from Models.Fixture import Fixture
-from Models.Test import Test
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QShortcut, QMessageBox
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QShortcut
 from PyQt5.QtGui import QKeySequence
 from Views.FixtureView import FixtureView
 

@@ -1,4 +1,3 @@
-from DataAccess.MainConfigData import MainConfigData
 from watchdog.observers.polling import PollingObserver
 import time
 

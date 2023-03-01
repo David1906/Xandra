@@ -1,4 +1,3 @@
-from time import sleep
 from DataAccess.FixtureData import FixtureData
 from DataAccess.TestData import TestData
 from DataAccess.TestParser import TestParser

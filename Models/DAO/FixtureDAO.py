@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, Float, Boolean
+from sqlalchemy import Column, String, Integer, Boolean
 from DataAccess.SqlAlchemyBase import Base
 
 

@@ -21,19 +21,27 @@ class FixtureView(QGroupBox):
         gridLayout = QGridLayout()
         self.setLayout(gridLayout)
 
+        self.lblRetestMode = QLabel("Retest Mode")
+        gridLayout.addWidget(self.lblRetestMode, 0, 5)
+        self.swRetestMode = Switch()
+        self.swRetestMode.setChecked(fixture.isRetestMode)
+        self.swRetestMode.toggled.connect(self.on_swRetestMode_change)
+        gridLayout.addWidget(self.swRetestMode, 0, 6)
+        self.set_retest_mode_visibility(False)
+
         self.lblIp = QLabel("IP:")
-        gridLayout.addWidget(self.lblIp, 0, 0, 1, 2, QtCore.Qt.AlignLeft)
+        gridLayout.addWidget(self.lblIp, 1, 0, 1, 2, QtCore.Qt.AlignLeft)
 
         self.btnStart = QPushButton("Start")
         self.btnStart.clicked.connect(self.on_btnStart_clicked)
-        gridLayout.addWidget(self.btnStart, 0, 3, 1, 2, QtCore.Qt.AlignLeft)
+        gridLayout.addWidget(self.btnStart, 1, 3, 1, 2, QtCore.Qt.AlignLeft)
 
         self.lblTraceability = QLabel("Traceability")
-        gridLayout.addWidget(self.lblTraceability, 0, 5)
+        gridLayout.addWidget(self.lblTraceability, 1, 5)
         self.swTraceability = Switch()
         self.swTraceability.setChecked(not fixture.isSkipped)
         self.swTraceability.toggled.connect(self.on_swTraceability_change)
-        gridLayout.addWidget(self.swTraceability, 0, 6)
+        gridLayout.addWidget(self.swTraceability, 1, 6)
 
         self.lblYield = QLabel("Yield:")
         gridLayout.addWidget(self.lblYield, 2, 0, 1, 2)
@@ -69,6 +77,14 @@ class FixtureView(QGroupBox):
         self.w = LastFailuresWindow(self.fixture.ip)
         self.w.showMaximized()
 
+    def on_swRetestMode_change(self, checked: bool):
+        self.fixture.isRetestMode = checked
+        self.swTraceability.setEnabled(not checked)
+        if self.swTraceability.getChecked() == (not checked):
+            self.on_swTraceability_change(not checked)
+        else:
+            self.swTraceability.setChecked(not checked)
+
     def on_swTraceability_change(self, checked: bool):
         self.fixture.isSkipped = not checked
         self._fixtureController.update(self.fixture)
@@ -102,6 +118,7 @@ class FixtureView(QGroupBox):
 
     def on_btnStart_clicked(self):
         isStart = self.btnStart.text() == "Start"
+        self.swRetestMode.setEnabled(not isStart)
         self.swTraceability.setEnabled(not isStart)
         if isStart:
             cmd = self._fixtureController.get_fct_host_cmd(
@@ -124,6 +141,7 @@ class FixtureView(QGroupBox):
 
     def on_terminal_finished(self, exitStatus):
         self.btnStart.setText("Start")
+        self.swRetestMode.setEnabled(True)
         self.swTraceability.setEnabled(True)
         self.set_fixture_isTesting(False)
 
@@ -144,3 +162,15 @@ class FixtureView(QGroupBox):
     def stop(self):
         if self.btnStart.text() == "Stop":
             self.on_btnStart_clicked()
+
+    def set_retest_mode_visibility(self, value):
+        if value:
+            self.lblRetestMode.show()
+            self.swRetestMode.show()
+        else:
+            self.lblRetestMode.hide()
+            self.swRetestMode.hide()
+
+    def disableRetestMode(self):
+        self.swRetestMode.setChecked(False)
+        self._update()

@@ -14,7 +14,8 @@ class Test:
         stepLabel: str = None,
         operator: str = None,
         fullPath: str = None,
-        isOnlineMode: bool = False,
+        countInYield: bool = False,
+        uploadToSFC: bool = False,
     ) -> None:
         self.serialNumber = serialNumber
         self.project = project
@@ -26,7 +27,8 @@ class Test:
         self.stepLabel = stepLabel
         self.operator = operator
         self.fullPath = fullPath
-        self.isOnlineMode = isOnlineMode
+        self.countInYield = countInYield
+        self.uploadToSFC = uploadToSFC
 
     def is_complete(self) -> bool:
         return (
@@ -42,7 +44,7 @@ class Test:
         )
 
     def get_result_string(self) -> str:
-        mode = "" if self.isOnlineMode else " (OFFLINE)"
+        mode = "" if self.uploadToSFC else " (OFFLINE)"
         if self.status:
             return "PASS" + mode
         else:

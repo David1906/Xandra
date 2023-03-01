@@ -48,6 +48,13 @@ class FixtureData:
         else:
             return fixtureDAO.isSkipped
 
+    def is_retest_mode(self, fixtureIp: str) -> bool:
+        fixtureDAO = self.find_DTO(fixtureIp)
+        if fixtureDAO == None:
+            return False
+        else:
+            return fixtureDAO.isRetestMode
+
     def find_DTO(self, fixtureIp: str) -> FixtureDAO:
         session = Session()
         data = session.query(FixtureDAO).where(FixtureDAO.ip == fixtureIp).first()
@@ -55,8 +62,10 @@ class FixtureData:
         Session.remove()
         return data
 
-    def refresh(self):
+    def refresh(self, resetFixture: bool = False):
         for fixture in self.find_all():
+            if resetFixture:
+                fixture.reset()
             self.create_or_update(fixture)
 
     def find_all(self) -> "list[Fixture]":
@@ -76,4 +85,5 @@ class FixtureData:
                     self.is_skipped(fixtureIp),
                     self._mainConfigData.get_yield_error_threshold(),
                     self._mainConfigData.get_yield_warning_threshold(),
+                    isRetestMode=self.is_retest_mode(fixtureIp),
                 )

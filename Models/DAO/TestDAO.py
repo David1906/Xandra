@@ -17,7 +17,8 @@ class TestDAO(Base):
     stepLabel = Column(String(512))
     operator = Column(String(512))
     fullPath = Column(String(2048))
-    isOnlineMode = Column(Boolean)
+    countInYield = Column(Boolean)
+    uploadToSFC = Column(Boolean)
 
     def __init__(
         self,
@@ -31,7 +32,8 @@ class TestDAO(Base):
         stepLabel: str = None,
         operator: str = None,
         fullPath: str = None,
-        isOnlineMode: bool = False,
+        countInYield: bool = False,
+        uploadToSFC: bool = False,
     ) -> None:
         self.serialNumber = serialNumber
         self.project = project
@@ -43,4 +45,5 @@ class TestDAO(Base):
         self.stepLabel = stepLabel
         self.operator = operator
         self.fullPath = fullPath
-        self.isOnlineMode = isOnlineMode
+        self.countInYield = countInYield
+        self.uploadToSFC = uploadToSFC

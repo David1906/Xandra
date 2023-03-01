@@ -60,28 +60,32 @@ class LastTestsWindow(QtWidgets.QWidget):
 
     def updateTable(self, tests: "list[Test]"):
         row_count = len(tests)
-        column_count = len(tests[0].__dict__)
-        self.table.setColumnCount(column_count)
+        keys = self._extractKeys(tests)
         self.table.setRowCount(row_count)
-        keys = list(tests[0].__dict__.keys())
-        for column in range(column_count):
-            if keys[column] == "fullPath":
-                keys[column] = "Logfile"
-        self.table.setHorizontalHeaderLabels(keys)
+        self.table.setColumnCount(len(keys))
         for row in range(row_count):
-            for column in range(column_count):
-                item = list(tests[row].__dict__.values())[column]
+            for column in range(len(keys)):
+                item = tests[row].__dict__[keys[column]]
                 if item == None:
                     continue
                 if keys[column] == "status":
                     item = "PASS" if item == 1 else "FAILED"
-                if keys[column] == "Logfile":
+                if keys[column] == "fullPath":
                     btn = LogButton(item)
                     self.table.setCellWidget(row, column, btn)
                 else:
                     self.table.setItem(
                         row, column, QtWidgets.QTableWidgetItem(str(item))
                     )
+        fullPathIdx = keys.index("fullPath")
+        keys[fullPathIdx] = "Logfile"
+        self.table.setHorizontalHeaderLabels(keys)
+
+    def _extractKeys(self, tests: "list[Test]") -> "list[str]":
+        keys = list(tests[0].__dict__.keys())
+        keys.remove("countInYield")
+        keys.remove("uploadToSFC")
+        return keys
 
     def updateChart(self, tests: "list[Test]"):
         if self.series != None:

@@ -63,7 +63,7 @@ class TestData:
 
         if ignoreOfflineFailures:
             query = query.filter(
-                or_(TestDAO.isOnlineMode == True, TestDAO.status == True)
+                or_(TestDAO.countInYield == True, TestDAO.status == True)
             )
 
         query = query.limit(

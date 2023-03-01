@@ -17,17 +17,28 @@ class FixtureGridView(QWidget):
         self._fixtureGridController = FixtureGridController()
         self._fixtureGridController.updated.connect(self.update_fixture)
         self._fixtureGridController.testing_status_changed.connect(
-            self.on_testing_status_changed)
+            self.on_testing_status_changed
+        )
+        self._isRetestMode = False
 
         self.hBox = QHBoxLayout()
         self.setLayout(self.hBox)
         self.create_fixtureViews()
 
-        self.msgSc = QShortcut(QKeySequence('Ctrl+Shift+A'), self)
+        self.msgSc = QShortcut(QKeySequence("Ctrl+Shift+A"), self)
         self.msgSc.activated.connect(self.start_all_fixtures)
 
-        self.msgSt = QShortcut(QKeySequence('Ctrl+Shift+S'), self)
+        self.msgSt = QShortcut(QKeySequence("Ctrl+Shift+S"), self)
         self.msgSt.activated.connect(self.stop_all_fixtures)
+
+        self.msgSt = QShortcut(QKeySequence("Ctrl+Shift+R"), self)
+        self.msgSt.activated.connect(self.show_retest_mode)
+
+    def show_retest_mode(self):
+        self._isRetestMode = not self._isRetestMode
+        for fixtureView in self._fixtureViews:
+            fixtureView.set_retest_mode_visibility(self._isRetestMode)
+            fixtureView.disableRetestMode()
 
     def create_fixtureViews(self):
         fixtures = self._fixtureGridController.get_all_fixtures()

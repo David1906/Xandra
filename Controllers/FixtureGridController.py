@@ -21,18 +21,20 @@ class FixtureGridController(QtCore.QThread):
 
         self._sfcEventHandler = LogEventHandler()
         self._sfcEventHandler.updated.connect(
-            lambda fixture: self.updated.emit(fixture))
+            lambda fixture: self.updated.emit(fixture)
+        )
         self._fileWatchdog = FileWatchdog(self._sfcEventHandler)
         atexit.register(lambda: self._fileWatchdog.stop())
 
         self._baseEventHandler = BaseEventHandler()
         self._baseEventHandler.modified.connect(
-            lambda event: self.on_config_change(event))
+            lambda event: self.on_config_change(event)
+        )
         self._configWatchdog = FileWatchdog(self._baseEventHandler)
         self._configWatchdog.start(MainConfigData.MAIN_CONFIG_JSON_PATH)
         atexit.register(lambda: self._configWatchdog.stop())
 
-        self._fixtureData.refresh()
+        self._fixtureData.refresh(resetFixture=True)
 
         self._socket = FixtureSocket()
         self._socket.testing_status_changed.connect(self.on_testing_status_change)

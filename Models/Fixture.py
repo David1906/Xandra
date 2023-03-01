@@ -26,7 +26,12 @@ class Fixture:
         self._test: Test = None
 
     def is_disabled(self) -> bool:
-        return self.has_low_yield() and not self.isSkipped and not self.areLastTestPass
+        return (
+            self.has_low_yield() and self.isLockEnabled() and not self.areLastTestPass
+        )
+
+    def isLockEnabled(self):
+        return not self.isSkipped or self.isRetestMode
 
     def has_low_yield(self) -> bool:
         return self.yieldRate <= self.yieldErrorMin
@@ -51,6 +56,10 @@ class Fixture:
         return "Testing" if self.isTesting else "IDLE"
 
     def get_status_color(self) -> str:
+        if self.isRetestMode and self.is_disabled():
+            return "lightcoral"
+        if self.isRetestMode:
+            return "orange"
         if self.isSkipped:
             return "gray"
         if self.is_disabled():
@@ -60,8 +69,26 @@ class Fixture:
         return ""
 
     def configure(self, test: Test):
-        test.isOnlineMode = self.is_online_mode()
+        test.countInYield = self.is_affecting_yield(test)
+        test.uploadToSFC = self.is_upload_to_sfc(test)
+
+    def is_upload_to_sfc(self, test: Test):
+        if test.status:
+            return not self.isSkipped or self.isRetestMode
+        else:
+            return not self.isSkipped and not self.isRetestMode
+
+    def is_affecting_yield(self, test: Test):
+        if test.status:
+            return not self.isRetestMode
+        else:
+            return not self.isSkipped and not self.isRetestMode
 
     def is_online_mode(self) -> bool:
         testStatus = False if self._test == None else self._test.status
         return not self.isSkipped or (self.isRetestMode and testStatus)
+
+    def reset(self):
+        self.isTesting = False
+        self.isRetestMode = False
+        self.isSkipped = False

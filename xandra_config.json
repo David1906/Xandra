@@ -11,7 +11,7 @@
     "logsPath": "/log/diag",
     "logsPath_description":"Ruta donde se guardan los logs de las pruebas realizadas",
 
-    "yieldErrorThreshold": 70,
+    "yieldErrorThreshold": 50,
     "yieldErrorThreshold_description": "Porcentaje de yield el cual una vez alcanzado bloqueará la fixtura y lo pintará de color rojo en la interfaz",
 
     "yieldWarningThreshold": 80,

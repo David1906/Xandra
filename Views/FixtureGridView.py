@@ -1,7 +1,9 @@
+import os
 from Controllers.FixtureGridController import FixtureGridController
 from Models.Fixture import Fixture
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QShortcut
 from PyQt5.QtGui import QKeySequence
+from Views.AuthView import AuthView
 from Views.FixtureView import FixtureView
 
 
@@ -30,11 +32,18 @@ class FixtureGridView(QWidget):
         self.msgSt = QShortcut(QKeySequence("Ctrl+Shift+S"), self)
         self.msgSt.activated.connect(self.stop_all_fixtures)
 
-        #self.msgSt = QShortcut(QKeySequence("Ctrl+Shift+R"), self)
-        #self.msgSt.activated.connect(self.show_retest_mode)
+        if os.environ.get("ENABLE_RETEST") == "true":
+            self.msgSt = QShortcut(QKeySequence("Ctrl+Shift+R"), self)
+            self.msgSt.activated.connect(self.show_retest_mode)
 
     def show_retest_mode(self):
-        self._isRetestMode = not self._isRetestMode
+        authView = AuthView()
+        if not self._isRetestMode:
+            authView.interact()
+        if authView.isAuthorized:
+            self._isRetestMode = not self._isRetestMode
+        else:
+            self._isRetestMode = False
         for fixtureView in self._fixtureViews:
             fixtureView.set_retest_mode_visibility(self._isRetestMode)
             fixtureView.disableRetestMode()

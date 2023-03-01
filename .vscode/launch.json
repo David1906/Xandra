@@ -10,7 +10,10 @@
             "request": "launch",
             "program": "./xandra.py",
             "console": "integratedTerminal",
-            "justMyCode": true
+            "justMyCode": true,
+            "env": {
+                "ENABLE_RETEST": "true",
+            }
         }
     ]
 }

@@ -31,8 +31,8 @@ class FixtureGridView(QWidget):
         self.msgSt = QShortcut(QKeySequence("Ctrl+Shift+S"), self)
         self.msgSt.activated.connect(self.stop_all_fixtures)
 
-        self.msgSt = QShortcut(QKeySequence("Ctrl+Shift+R"), self)
-        self.msgSt.activated.connect(self.show_retest_mode)
+        #self.msgSt = QShortcut(QKeySequence("Ctrl+Shift+R"), self)
+        #self.msgSt.activated.connect(self.show_retest_mode)
 
     def show_retest_mode(self):
         self._isRetestMode = not self._isRetestMode

@@ -1,5 +1,14 @@
-from PyQt5 import QtGui
-from PyQt5.QtWidgets import QMainWindow, QMessageBox
+import os
+from PyQt5 import QtGui, QtCore, QtWidgets
+from PyQt5.QtWidgets import (
+    QWidget,
+    QMainWindow,
+    QMessageBox,
+    QHBoxLayout,
+    QGridLayout,
+    QLabel,
+)
+from DataAccess.FctHostControlData import FctHostControlData
 from Utils.PathHelper import PathHelper
 from Views.FixtureGridView import FixtureGridView
 
@@ -11,11 +20,34 @@ class MainWindow(QMainWindow):
     def __init__(self, title: str = "Xandra - FBT"):
         super().__init__()
 
+        self._fctHostControlData = FctHostControlData()
+
         self.setWindowTitle(title)
         self.setWindowIcon(QtGui.QIcon(MainWindow.ICON_FULLPATH))
 
+        gridLayout = QGridLayout()
+        gridLayout.setContentsMargins(0, 0, 0, 0)
+
         self.fixtureView = FixtureGridView()
-        self.setCentralWidget(self.fixtureView)
+        gridLayout.addWidget(self.fixtureView, 0, 0, 99, 0)
+
+        self.footer = QHBoxLayout()
+        self.footer.setContentsMargins(15, 0, 15, 15)
+        self.footer.setSizeConstraint(QtWidgets.QLayout.SetFixedSize)
+        self.lblXandraVersion = QLabel(
+            f"Xandra Version: {os.environ.get('XANDRA_VERSION')}"
+        )
+        self.footer.addWidget(self.lblXandraVersion, alignment=QtCore.Qt.AlignLeft)
+        self.lblScriptVersion = QLabel(
+            f"Script Version: {self._fctHostControlData.get_script_version()}"
+        )
+        self.footer.addWidget(self.lblScriptVersion, alignment=QtCore.Qt.AlignRight)
+        gridLayout.addLayout(self.footer, 100, 0, alignment=QtCore.Qt.AlignBottom)
+
+        widget = QWidget()
+        widget.setContentsMargins(0, 0, 0, 0)
+        widget.setLayout(gridLayout)
+        self.setCentralWidget(widget)
         self.fixtureView.interact()
 
     def closeEvent(self, event):

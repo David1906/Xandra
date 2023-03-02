@@ -5,6 +5,7 @@ from Views.MainWindow import MainWindow
 import sys
 import os
 
+os.environ["XANDRA_VERSION"] = "1.0.0"
 os.environ["HALT"] = "Az3E4ur"
 app = QApplication(sys.argv)
 QtExceptHook().enable()

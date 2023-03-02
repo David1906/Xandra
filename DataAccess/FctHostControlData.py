@@ -19,6 +19,14 @@ class FctHostControlData:
     def get_all_fixture_configs(self) -> "list[{}]":
         return self.data[FctHostControlData.FIXTURES_ARRAY_KEY]
 
+    def get_script_version(self):
+        scriptFullPath = self.get_upload_sfc_script_fullpath()
+        chunks = scriptFullPath.split("/")
+        for chunkIdx in range(len(chunks)):
+            if chunks[chunkIdx] == "script" and chunkIdx > 0:
+                return chunks[chunkIdx - 1]
+        return "unknown"
+
     def get_upload_sfc_script_fullpath(self) -> str:
         return self.get_script_fullpath() + self._mainConfigData.get_upload_Sfc_sript()
 

@@ -142,7 +142,8 @@ class FixtureView(QGroupBox):
     def on_terminal_finished(self, exitStatus):
         self.btnStart.setText("Start")
         self.swRetestMode.setEnabled(True)
-        self.swTraceability.setEnabled(True)
+        if not self.fixture.isRetestMode:
+            self.swTraceability.setEnabled(True)
         self.set_fixture_isTesting(False)
 
     def equals(self, fixture: Fixture) -> bool:

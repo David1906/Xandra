@@ -91,6 +91,7 @@ class LastLogsWindow(QtWidgets.QWidget):
         keys = list(tests[0].__dict__.keys())
         keys.remove("countInYield")
         keys.remove("uploadToSFC")
+        keys.remove("sfcError")
         return keys
 
     def updateChart(self, tests: "list[Test]"):

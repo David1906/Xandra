@@ -1,17 +1,15 @@
 cd "$(dirname "$0")"
 
-git stash push -m xandra_config.json
 git restore .
 git clean -f
 git pull
-git stash pop
 
-chmod +x ./Resources/chk_station_is_disabled.py
-chmod +x ./Resources/chk_station_is_disabled.sh
-chmod +x ./Resources/chk_station_test_finished.py
-chmod +x ./Resources/test_upload.sh
+sudo chmod +x ./Resources/chk_station_is_disabled.py
+sudo chmod +x ./Resources/chk_station_is_disabled.sh
+sudo chmod +x ./Resources/chk_station_test_finished.py
+sudo chmod +x ./Resources/test_upload.sh
 
-if ! [ -x "$(command -v alembic)" ]; then
+if command -v alembic > /dev/null; then
     echo "alembic upgrade head"
 else
     echo "/root/.local/bin/alembic upgrade head"

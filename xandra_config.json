@@ -8,6 +8,12 @@
     "fctHostControlConfig": "/usr/local/Foxconn/automation/DA194/Bahubali_Sparrow_C3/FCTHostControl.config",
     "fctHostControlConfig_description":"Ruta completa al archivo de configuración de FCTHostControl.config",
 
+    "defaultProductModelName":  "C4",
+    "defaultProductModelName_description" : "Nombre del modelo seleccionado por defecto en FCTHostControl.config",
+
+    "uploadSfcSript":  "up_sfc.sh",
+    "uploadSfcSript_description" : "Nombre del script encargado de subir la trazabilidad al sistema SFC (la ruta a la carpeta de scripts se obtiene del modelo *defaultProductModelName* en la posición Testing_Main.App_Path)",
+
     "logsPath": "/log/diag",
     "logsPath_description":"Ruta donde se guardan los logs de las pruebas realizadas",
 

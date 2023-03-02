@@ -26,6 +26,11 @@ class LogEventHandler(FileSystemEventHandler, QtCore.QThread):
             self._testData.add(test)
             self._fixtureData.create_or_update(fixture)
 
+            if test.uploadToSFC:
+                test.sfcError = not self._fixtureData.upload_pass_to_sfc(
+                    test.serialNumber
+                )
+
             fixture = self._fixtureData.find(test.fixtureIp)
             fixture.set_test(test)
             self.updated.emit(fixture)

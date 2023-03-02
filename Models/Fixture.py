@@ -50,7 +50,8 @@ class Fixture:
     def get_status_string(self):
         if self._test == None:
             return f"Status: {self.get_status_text()}"
-        return f"SN: {self._test.serialNumber}      Result: {self._test.get_result_string()}"
+        mode = "" if self.is_online_mode() else " (OFFLINE)"
+        return f"SN: {self._test.serialNumber}      Result: {self._test.get_result_string()} {mode}"
 
     def get_status_text(self):
         return "Testing" if self.isTesting else "IDLE"
@@ -73,10 +74,7 @@ class Fixture:
         test.uploadToSFC = self.is_upload_to_sfc(test)
 
     def is_upload_to_sfc(self, test: Test):
-        if test.status:
-            return not self.isSkipped or self.isRetestMode
-        else:
-            return not self.isSkipped and not self.isRetestMode
+        return test.status and self.isRetestMode
 
     def is_affecting_yield(self, test: Test):
         if test.status:
@@ -85,8 +83,7 @@ class Fixture:
             return not self.isSkipped and not self.isRetestMode
 
     def is_online_mode(self) -> bool:
-        testStatus = False if self._test == None else self._test.status
-        return not self.isSkipped or (self.isRetestMode and testStatus)
+        return self.is_upload_to_sfc(self._test) or not self.isSkipped
 
     def reset(self):
         self.isTesting = False

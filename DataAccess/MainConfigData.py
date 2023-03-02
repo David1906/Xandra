@@ -5,8 +5,7 @@ from Utils.PathHelper import PathHelper
 
 
 class MainConfigData:
-    MAIN_CONFIG_JSON_PATH = PathHelper().get_root_path() + \
-        "/xandra_config.json"
+    MAIN_CONFIG_JSON_PATH = PathHelper().get_root_path() + "/xandra_config_local.json"
     YIELD_WARNING_MAX = 99
     YIELD_WARNING_THRESHOLD_FROM_ERROR = 10
     JSON_DATA = {}
@@ -57,6 +56,12 @@ class MainConfigData:
 
     def get_unlock_pass_qty(self) -> str:
         return self._get_value("unlockPassQty")
+
+    def get_default_product_name(self) -> str:
+        return self._get_value("defaultProductModelName")
+    
+    def get_upload_Sfc_sript(self) -> str:
+        return self._get_value("uploadSfcSript")
 
     def get_google_isActivated(self):
         return self._get_value("googleSheets")["isActivated"]

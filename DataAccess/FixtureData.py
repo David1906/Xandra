@@ -1,3 +1,4 @@
+import subprocess
 from automapper import mapper
 from DataAccess.FctHostControlData import FctHostControlData
 from DataAccess.MainConfigData import MainConfigData
@@ -6,6 +7,7 @@ from DataAccess.TestData import TestData
 from Models.DAO.FixtureDAO import FixtureDAO
 from Models.Fixture import Fixture
 from sqlalchemy import update
+from subprocess import check_output
 
 
 class FixtureData:
@@ -87,3 +89,13 @@ class FixtureData:
                     self._mainConfigData.get_yield_warning_threshold(),
                     isRetestMode=self.is_retest_mode(fixtureIp),
                 )
+
+    def upload_pass_to_sfc(self, serialNumber) -> bool:
+        result = subprocess.run(
+            [self._fctHostControlData.get_upload_sfc_script_fullpath()],
+            stdout=subprocess.PIPE,
+            shell=True,
+            cwd=self._fctHostControlData.get_script_fullpath(),
+        )
+        print(result.stdout.decode())
+        return result.returncode == 0

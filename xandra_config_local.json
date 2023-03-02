@@ -8,6 +8,12 @@
     "fctHostControlConfig": "./Resources/FCTHostControl.config",
     "fctHostControlConfig_description":"Ruta completa al archivo de configuración de FCTHostControl.config",
 
+    "defaultProductModelName":  "C4",
+    "defaultProductModelName_description" : "Nombre del modelo seleccionado por defecto en FCTHostControl.config",
+
+    "uploadSfcSript":  "test_upload.sh",
+    "uploadSfcSript_description" : "Nombre del script encargado de subir la trazabilidad al sistema SFC (la ruta a la carpeta de scripts se obtiene del modelo *defaultProductModelName* en la posición Testing_Main.App_Path)",
+
     "logsPath": "/home/david/Documents/logs",
     "logsPath_description":"Ruta donde se guardan los logs de las pruebas realizadas",
 
@@ -17,7 +23,7 @@
     "yieldWarningThreshold": 80,
     "yieldWarningThreshold_description": "Porcentaje de yield el cual una vez alcanzado pintará la fixtuae de color amarillo en la interfaz",
 
-    "yieldCalcQty": 20,
+    "yieldCalcQty": 10,
     "yieldCalcQty_description" : "Cantidad de pruebas con las que se calculará el yield",
 
     "unlockPassQty": 3,

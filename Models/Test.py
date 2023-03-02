@@ -16,6 +16,7 @@ class Test:
         fullPath: str = None,
         countInYield: bool = False,
         uploadToSFC: bool = False,
+        sfcError: bool = False,
     ) -> None:
         self.serialNumber = serialNumber
         self.project = project
@@ -29,6 +30,7 @@ class Test:
         self.fullPath = fullPath
         self.countInYield = countInYield
         self.uploadToSFC = uploadToSFC
+        self.sfcError = sfcError
 
     def is_complete(self) -> bool:
         return (
@@ -44,8 +46,7 @@ class Test:
         )
 
     def get_result_string(self) -> str:
-        mode = "" if self.uploadToSFC else " (OFFLINE)"
         if self.status:
-            return "PASS" + mode
+            return "PASS" + (" (SFC Upload Error)" if self.sfcError else "")
         else:
-            return f"FAIL - {self.stepLabel}" + mode
+            return f"FAIL - {self.stepLabel}"

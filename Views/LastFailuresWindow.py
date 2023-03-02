@@ -11,8 +11,8 @@ class LastFailuresWindow(LastLogsWindow):
             biggestSliceColor=Qt.red,
         )
 
-    def getTests(self):
-        return self._testData.find_last_failures(self.fixtureIp)
+    def getTests(self, qty: int):
+        return self._testData.find_last_failures(self.fixtureIp, qty)
 
     def getResults(self, tests: "list[Test]"):
         results = {}

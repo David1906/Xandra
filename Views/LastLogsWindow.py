@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from DataAccess.MainConfigData import MainConfigData
 from DataAccess.TestData import TestData
 from Models.Test import Test
 from PyQt5 import QtCore, QtWidgets
@@ -9,11 +10,14 @@ from Views.LogButton import LogButton
 
 
 class LastLogsWindow(QtWidgets.QWidget):
+    PAGE_SIZES = [10, 25, 50, 100, 200]
+
     def __init__(self, fixtureIp: str, title: str = "", biggestSliceColor=Qt.green):
         super().__init__()
 
         self.fixtureIp = fixtureIp
         self._testData = TestData()
+        self._mainConfigData = MainConfigData()
         self.biggestSliceColor = biggestSliceColor
         self.series = None
 
@@ -29,6 +33,7 @@ class LastLogsWindow(QtWidgets.QWidget):
         self.gridLayout.addWidget(chartview, 0, 0)
 
         self.table = QtWidgets.QTableWidget()
+        self.table.setMaximumHeight(450)
         header = self.table.horizontalHeader()
         header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
         self.table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
@@ -40,13 +45,39 @@ class LastLogsWindow(QtWidgets.QWidget):
         )
         self.gridLayout.addWidget(self.label, 0, 0, alignment=QtCore.Qt.AlignCenter)
 
-        self.btnStart = QtWidgets.QPushButton("Refresh")
-        self.btnStart.clicked.connect(self.refresh)
-        self.gridLayout.addWidget(self.btnStart, 2, 0, QtCore.Qt.AlignCenter)
-        self.refresh()
+        footer = QtWidgets.QHBoxLayout()
 
-    def refresh(self):
-        data = self.getTests()
+        self.btnStart = QtWidgets.QPushButton("Refresh")
+        self.btnStart.clicked.connect(self.on_btn_refresh_click)
+        footer.addWidget(self.btnStart)
+
+        self.cmbSize = QtWidgets.QComboBox()
+        yieldCalcQty = self._mainConfigData.get_yield_calc_qty()
+        idxSelected = False
+        for sizeIdx in range(len(LastLogsWindow.PAGE_SIZES)):
+            size = LastLogsWindow.PAGE_SIZES[sizeIdx]
+            self.cmbSize.addItem(str(size))
+            if not idxSelected and (size >= yieldCalcQty):
+                self.cmbSize.setCurrentIndex(sizeIdx)
+                idxSelected = True
+            elif not idxSelected and size == LastLogsWindow.PAGE_SIZES[-1]:
+                self.cmbSize.addItem(str(yieldCalcQty))
+                self.cmbSize.setCurrentIndex(sizeIdx + 1)
+
+        self.cmbSize.activated[str].connect(self.on_cmb_size_change)
+        footer.addWidget(self.cmbSize)
+        self.gridLayout.addLayout(footer, 2, 0, QtCore.Qt.AlignCenter)
+
+        self.refresh(int(self.cmbSize.currentText()))
+
+    def on_cmb_size_change(self, size):
+        self.refresh(int(size))
+
+    def on_btn_refresh_click(self):
+        self.refresh(int(self.cmbSize.currentText()))
+
+    def refresh(self, qty: int = 10):
+        data = self.getTests(qty)
         row_count = len(data)
         hasData = row_count > 0
 
@@ -61,7 +92,7 @@ class LastLogsWindow(QtWidgets.QWidget):
         self.updateChart(data)
 
     @abstractmethod
-    def getTests(self):
+    def getTests(self, qty: int):
         pass
 
     def updateTable(self, tests: "list[Test]"):

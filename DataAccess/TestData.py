@@ -76,5 +76,5 @@ class TestData:
         Session.remove()
         return tests
 
-    def find_last_failures(self, fixtureIp: str) -> "list[Test]":
-        return self.find_last(fixtureIp, onlyFailures=True)
+    def find_last_failures(self, fixtureIp: str, qty: int) -> "list[Test]":
+        return self.find_last(fixtureIp, qty=qty, onlyFailures=True)

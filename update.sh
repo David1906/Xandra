@@ -1,6 +1,7 @@
 cd "$(dirname "$0")"
 
 git stash push -m xandra_config.json
+git restore .
 git clean -f
 git pull
 git stash pop

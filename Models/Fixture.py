@@ -6,11 +6,13 @@ class Fixture:
     def __init__(self, fixtureConfig: FixtureConfig, test: Test = None) -> None:
         self._fixtureConfig = fixtureConfig
         self._test = test or Test(isNull=True)
+        self.hasErrorUploadingToSfc = False
 
     def get_status_string(self):
         if self._test.isNull:
             return f"Status: {self._fixtureConfig.get_status_text()}"
-        mode = "" if self.is_online() else " (OFFLINE)"
+        error = "(Upload SFC Error)" if self.hasErrorUploadingToSfc else ""
+        mode = f"{error}" if self.is_online() else "(OFFLINE)"
         return f"SN: {self._test.serialNumber}      Result: {self._test.get_result_string()} {mode}"
 
     def is_online(self) -> bool:
@@ -53,10 +55,11 @@ class Fixture:
         return self._fixtureConfig.get_status_color()
 
     def set_test(self, test: Test):
+        self.hasErrorUploadingToSfc = False
         self._test = test
 
     def equals(self, fixture) -> bool:
-        return fixture._fixtureConfig.id == self._fixtureConfig.id
+        return fixture.get_id() == self.get_id()
 
     def equalsIp(self, fixtureIp: str) -> bool:
         return self._fixtureConfig.ip == fixtureIp
@@ -75,3 +78,6 @@ class Fixture:
 
     def set_skipped(self, value: bool):
         self._fixtureConfig.isSkipped = value
+
+    def set_config(self, fixtureConfig: FixtureConfig):
+        self._fixtureConfig = fixtureConfig

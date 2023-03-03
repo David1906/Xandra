@@ -12,11 +12,14 @@ class TestData:
         self._googleSheet = GoogleSheet()
         self._mainConfigData = MainConfigData()
 
-    def add(self, test: Test):
+    def add(self, test: Test, countInYield: bool = False, uploadToSfc: bool = False):
         if test.fixtureIp == None:
             return
         session = Session()
-        session.add(mapper.to(TestDAO).map(test))
+        testDTO = mapper.to(TestDAO).map(test)
+        testDTO.countInYield = countInYield
+        testDTO.uploadToSFC = uploadToSfc
+        session.add(testDTO)
         session.commit()
         session.close()
         Session.remove()

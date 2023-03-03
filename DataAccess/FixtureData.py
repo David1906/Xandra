@@ -42,11 +42,7 @@ class FixtureData:
 
     def upload_pass_to_sfc(self, serialNumber) -> bool:
         result = subprocess.run(
-            [
-                self._fctHostControlData.get_upload_sfc_script_fullpath(),
-                "-s",
-                serialNumber,
-            ],
+            f'{self._fctHostControlData.get_upload_sfc_script_fullpath()} -s "{serialNumber}"',
             stdout=subprocess.PIPE,
             shell=True,
             cwd=self._fctHostControlData.get_script_fullpath(),

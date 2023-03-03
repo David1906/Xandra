@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from DataAccess.MainConfigData import MainConfigData
 from DataAccess.TestData import TestData
-from Models.Test import Test
+from Models.Fixture import Test
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtChart import QChart, QChartView, QPieSeries
 from PyQt5.QtCore import Qt
@@ -120,9 +120,9 @@ class LastLogsWindow(QtWidgets.QWidget):
 
     def _extractKeys(self, tests: "list[Test]") -> "list[str]":
         keys = list(tests[0].__dict__.keys())
-        keys.remove("countInYield")
-        keys.remove("uploadToSFC")
-        keys.remove("sfcError")
+        for rmKey in ["isNull"]:
+            if rmKey in keys:
+                keys.remove(rmKey)
         return keys
 
     def updateChart(self, tests: "list[Test]"):

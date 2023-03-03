@@ -1,4 +1,4 @@
-from Models.Test import Test
+from Models.Fixture import Test
 from PyQt5.QtCore import Qt
 from Views.LastLogsWindow import LastLogsWindow
 

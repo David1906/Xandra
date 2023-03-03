@@ -1,91 +1,77 @@
+from Models.FixtureConfig import FixtureConfig
 from Models.Test import Test
 
 
 class Fixture:
-    def __init__(
-        self,
-        id: int = 0,
-        ip: int = 0,
-        yieldRate: float = 0,
-        areLastTestPass: bool = False,
-        isSkipped: bool = False,
-        yieldErrorMin: float = 0,
-        yieldWarningMin: float = 0,
-        isTesting: bool = False,
-        isRetestMode: bool = False,
-    ):
-        self.id = id
-        self.ip = ip
-        self.yieldRate = yieldRate
-        self.areLastTestPass = areLastTestPass
-        self.isSkipped = isSkipped
-        self.yieldErrorMin = yieldErrorMin
-        self.yieldWarningMin = yieldWarningMin
-        self.isTesting = isTesting
-        self.isRetestMode = isRetestMode
-        self._test: Test = None
+    def __init__(self, fixtureConfig: FixtureConfig, test: Test = None) -> None:
+        self._fixtureConfig = fixtureConfig
+        self._test = test or Test(isNull=True)
+
+    def get_status_string(self):
+        if self._test.isNull:
+            return f"Status: {self._fixtureConfig.get_status_text()}"
+        mode = "" if self.is_online() else " (OFFLINE)"
+        return f"SN: {self._test.serialNumber}      Result: {self._test.get_result_string()} {mode}"
+
+    def is_online(self) -> bool:
+        return self.is_upload_to_sfc() or not self._fixtureConfig.isSkipped
+
+    def is_upload_to_sfc(self) -> bool:
+        return self._test.status and self._fixtureConfig.isRetestMode
+
+    def is_affecting_yield(self) -> bool:
+        if self._test.status:
+            return not self._fixtureConfig.isRetestMode
+        else:
+            return (
+                not self._fixtureConfig.isSkipped
+                and not self._fixtureConfig.isRetestMode
+            )
+
+    def is_retest_mode(self) -> bool:
+        return self._fixtureConfig.isRetestMode
+
+    def is_skipped(self) -> bool:
+        return self._fixtureConfig.isSkipped
+
+    def get_yield(self) -> float:
+        return self._fixtureConfig.yieldRate
+
+    def get_ip(self) -> str:
+        return self._fixtureConfig.ip
+
+    def get_id(self) -> str:
+        return self._fixtureConfig.id
+
+    def get_are_last_test_pass(self) -> bool:
+        return self._fixtureConfig.areLastTestPass
 
     def is_disabled(self) -> bool:
-        return (
-            self.has_low_yield() and self.isLockEnabled() and not self.areLastTestPass
-        )
+        return self._fixtureConfig.is_disabled()
 
-    def isLockEnabled(self):
-        return not self.isSkipped or self.isRetestMode
-
-    def has_low_yield(self) -> bool:
-        return self.yieldRate <= self.yieldErrorMin
-
-    def is_warning(self) -> bool:
-        return self.yieldRate <= self.yieldWarningMin
+    def get_status_color(self) -> bool:
+        return self._fixtureConfig.get_status_color()
 
     def set_test(self, test: Test):
         self._test = test
 
-    def set_isTesting(self, isTesting: bool):
-        self.isTesting = isTesting
-        if isTesting:
-            self._test = None
+    def equals(self, fixture) -> bool:
+        return fixture._fixtureConfig.id == self._fixtureConfig.id
 
-    def get_status_string(self):
-        if self._test == None:
-            return f"Status: {self.get_status_text()}"
-        mode = "" if self.is_online_mode() else " (OFFLINE)"
-        return f"SN: {self._test.serialNumber}      Result: {self._test.get_result_string()} {mode}"
+    def equalsIp(self, fixtureIp: str) -> bool:
+        return self._fixtureConfig.ip == fixtureIp
 
-    def get_status_text(self):
-        return "Testing" if self.isTesting else "IDLE"
+    def set_isTesting(self, value: bool):
+        self._fixtureConfig.isTesting = value
 
-    def get_status_color(self) -> str:
-        if self.isRetestMode and self.is_disabled():
-            return "lightcoral"
-        if self.isRetestMode:
-            return "orange"
-        if self.isSkipped:
-            return "gray"
-        if self.is_disabled():
-            return "lightcoral"
-        elif self.is_warning():
-            return "yellow"
-        return ""
-
-    def configure(self, test: Test):
-        test.countInYield = self.is_affecting_yield(test)
-        test.uploadToSFC = self.is_upload_to_sfc(test)
-
-    def is_upload_to_sfc(self, test: Test):
-        return test.status and self.isRetestMode
-
-    def is_affecting_yield(self, test: Test):
-        if test.status:
-            return not self.isRetestMode
-        else:
-            return not self.isSkipped and not self.isRetestMode
-
-    def is_online_mode(self) -> bool:
-        return self.is_upload_to_sfc(self._test) or not self.isSkipped
+    def get_config(self) -> FixtureConfig:
+        return self._fixtureConfig
 
     def reset(self):
-        self.isTesting = False
-        self.isRetestMode = False
-        self.isSkipped = False
+        self._fixtureConfig.reset()
+
+    def set_reset_mode(self, value: bool):
+        self._fixtureConfig.isRetestMode = value
+
+    def set_skipped(self, value: bool):
+        self._fixtureConfig.isSkipped = value

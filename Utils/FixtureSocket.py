@@ -1,8 +1,8 @@
+from DataAccess.FixtureData import FixtureData
 from PyQt5 import QtCore
+import pickle
 import select
 import socket
-from DataAccess.FixtureData import FixtureData
-import pickle
 
 
 class FixtureSocket(QtCore.QThread):
@@ -54,7 +54,7 @@ class FixtureSocket(QtCore.QThread):
         if (data["message"] == "TEST_START"):
             fixture = self._fixtureData.find(data["fixtureIp"])
             if fixture != None:
-                fixtureData = {"fixtureIp": fixture.ip,
+                fixtureData = {"fixtureIp": fixture.get_ip(),
                                "isDisabled": fixture.is_disabled()}
                 notified_socket.send(pickle.dumps(fixtureData))
             self.testing_status_changed.emit(data["fixtureIp"], True)

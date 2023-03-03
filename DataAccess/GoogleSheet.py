@@ -1,5 +1,5 @@
 from DataAccess.MainConfigData import MainConfigData
-from Models.Test import Test
+from Models.Fixture import Test
 from oauth2client.service_account import ServiceAccountCredentials
 import gspread
 import logging

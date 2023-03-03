@@ -14,9 +14,7 @@ class Test:
         stepLabel: str = None,
         operator: str = None,
         fullPath: str = None,
-        countInYield: bool = False,
-        uploadToSFC: bool = False,
-        sfcError: bool = False,
+        isNull: bool = False,
     ) -> None:
         self.serialNumber = serialNumber
         self.project = project
@@ -28,9 +26,7 @@ class Test:
         self.stepLabel = stepLabel
         self.operator = operator
         self.fullPath = fullPath
-        self.countInYield = countInYield
-        self.uploadToSFC = uploadToSFC
-        self.sfcError = sfcError
+        self.isNull = isNull
 
     def is_complete(self) -> bool:
         return (
@@ -47,6 +43,6 @@ class Test:
 
     def get_result_string(self) -> str:
         if self.status:
-            return "PASS" + (" (SFC Upload Error)" if self.sfcError else "")
+            return "PASS"
         else:
             return f"FAIL - {self.stepLabel}"

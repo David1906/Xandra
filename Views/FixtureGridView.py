@@ -1,6 +1,6 @@
 import os
 from Controllers.FixtureGridController import FixtureGridController
-from Models.Fixture import Fixture
+from Models.FixtureConfig import FixtureConfig
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QShortcut
 from PyQt5.QtGui import QKeySequence
 from Views.AuthView import AuthView
@@ -16,7 +16,7 @@ class FixtureGridView(QWidget):
 
         self._fixtureViews: "list[FixtureView]" = []
         self._fixtureGridController = FixtureGridController()
-        self._fixtureGridController.updated.connect(self.update_fixture)
+        self._fixtureGridController.test_add.connect(self.on_test_add)
         self._fixtureGridController.testing_status_changed.connect(
             self.on_testing_status_changed
         )
@@ -69,10 +69,10 @@ class FixtureGridView(QWidget):
                 fixtureView.set_fixture_isTesting(isTesting)
                 return
 
-    def update_fixture(self, fixture: Fixture):
+    def on_test_add(self, fixture: FixtureConfig):
         for fixtureView in self._fixtureViews:
             if fixtureView.equals(fixture):
-                fixtureView.set_fixture(fixture)
+                fixtureView.set_test(fixture)
                 return
 
     def start_all_fixtures(self):

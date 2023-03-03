@@ -2,6 +2,7 @@ from Controllers.FixtureController import FixtureController
 from Models.Fixture import Fixture
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QGroupBox, QLabel, QPushButton, QGridLayout, QMessageBox
+from Models.Test import Test
 from Views.EmbeddedTerminal import EmbeddedTerminal
 from Views.LastFailuresWindow import LastFailuresWindow
 from Views.LastTestsWindow import LastTestsWindow
@@ -24,7 +25,7 @@ class FixtureView(QGroupBox):
         self.lblRetestMode = QLabel("Retest Mode")
         gridLayout.addWidget(self.lblRetestMode, 0, 5)
         self.swRetestMode = Switch()
-        self.swRetestMode.setChecked(fixture.isRetestMode)
+        self.swRetestMode.setChecked(fixture.is_retest_mode())
         self.swRetestMode.toggled.connect(self.on_swRetestMode_change)
         gridLayout.addWidget(self.swRetestMode, 0, 6)
         self.set_retest_mode_visibility(False)
@@ -39,7 +40,7 @@ class FixtureView(QGroupBox):
         self.lblTraceability = QLabel("Traceability")
         gridLayout.addWidget(self.lblTraceability, 1, 5)
         self.swTraceability = Switch()
-        self.swTraceability.setChecked(not fixture.isSkipped)
+        self.swTraceability.setChecked(not fixture.is_skipped())
         self.swTraceability.toggled.connect(self.on_swTraceability_change)
         gridLayout.addWidget(self.swTraceability, 1, 6)
 
@@ -70,15 +71,15 @@ class FixtureView(QGroupBox):
         self.set_fixture(fixture)
 
     def on_btnLastTests_clicked(self):
-        self.w = LastTestsWindow(self.fixture.ip)
+        self.w = LastTestsWindow(self.fixture.get_ip())
         self.w.showMaximized()
 
     def on_btnLastFailures_clicked(self):
-        self.w = LastFailuresWindow(self.fixture.ip)
+        self.w = LastFailuresWindow(self.fixture.get_ip())
         self.w.showMaximized()
 
     def on_swRetestMode_change(self, checked: bool):
-        self.fixture.isRetestMode = checked
+        self.fixture.set_reset_mode(checked)
         self.swTraceability.setEnabled(not checked)
         if self.swTraceability.getChecked() == (not checked):
             self.on_swTraceability_change(not checked)
@@ -86,8 +87,12 @@ class FixtureView(QGroupBox):
             self.swTraceability.setChecked(not checked)
 
     def on_swTraceability_change(self, checked: bool):
-        self.fixture.isSkipped = not checked
+        self.fixture.set_skipped(not checked)
         self._fixtureController.update(self.fixture)
+        self._update()
+
+    def set_test(self, test: Test):
+        self.fixture.set_test(test)
         self._update()
 
     def set_fixture(self, fixture: Fixture):
@@ -96,12 +101,12 @@ class FixtureView(QGroupBox):
 
     def _update(self):
         self.lblResult.setText(self.fixture.get_status_string())
-        self.lblYield.setText(f"Yield: {self.fixture.yieldRate}%")
-        self.lblIp.setText(f"Ip: {self.fixture.ip}")
+        self.lblYield.setText(f"Yield: {self.fixture.get_yield()}%")
+        self.lblIp.setText(f"Ip: {self.fixture.get_ip()}")
         self.lblPassed.setText(
             f"Passed Last {self._fixtureController.get_last_test_pass_qty()} Tests:"
         )
-        self.led.setChecked(self.fixture.areLastTestPass)
+        self.led.setChecked(self.fixture.get_are_last_test_pass())
         self.btnStart.setEnabled(
             not self.fixture.is_disabled() or self.btnStart.text() == "Stop"
         )
@@ -131,7 +136,7 @@ class FixtureView(QGroupBox):
             reply = QMessageBox.question(
                 self,
                 "Stop Fixture",
-                f"Are you sure to stop fixture {self.fixture.id}?",
+                f"Are you sure to stop fixture {self.fixture.get_id()}?",
                 QMessageBox.Yes | QMessageBox.No,
                 QMessageBox.No,
             )
@@ -142,15 +147,15 @@ class FixtureView(QGroupBox):
     def on_terminal_finished(self, exitStatus):
         self.btnStart.setText("Start")
         self.swRetestMode.setEnabled(True)
-        if not self.fixture.isRetestMode:
+        if not self.fixture.is_retest_mode():
             self.swTraceability.setEnabled(True)
         self.set_fixture_isTesting(False)
 
     def equals(self, fixture: Fixture) -> bool:
-        return fixture.id == self.fixture.id
+        return self.fixture.equals(fixture)
 
     def equalsIp(self, fixtureIp: str) -> bool:
-        return self.fixture.ip == fixtureIp
+        return self.fixture.equalsIp(fixtureIp)
 
     def set_fixture_isTesting(self, value: bool):
         self.fixture.set_isTesting(value)

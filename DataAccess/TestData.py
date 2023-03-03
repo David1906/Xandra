@@ -3,7 +3,7 @@ from DataAccess.GoogleSheet import GoogleSheet
 from DataAccess.MainConfigData import MainConfigData
 from DataAccess.SqlAlchemyBase import Session
 from Models.DAO.TestDAO import TestDAO
-from Models.Test import Test
+from Models.Fixture import Test
 from sqlalchemy import or_
 
 

@@ -5,7 +5,7 @@ from Utils.PathHelper import PathHelper
 
 
 class MainConfigData:
-    MAIN_CONFIG_JSON_PATH = PathHelper().get_root_path() + "/xandra_config_local.json"
+    MAIN_CONFIG_JSON_PATH = PathHelper().get_root_path() + "/xandra_config.json"
     YIELD_WARNING_MAX = 99
     YIELD_WARNING_THRESHOLD_FROM_ERROR = 10
     JSON_DATA = {}

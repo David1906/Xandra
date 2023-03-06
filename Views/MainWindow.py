@@ -59,6 +59,7 @@ class MainWindow(QMainWindow):
             QMessageBox.No,
         )
         if reply == QMessageBox.Yes:
+            QtWidgets.QApplication.closeAllWindows()
             event.accept()
         else:
             event.ignore()

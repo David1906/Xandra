@@ -1,11 +1,15 @@
+from Utils.PathHelper import PathHelper
 import json
 import os
 
-from Utils.PathHelper import PathHelper
-
 
 class MainConfigData:
-    MAIN_CONFIG_JSON_PATH = PathHelper().get_root_path() + "/xandra_config.json"
+    fileName = (
+        "/xandra_config_local.json"
+        if os.environ.get("ENV") == "testing"
+        else "/xandra_config.json"
+    )
+    MAIN_CONFIG_JSON_PATH = PathHelper().get_root_path() + fileName
     YIELD_WARNING_MAX = 99
     YIELD_WARNING_THRESHOLD_FROM_ERROR = 10
     JSON_DATA = {}
@@ -59,7 +63,7 @@ class MainConfigData:
 
     def get_default_product_name(self) -> str:
         return self._get_value("defaultProductModelName")
-    
+
     def get_upload_Sfc_sript(self) -> str:
         return self._get_value("uploadSfcSript")
 

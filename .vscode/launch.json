@@ -13,6 +13,7 @@
             "justMyCode": true,
             "env": {
                 "ENABLE_RETEST": "true",
+                "ENV": "testing"
             }
         }
     ]

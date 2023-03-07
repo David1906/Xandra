@@ -3,9 +3,9 @@ from Utils.PathHelper import PathHelper
 from Utils.qtexceptiohook import QtExceptHook
 from Views.ExitSingleInstanceWindow import ExitSingleInstanceWindow
 from Views.MainWindow import MainWindow
-import sys
-import os
 import fcntl
+import os
+import sys
 
 fh = 0
 app = QApplication(sys.argv)

@@ -66,6 +66,8 @@ class Fixture:
 
     def set_isTesting(self, value: bool):
         self._fixtureConfig.isTesting = value
+        if value:
+            self._test = Test(isNull=True)
 
     def get_config(self) -> FixtureConfig:
         return self._fixtureConfig

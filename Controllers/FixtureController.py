@@ -13,7 +13,10 @@ class FixtureController:
         self._mainConfigData = MainConfigData()
 
     def get_fct_host_cmd(self, fixture: Fixture, hasTraceability: bool):
-        cmd = f"{self._mainConfigData.get_fixture_ip_env_name()}={fixture.get_ip()} {self._mainConfigData.get_fct_host_control_fullpath()} -f {fixture.get_id()}"
+        fullpathSplit = self._mainConfigData.get_fct_host_control_fullpath().split("/")
+        fileName = fullpathSplit[-1]
+        path = "/".join(fullpathSplit[0:-1])
+        cmd = f"cd {path} && {self._mainConfigData.get_fixture_ip_env_name()}={fixture.get_ip()} ./{fileName} -f {fixture.get_id()}"
         if hasTraceability == False:
             cmd += " -m"
         return cmd

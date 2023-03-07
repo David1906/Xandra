@@ -30,8 +30,7 @@ def run_once():
         fcntl.flock(fh, fcntl.LOCK_EX | fcntl.LOCK_NB)
         start()
     except Exception as e:
-        print(str(e))
-        ExitSingleInstanceWindow().exec()
+        ExitSingleInstanceWindow().exec(str(e))
         os._exit(0)
 
 

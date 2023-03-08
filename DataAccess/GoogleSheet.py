@@ -1,6 +1,7 @@
 from DataAccess.MainConfigData import MainConfigData
 from Models.Fixture import Test
 from oauth2client.service_account import ServiceAccountCredentials
+from threading import Thread
 import gspread
 import logging
 
@@ -19,9 +20,13 @@ class GoogleSheet:
         )
 
     def add(self, test: Test):
+        if not self._mainConfigData.get_google_isActivated():
+            return
+        thread = Thread(target=lambda: self.add_task(test))
+        thread.start()
+
+    def add_task(self, test: Test):
         try:
-            if not self._mainConfigData.get_google_isActivated():
-                return
             client = gspread.authorize(self.credentials)
             sheet = client.open(self._mainConfigData.get_google_sheetName()).sheet1
             sheet.append_row(

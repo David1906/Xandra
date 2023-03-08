@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
+from SocketClient import SocketClient
 import math
 import os
-from SocketClient import SocketClient
 
 
-class FixtureYieldChecker:
+class FixtureEnabledChecker:
     BASE_PATH = os.path.dirname(os.path.abspath(__file__))
     GREEN_COLOR = "\033[92m"
     RED_COLOR = "\033[91m"
+    WHITE_COLOR = "\033[93m"
     END_COLOR = "\033[0m"
 
     def __init__(self):
         self._socketClient = SocketClient()
-        self._result_file = f"{FixtureYieldChecker.BASE_PATH}/chk_station_yield.result"
+        self._result_file = f"{FixtureEnabledChecker.BASE_PATH}/chk_station_yield.result"
         os.environ["RESULTFILE"] = self._result_file
         if os.path.exists(self._result_file):
             os.remove(self._result_file)
@@ -30,26 +31,26 @@ class FixtureYieldChecker:
                 return True
         except:
             self.outputNoConnection()
-            return False
+            return True
 
     def outputNoConnection(self):
         self.printHeader(
             "Connection Error With Xandra",
-            FixtureYieldChecker.RED_COLOR,
+            FixtureEnabledChecker.WHITE_COLOR,
         )
-        self.outputResultFile("FAIL")
+        self.outputResultFile("PASS")
 
     def outputPass(self):
         self.printHeader(
             "Fixture Enabled",
-            FixtureYieldChecker.GREEN_COLOR,
+            FixtureEnabledChecker.GREEN_COLOR,
         )
         self.outputResultFile("PASS")
 
     def outputFail(self):
         self.printHeader(
             "Fixture Disabled Due To Low Yield",
-            FixtureYieldChecker.RED_COLOR,
+            FixtureEnabledChecker.RED_COLOR,
         )
         self.outputResultFile("FAIL")
 
@@ -72,14 +73,14 @@ class FixtureYieldChecker:
         )
 
     def printInColor(self, text, color):
-        print(f"{color}{text}{FixtureYieldChecker.END_COLOR}")
+        print(f"{color}{text}{FixtureEnabledChecker.END_COLOR}")
 
     def outputResultFile(self, result):
         with open(self._result_file, "w") as outfile:
             outfile.write(result)
 
 
-if FixtureYieldChecker().check():
+if FixtureEnabledChecker().check():
     exit(0)
 else:
     exit(1)

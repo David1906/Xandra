@@ -1,8 +1,8 @@
 from Controllers.FixtureController import FixtureController
 from Models.Fixture import Fixture
+from Models.Test import Test
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QGroupBox, QLabel, QPushButton, QGridLayout, QMessageBox
-from Models.Test import Test
 from Views.EmbeddedTerminal import EmbeddedTerminal
 from Views.LastFailuresWindow import LastFailuresWindow
 from Views.LastTestsWindow import LastTestsWindow
@@ -70,6 +70,9 @@ class FixtureView(QGroupBox):
 
         self.set_fixture(fixture)
 
+        self._updateTimer = QtCore.QTimer()
+        self._updateTimer.timeout.connect(self._update_status)
+
     def on_btnLastTests_clicked(self):
         self.w = LastTestsWindow(self.fixture.get_ip())
         self.w.showMaximized()
@@ -102,7 +105,7 @@ class FixtureView(QGroupBox):
         self._update()
 
     def _update(self):
-        self.lblResult.setText(self.fixture.get_status_string())
+        self._update_status()
         self.lblYield.setText(f"Yield: {self.fixture.get_yield()}%")
         self.lblIp.setText(f"Ip: {self.fixture.get_ip()}")
         self.lblPassed.setText(
@@ -122,6 +125,10 @@ class FixtureView(QGroupBox):
             }}
             """
         )
+
+    def _update_status(self):
+        if self.fixture != None:
+            self.lblResult.setText(self.fixture.get_status_string())
 
     def on_btnStart_clicked(self):
         isStart = self.btnStart.text() == "Start"
@@ -162,6 +169,10 @@ class FixtureView(QGroupBox):
     def set_fixture_isTesting(self, value: bool):
         self.fixture.set_isTesting(value)
         self._update()
+        if value:
+            self._updateTimer.start(1000)
+        else:
+            self._updateTimer.stop()
 
     def start(self):
         if self.btnStart.text() == "Start":

@@ -1,5 +1,8 @@
 from Models.FixtureConfig import FixtureConfig
 from Models.Test import Test
+from timeit import default_timer as timer
+import datetime
+import math
 
 
 class Fixture:
@@ -7,13 +10,20 @@ class Fixture:
         self._fixtureConfig = fixtureConfig
         self._test = test or Test(isNull=True)
         self.hasErrorUploadingToSfc = False
+        self.startTimer = timer()
 
     def get_status_string(self):
         if self._test.isNull:
-            return f"Status: {self._fixtureConfig.get_status_text()}"
+            elapsedTime = ""
+            if self._fixtureConfig.isTesting:
+                elapsedTime = f"... ({self.get_elapsed_time()})"
+            return f"Status: {self._fixtureConfig.get_status_text()}{elapsedTime}"
         error = "(Upload SFC Error)" if self.hasErrorUploadingToSfc else ""
         mode = f"{error}" if self.is_online() else "(OFFLINE)"
         return f"SN: {self._test.serialNumber}      Result: {self._test.get_result_string()} {mode}"
+
+    def get_elapsed_time(self) -> str:
+        return str(datetime.timedelta(seconds=math.floor(timer() - self.startTimer)))
 
     def is_online(self) -> bool:
         return self.is_upload_to_sfc() or not self._fixtureConfig.isSkipped
@@ -68,6 +78,7 @@ class Fixture:
         self._fixtureConfig.isTesting = value
         if value:
             self._test = Test(isNull=True)
+            self.startTimer = timer()
 
     def get_config(self) -> FixtureConfig:
         return self._fixtureConfig

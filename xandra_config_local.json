@@ -11,8 +11,8 @@
     "defaultProductModelName":  "C4",
     "defaultProductModelName_description" : "Nombre del modelo seleccionado por defecto en FCTHostControl.config",
 
-    "uploadSfcSript":  "test_upload.sh",
-    "uploadSfcSript_description" : "Nombre del script encargado de subir la trazabilidad al sistema SFC (la ruta a la carpeta de scripts se obtiene del modelo *defaultProductModelName* en la posición Testing_Main.App_Path)",
+    "uploadSfcSript":  "/home/david/Xandra/Resources/up_sfc.sh",
+    "uploadSfcSript_description" : "Ruta completa al script encargado de subir la trazabilidad al sistema SFC",
 
     "logsPath": "/home/david/Documents/logs",
     "logsPath_description":"Ruta donde se guardan los logs de las pruebas realizadas",

@@ -20,7 +20,7 @@ class FctHostControlData:
         return self.data[FctHostControlData.FIXTURES_ARRAY_KEY]
 
     def get_script_version(self):
-        scriptFullPath = self.get_upload_sfc_script_fullpath()
+        scriptFullPath = self.get_script_fullpath()
         chunks = scriptFullPath.split("/")
         for chunkIdx in range(len(chunks)):
             if chunks[chunkIdx] == "script" and chunkIdx > 0:
@@ -28,7 +28,7 @@ class FctHostControlData:
         return "unknown"
 
     def get_upload_sfc_script_fullpath(self) -> str:
-        return self.get_script_fullpath() + self._mainConfigData.get_upload_Sfc_sript()
+        return self._mainConfigData.get_upload_Sfc_sript()
 
     def get_script_fullpath(self) -> str:
         productName = self._mainConfigData.get_default_product_name()
@@ -40,4 +40,5 @@ class FctHostControlData:
 
     def _extract_script_path(self, product: dict):
         appPath: str = product["Testing_Main"]["App_Path"]
-        return appPath.replace("run_test.sh", "")
+        appPathSplit = appPath.split("/")
+        return "/".join(appPathSplit[0:-1])

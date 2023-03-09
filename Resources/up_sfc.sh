@@ -24,16 +24,20 @@ check_log ${filename}
 LOGFILE=${LOGPATH}/${BSN}/$filename
 # Disabled for retest . ./get_bmcip.sh -s ${BSN}
 
-SN_ID="${Station_ID}${BSN}"
-PN_ID="${SNPIN}-600-G"
-mac=${MAC}
-
 StationID=${Station_ID}
 FILE=${LOGPATH}/${BSN}/StationID.txt
 if [ -e ${FILE} ]; then
     StationID=$(<${LOGPATH}/${BSN}/StationID.txt)
 fi
+
+SN_ID="${StationID}${BSN}"
+PN_ID="${SNPIN}-600-G"
+mac=${MAC}
+
 OP_ID=$(cat ${LOGPATH}/${BSN}/OPID.txt)
+if [ -z "$OP_ID" ]; then
+    OP_ID="Lunar"
+fi
 
 mount_sfc()
 {
@@ -56,11 +60,7 @@ mount_sfc()
 
 send_log()
 {
-     SEND_LOG_FILE=${LOGPATH}/${BSN}/StationID.txt
-     if [ -f "$SEND_LOG_FILE" ]; then
-         rm $SEND_LOG_FILE
-     fi
-     echo -e "${StationID}\n${BSN}\n${OP_ID}\nPASS\n0" > ${SEND_LOG_FILE}.LOG
+     echo -e "${Station_ID}\n${BSN}\n${OP_ID}\nPASS\n0" > ${LOGPATH}/${BSN}/${SN_ID}.LOG
      cd /home/Project/Station
      if [ -f $SN_ID.* ];then
             rm -f $SN_ID.*

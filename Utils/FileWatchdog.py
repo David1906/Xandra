@@ -1,10 +1,10 @@
-from watchdog.observers.polling import PollingObserver
+from watchdog.observers import Observer
 import time
 
 
 class FileWatchdog:
     def __init__(self, eventHandler):
-        self._observer = PollingObserver()
+        self._observer = Observer()
         self._eventHandler = eventHandler
 
     def run(self):

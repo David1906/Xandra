@@ -109,6 +109,7 @@ class LastLogsWindow(QtWidgets.QWidget):
                     item = "PASS" if item == 1 else "FAILED"
                 if keys[column] == "fullPath":
                     btn = LogButton(item)
+                    btn.setToolTip(item)
                     self.table.setCellWidget(row, column, btn)
                 else:
                     self.table.setItem(

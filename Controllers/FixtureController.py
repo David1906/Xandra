@@ -32,10 +32,11 @@ class FixtureController:
             fixture._test, fixture.is_affecting_yield(), fixture.is_upload_to_sfc()
         )
         if fixture.is_upload_to_sfc():
-            isUploadOk = self._fixtureData.upload_pass_to_sfc(
+            isUploadOk, message = self._fixtureData.upload_pass_to_sfc(
                 fixture._test.serialNumber
             )
             fixture.hasErrorUploadingToSfc = not isUploadOk
+            fixture.errorMsg = message
 
     def update(self, fixture: Fixture):
         self._fixtureData.create_or_update(fixture)

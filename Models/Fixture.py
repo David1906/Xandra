@@ -10,6 +10,7 @@ class Fixture:
         self._fixtureConfig = fixtureConfig
         self._test = test or Test(isNull=True)
         self.hasErrorUploadingToSfc = False
+        self.errorMsg = ""
         self.startTimer = timer()
 
     def get_status_string(self):
@@ -66,6 +67,7 @@ class Fixture:
 
     def set_test(self, test: Test):
         self.hasErrorUploadingToSfc = False
+        self.errorMsg = ""
         self._test = test
 
     def equals(self, fixture) -> bool:
@@ -79,6 +81,7 @@ class Fixture:
         if value:
             self._test = Test(isNull=True)
             self.startTimer = timer()
+            self.errorMsg = ""
 
     def get_config(self) -> FixtureConfig:
         return self._fixtureConfig

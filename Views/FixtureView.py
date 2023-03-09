@@ -129,6 +129,7 @@ class FixtureView(QGroupBox):
     def _update_status(self):
         if self.fixture != None:
             self.lblResult.setText(self.fixture.get_status_string())
+            self.lblResult.setToolTip(self.fixture.errorMsg)
 
     def on_btnStart_clicked(self):
         isStart = self.btnStart.text() == "Start"

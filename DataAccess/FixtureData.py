@@ -2,6 +2,7 @@ from DataAccess.FctHostControlData import FctHostControlData
 from DataAccess.FixtureConfigData import FixtureConfigData
 from DataAccess.MainConfigData import MainConfigData
 from Models.Fixture import Fixture
+from typing import Tuple
 import subprocess
 
 
@@ -40,7 +41,7 @@ class FixtureData:
         fixtureConfig = self._fixtureConfigData.find(fixtureIp)
         return Fixture(fixtureConfig)
 
-    def upload_pass_to_sfc(self, serialNumber) -> bool:
+    def upload_pass_to_sfc(self, serialNumber) -> Tuple[bool, str]:
         result = subprocess.run(
             f'{self._fctHostControlData.get_upload_sfc_script_fullpath()} -s "{serialNumber}"',
             stdout=subprocess.PIPE,
@@ -48,4 +49,4 @@ class FixtureData:
             cwd=self._fctHostControlData.get_script_fullpath(),
         )
         print(result.stdout.decode())
-        return result.returncode == 0
+        return (result.returncode == 0, result.stdout.decode())

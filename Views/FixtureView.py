@@ -134,7 +134,10 @@ class FixtureView(QGroupBox):
     def on_btnStart_clicked(self):
         isStart = self.btnStart.text() == "Start"
         self.swRetestMode.setEnabled(not isStart)
-        self.swTraceability.setEnabled(not isStart)
+        if self.fixture.is_retest_mode():
+            self.swTraceability.setEnabled(False)
+        else:
+            self.swTraceability.setEnabled(not isStart)
         if isStart:
             cmd = self._fixtureController.get_fct_host_cmd(
                 self.fixture, self.swTraceability.getChecked()

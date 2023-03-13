@@ -45,13 +45,19 @@ __author__ = "Stephan Sokolow; Filip Van Raemdonck; Gustavo J A M Carneiro"
 __license__ = "Public Domain"
 
 
+import datetime
 import getpass
 import socket
 import sys
+import logging
 import traceback
 from gettext import gettext as _
 from smtplib import SMTP, SMTPException
 from typing import Callable
+
+# logging
+logging.basicConfig(filename="errors.log", level=logging.ERROR)
+
 
 # pylint: disable=no-name-in-module
 from PyQt5.QtCore import QCommandLineOption, QCommandLineParser, QEvent, pyqtSlot
@@ -165,12 +171,12 @@ class QtExceptHook(object):
 
         self._dialog.setInformativeText(secondary)
 
+        self.b_quit = self._dialog.addButton("Exit Xandra", QMessageBox.RejectRole)
+
         # Workaround for the X button not working when details are available
         # Source: https://stackoverflow.com/a/32764190/435253
-        btn_close = self._dialog.addButton(QMessageBox.Close)
+        btn_close = self._dialog.addButton(QMessageBox.Ok)
         self._dialog.setEscapeButton(btn_close)
-
-        self.b_quit = self._dialog.addButton(_("Quit"), QMessageBox.RejectRole)
 
     def _cb_copy_to_clipboard(self):
         """Qt slot for the :guilabel:`Copy Traceback...` button."""
@@ -193,18 +199,33 @@ class QtExceptHook(object):
         t_exception = traceback.TracebackException(
             exc_type, exc_value, exc_traceback, capture_locals=True
         )
-        traceback_text = t_exception._str + \
-            "\n\n" + "\n".join(t_exception.format())
+        traceback_text = (
+            str(datetime.datetime.now())
+            + "\n\n"
+            + t_exception._str
+            + "\n\n"
+            + "\n".join(t_exception.format())
+        )
         if self._extra_info:
             traceback_text += "\n{}".format(self._extra_info)
 
         # Store it in the dialog where *everything* will retrieve it from
         self._dialog.setDetailedText(traceback_text)
 
+        logging.error(traceback_text)
+
         # Show the dialog
         self._dialog.exec_()
         if self._dialog.clickedButton() == self.b_quit:
-            QApplication.instance().quit()
+            reply = QMessageBox.question(
+                self._dialog,
+                "Exit Xandra",
+                f"Are you sure to exit Xandra? It will stop all fixtures",
+                QMessageBox.Yes | QMessageBox.No,
+                QMessageBox.No,
+            )
+            if reply == QMessageBox.Yes:
+                QApplication.instance().quit()
 
     def enable(self):
         """Replace the default exception handler with this one"""

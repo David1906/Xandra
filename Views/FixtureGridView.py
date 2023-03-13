@@ -36,6 +36,10 @@ class FixtureGridView(QWidget):
         if os.environ.get("ENABLE_RETEST") == "true":
             self.msgSt = QShortcut(QKeySequence("Ctrl+Shift+R"), self)
             self.msgSt.activated.connect(self.show_retest_mode)
+            self.msgForceTraceability = QShortcut(QKeySequence("Ctrl+Shift+T"), self)
+            self.msgForceTraceability.activated.connect(
+                self.toggle_force_traceability_enabled
+            )
 
     def show_retest_mode(self):
         authView = AuthView()
@@ -48,6 +52,10 @@ class FixtureGridView(QWidget):
         for fixtureView in self._fixtureViews:
             fixtureView.set_retest_mode_visibility(self._isRetestMode)
             fixtureView.disableRetestMode()
+
+    def toggle_force_traceability_enabled(self):
+        for fixtureView in self._fixtureViews:
+            fixtureView.toggle_force_traceability_enabled()
 
     def create_fixtureViews(self):
         fixtures = self._fixtureGridController.get_all_fixtures()

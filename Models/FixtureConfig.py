@@ -27,7 +27,9 @@ class FixtureConfig:
         )
 
     def is_lock_enabled(self):
-        return self.isSkipped == self.isRetestMode
+        return self.isSkipped == self.isRetestMode or (
+            not self.isSkipped and self.isRetestMode
+        )
 
     def has_low_yield(self) -> bool:
         return self.yieldRate <= self.yieldErrorMin

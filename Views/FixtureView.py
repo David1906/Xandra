@@ -15,6 +15,7 @@ class FixtureView(QGroupBox):
         super().__init__()
 
         self.fixture = fixture
+        self.forceTraceabilityEnabled = False
         self.w = None
         self._fixtureController = FixtureController()
 
@@ -66,6 +67,7 @@ class FixtureView(QGroupBox):
         gridLayout.addWidget(self.btnLastFailures, 11, 1)
 
         self.lblResult = QLabel("Status: IDLE")
+        self.lblResult.setStyleSheet("font-size: 10px;")
         gridLayout.addWidget(self.lblResult, 11, 2, 1, 5, QtCore.Qt.AlignRight)
 
         self.set_fixture(fixture)
@@ -83,11 +85,12 @@ class FixtureView(QGroupBox):
 
     def on_swRetestMode_change(self, checked: bool):
         self.fixture.set_reset_mode(checked)
-        self.swTraceability.setEnabled(not checked)
-        if self.swTraceability.getChecked() == (not checked):
-            self.on_swTraceability_change(not checked)
+        self._update_sw_traceability_enabled()
+        if not self.swTraceability.getChecked():
+            self.swTraceability.setChecked(True)
         else:
-            self.swTraceability.setChecked(not checked)
+            self._fixtureController.update(self.fixture)
+            self._update()
 
     def on_swTraceability_change(self, checked: bool):
         self.fixture.set_skipped(not checked)
@@ -134,10 +137,6 @@ class FixtureView(QGroupBox):
     def on_btnStart_clicked(self):
         isStart = self.btnStart.text() == "Start"
         self.swRetestMode.setEnabled(not isStart)
-        if self.fixture.is_retest_mode():
-            self.swTraceability.setEnabled(False)
-        else:
-            self.swTraceability.setEnabled(not isStart)
         if isStart:
             cmd = self._fixtureController.get_fct_host_cmd(
                 self.fixture, self.swTraceability.getChecked()
@@ -156,12 +155,19 @@ class FixtureView(QGroupBox):
             if reply == QMessageBox.Yes:
                 self.terminal.Stop()
                 self.btnStart.setText("Start")
+        self._update_sw_traceability_enabled()
+
+    def _update_sw_traceability_enabled(self):
+        isStart = self.btnStart.text() == "Start"
+        if self.fixture.is_retest_mode() and not self.forceTraceabilityEnabled:
+            self.swTraceability.setEnabled(False)
+        else:
+            self.swTraceability.setEnabled(isStart)
 
     def on_terminal_finished(self, exitStatus):
         self.btnStart.setText("Start")
         self.swRetestMode.setEnabled(True)
-        if not self.fixture.is_retest_mode():
-            self.swTraceability.setEnabled(True)
+        self._update_sw_traceability_enabled()
         self.set_fixture_isTesting(False)
 
     def equals(self, fixture: Fixture) -> bool:
@@ -197,3 +203,7 @@ class FixtureView(QGroupBox):
     def disableRetestMode(self):
         self.swRetestMode.setChecked(False)
         self._update()
+
+    def toggle_force_traceability_enabled(self):
+        self.forceTraceabilityEnabled = not self.forceTraceabilityEnabled
+        self._update_sw_traceability_enabled()

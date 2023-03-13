@@ -20,7 +20,7 @@ class Fixture:
                 elapsedTime = f"... ({self.get_elapsed_time()})"
             return f"Status: {self._fixtureConfig.get_status_text()}{elapsedTime}"
         error = "(Upload SFC Error)" if self.hasErrorUploadingToSfc else ""
-        mode = f"{error}" if self.is_online() else "(OFFLINE)"
+        mode = f"{error}" if self.is_online() else "(Offline)"
         return f"SN: {self._test.serialNumber}      Result: {self._test.get_result_string()} {mode}"
 
     def get_elapsed_time(self) -> str:
@@ -30,7 +30,11 @@ class Fixture:
         return self.is_upload_to_sfc() or not self._fixtureConfig.isSkipped
 
     def is_upload_to_sfc(self) -> bool:
-        return self._test.status and self._fixtureConfig.isRetestMode
+        return (
+            self._test.status
+            and self._fixtureConfig.isRetestMode
+            and self._fixtureConfig.isSkipped
+        )
 
     def is_affecting_yield(self) -> bool:
         if self._test.status:

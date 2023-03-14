@@ -67,7 +67,7 @@ class FixtureView(QGroupBox):
         gridLayout.addWidget(self.btnLastFailures, 11, 1)
 
         self.lblResult = QLabel("Status: IDLE")
-        self.lblResult.setStyleSheet("font-size: 10px;")
+        self.lblResult.setStyleSheet("font-size: 12px;")
         gridLayout.addWidget(self.lblResult, 11, 2, 1, 5, QtCore.Qt.AlignRight)
 
         self.set_fixture(fixture)

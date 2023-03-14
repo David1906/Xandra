@@ -22,6 +22,9 @@ class MainWindow(QMainWindow):
 
         self._fctHostControlData = FctHostControlData()
 
+        self._fctHostControlData.write_check_station_config()
+        self._fctHostControlData.write_test_end_call_config()
+
         self.setWindowTitle(title)
         self.setWindowIcon(QtGui.QIcon(MainWindow.ICON_FULLPATH))
 

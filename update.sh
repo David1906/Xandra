@@ -14,3 +14,5 @@ if command -v alembic > /dev/null; then
 else
     /root/.local/bin/alembic upgrade head
 fi
+
+ls -hls Resources

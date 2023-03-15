@@ -69,10 +69,11 @@ class Fixture:
     def get_status_color(self) -> bool:
         return self._fixtureConfig.get_status_color()
 
-    def set_test(self, test: Test):
+    def set_test(self, test: Test, traceability: bool):
         self.hasErrorUploadingToSfc = False
         self.errorMsg = ""
         self._test = test
+        test.traceability = traceability or self.is_upload_to_sfc()
 
     def equals(self, fixture) -> bool:
         return fixture.get_id() == self.get_id()

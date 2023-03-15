@@ -17,17 +17,21 @@ class Test:
         fullPath: str = None,
         isNull: bool = False,
         description: str = None,
+        traceability: bool = False,
+        countInYield: bool = False,
     ) -> None:
         self.serialNumber = serialNumber
         self.project = project
+        self.operator = operator
         self.startTime = startTime
         self.endTime = endTime
         self.codeVersion = codeVersion
         self.fixtureIp = fixtureIp
         self.status = status
         self.stepLabel = stepLabel
-        self.operator = operator
         self.description = description
+        self.traceability = traceability
+        self.countInYield = countInYield
         self.fullPath = fullPath
         self.isNull = isNull
 

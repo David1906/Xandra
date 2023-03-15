@@ -20,6 +20,7 @@ class TestDAO(Base):
     countInYield = Column(Boolean)
     uploadToSFC = Column(Boolean)
     description = Column(String(2048))
+    traceability = Column(Boolean)
 
     def __init__(
         self,
@@ -36,6 +37,7 @@ class TestDAO(Base):
         countInYield: bool = False,
         uploadToSFC: bool = False,
         description: str = None,
+        traceability: bool = False,
     ) -> None:
         self.serialNumber = serialNumber
         self.project = project
@@ -50,3 +52,4 @@ class TestDAO(Base):
         self.countInYield = countInYield
         self.uploadToSFC = uploadToSFC
         self.description = description
+        self.traceability = traceability

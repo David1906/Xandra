@@ -6,6 +6,8 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtChart import QChart, QChartView, QPieSeries
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPen
+from Utils.PathHelper import PathHelper
+from Views.ImageWidget import ImageWidget
 from Views.LogButton import LogButton
 
 
@@ -111,6 +113,12 @@ class LastLogsWindow(QtWidgets.QWidget):
                     btn = LogButton(item)
                     btn.setToolTip(item)
                     self.table.setCellWidget(row, column, btn)
+                elif keys[column] == "traceability" or keys[column] == "countInYield":
+                    if item == True:
+                        img = ImageWidget(
+                            PathHelper().join_root_path("/Static/check.png"), self.table
+                        )
+                        self.table.setCellWidget(row, column, img)
                 else:
                     self.table.setItem(
                         row, column, QtWidgets.QTableWidgetItem(str(item))

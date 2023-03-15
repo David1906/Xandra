@@ -98,7 +98,7 @@ class FixtureView(QGroupBox):
         self._update()
 
     def set_test(self, test: Test):
-        self.fixture.set_test(test)
+        self.fixture.set_test(test, self.swTraceability.getChecked())
         self._fixtureController.add_test(self.fixture)
         self._fixtureController.refresh(self.fixture)
         self._update()

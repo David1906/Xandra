@@ -26,7 +26,7 @@ class TestData:
         self._googleSheet.add(test)
 
     def get_yield(self, fixtureIp: str) -> float:
-        tests = self.find_last(fixtureIp, ignoreOfflineFailures=True)
+        tests = self.find_last(fixtureIp, onlyCountInYield=True)
         if len(tests) == 0:
             return 100
         passTests = 0
@@ -52,7 +52,7 @@ class TestData:
         fixtureIp: str,
         qty: int = 0,
         onlyFailures: bool = False,
-        ignoreOfflineFailures: bool = False,
+        onlyCountInYield: bool = False,
     ) -> "list[Test]":
         session = Session()
         query = (
@@ -64,10 +64,8 @@ class TestData:
         if onlyFailures:
             query = query.filter(TestDAO.status == False)
 
-        if ignoreOfflineFailures:
-            query = query.filter(
-                or_(TestDAO.countInYield == True, TestDAO.status == True)
-            )
+        if onlyCountInYield:
+            query = query.filter(TestDAO.countInYield == True)
 
         query = query.limit(
             self._mainConfigData.get_yield_calc_qty() if qty == 0 else qty
@@ -79,5 +77,12 @@ class TestData:
         Session.remove()
         return tests
 
-    def find_last_failures(self, fixtureIp: str, qty: int) -> "list[Test]":
-        return self.find_last(fixtureIp, qty=qty, onlyFailures=True)
+    def find_last_failures(
+        self,
+        fixtureIp: str,
+        qty: int,
+        onlyCountInYield: bool = False,
+    ) -> "list[Test]":
+        return self.find_last(
+            fixtureIp, qty=qty, onlyFailures=True, onlyCountInYield=onlyCountInYield
+        )

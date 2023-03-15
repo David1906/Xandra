@@ -22,6 +22,7 @@ class LastLogsWindow(QtWidgets.QWidget):
         self._mainConfigData = MainConfigData()
         self.biggestSliceColor = biggestSliceColor
         self.series = None
+        self.showOnliCountInYield = False
 
         self.setWindowTitle(title)
 
@@ -68,9 +69,22 @@ class LastLogsWindow(QtWidgets.QWidget):
 
         self.cmbSize.activated[str].connect(self.on_cmb_size_change)
         footer.addWidget(self.cmbSize)
+
+        self.chkOnlyCountInYield = QtWidgets.QCheckBox(
+            "Show only records that count in yield"
+        )
+        self.chkOnlyCountInYield.stateChanged.connect(self.on_chk_only_count_in_yield)
+        footer.addWidget(self.chkOnlyCountInYield)
         self.gridLayout.addLayout(footer, 2, 0, QtCore.Qt.AlignCenter)
 
         self.refresh(int(self.cmbSize.currentText()))
+
+    def on_chk_only_count_in_yield(self):
+        self.showOnliCountInYield = self.chkOnlyCountInYield.isChecked()
+        self.refresh(int(self.cmbSize.currentText()))
+
+    def is_only_count_in_yield(self):
+        return self.showOnliCountInYield
 
     def on_cmb_size_change(self, size):
         self.refresh(int(size))
@@ -98,6 +112,7 @@ class LastLogsWindow(QtWidgets.QWidget):
         pass
 
     def updateTable(self, tests: "list[Test]"):
+        self.table.clear()
         row_count = len(tests)
         keys = self._extractKeys(tests)
         self.table.setRowCount(row_count)

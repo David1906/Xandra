@@ -12,7 +12,9 @@ class LastFailuresWindow(LastLogsWindow):
         )
 
     def getTests(self, qty: int):
-        return self._testData.find_last_failures(self.fixtureIp, qty)
+        return self._testData.find_last_failures(
+            self.fixtureIp, qty, onlyCountInYield=self.is_only_count_in_yield()
+        )
 
     def getResults(self, tests: "list[Test]"):
         results = {}

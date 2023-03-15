@@ -8,7 +8,9 @@ class LastTestsWindow(LastLogsWindow):
         super().__init__(fixtureIp, title=f"Last Tests - Fixture {fixtureIp}")
 
     def getTests(self, qty: int):
-        return self._testData.find_last(self.fixtureIp, qty=qty)
+        return self._testData.find_last(
+            self.fixtureIp, qty=qty, onlyCountInYield=self.is_only_count_in_yield()
+        )
 
     def getResults(self, tests: "list[Test]"):
         results = {}

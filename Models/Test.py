@@ -1,4 +1,5 @@
 from datetime import datetime
+import re
 
 
 class Test:
@@ -15,6 +16,7 @@ class Test:
         operator: str = None,
         fullPath: str = None,
         isNull: bool = False,
+        description: str = None,
     ) -> None:
         self.serialNumber = serialNumber
         self.project = project
@@ -25,6 +27,7 @@ class Test:
         self.status = status
         self.stepLabel = stepLabel
         self.operator = operator
+        self.description = description
         self.fullPath = fullPath
         self.isNull = isNull
 
@@ -45,4 +48,20 @@ class Test:
         if self.status:
             return "PASS"
         else:
-            return f"FAIL - {self.stepLabel}"
+            shortDescription = ""
+            if self.is_chk_sel_error():
+                shortDescription = " - " + self.get_short_description()
+            return f"FAIL - {self.stepLabel}{shortDescription}"
+
+    def is_chk_sel_error(self) -> bool:
+        match = re.search(self.stepLabel, "chk_sel", re.IGNORECASE)
+        return match != None
+
+    def get_short_description(self):
+        if re.search("memory error", self.description, re.IGNORECASE):
+            return "DIMM Error"
+        if re.search("voltage", self.description, re.IGNORECASE):
+            match = re.search("Voltage SYS_\w+", self.description, re.IGNORECASE)
+            if match:
+                return match.group(0).strip()
+        return "unknown"

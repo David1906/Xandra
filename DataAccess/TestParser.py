@@ -1,11 +1,35 @@
+from DataAccess.TestDescriptionParser import TestDescriptionParser
 from datetime import datetime
 from Models.Test import Test
+from Utils.BaseEventHandler import BaseEventHandler
+from Utils.FileWatchdog import FileWatchdog
+from Utils.PathHelper import PathHelper
+import atexit
+import importlib
 import logging
 import re
+import sys
 
 
 class TestParser:
     REGEX_RESULT = "^result\s*:(pass|failed)+\s*"
+
+    def __init__(self) -> None:
+        self._testDescriptionParser = TestDescriptionParser()
+
+        self._sfcEventHandler = BaseEventHandler()
+        self._sfcEventHandler.modified.connect(self.on_modified)
+        self._fileWatchdog = FileWatchdog(self._sfcEventHandler)
+        atexit.register(lambda: self._fileWatchdog.stop())
+        self._fileWatchdog.start(
+            PathHelper().get_root_path() + "/DataAccess/TestDescriptionParser.py"
+        )
+
+    def on_modified(self):
+        importlib.reload(sys.modules["DataAccess.TestDescriptionParser"])
+        from DataAccess.TestDescriptionParser import TestDescriptionParser
+
+        self._testDescriptionParser = TestDescriptionParser()
 
     def parse(self, fullPath: str) -> Test:
         try:
@@ -54,6 +78,9 @@ class TestParser:
 
                     if test.is_complete():
                         break
+
+                if test.is_chk_sel_error():
+                    test.description = self._testDescriptionParser.parse(fullPath)
                 return test
         except Exception as e:
             logging.error(str(e))

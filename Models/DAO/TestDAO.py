@@ -19,6 +19,7 @@ class TestDAO(Base):
     fullPath = Column(String(2048))
     countInYield = Column(Boolean)
     uploadToSFC = Column(Boolean)
+    description = Column(String(2048))
 
     def __init__(
         self,
@@ -34,6 +35,7 @@ class TestDAO(Base):
         fullPath: str = None,
         countInYield: bool = False,
         uploadToSFC: bool = False,
+        description: str = None,
     ) -> None:
         self.serialNumber = serialNumber
         self.project = project
@@ -47,3 +49,4 @@ class TestDAO(Base):
         self.fullPath = fullPath
         self.countInYield = countInYield
         self.uploadToSFC = uploadToSFC
+        self.description = description

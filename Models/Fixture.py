@@ -101,3 +101,11 @@ class Fixture:
 
     def set_config(self, fixtureConfig: FixtureConfig):
         self._fixtureConfig = fixtureConfig
+
+    def get_status_description(self):
+        description = ""
+        if self._test != None and self._test.description != None:
+            description = self._test.description + "\n"
+        if self.errorMsg != None:
+            description = description + self.errorMsg
+        return description

@@ -41,7 +41,9 @@ class GoogleSheet:
                     "PASS" if test.status else "FAILED",
                     test.stepLabel,
                     test.operator,
-                    test.description
+                    test.description,
+                    test.traceability,
+                    test.countInYield
                 ],
                 value_input_option="USER_ENTERED",
             )

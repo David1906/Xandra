@@ -53,7 +53,7 @@ class Test:
             return "PASS"
         else:
             shortDescription = ""
-            if self.is_chk_sel_error():
+            if self.is_chk_sel_error() or self.is_chk_serialuart_error():
                 shortDescription = " - " + self.get_short_description()
             return f"FAIL - {self.stepLabel}{shortDescription}"
 
@@ -61,11 +61,19 @@ class Test:
         match = re.search(self.stepLabel, "chk_sel", re.IGNORECASE)
         return match != None
 
+    def is_chk_serialuart_error(self) -> bool:
+        match = re.search(self.stepLabel, "chk_serialuart", re.IGNORECASE)
+        return match != None
+
     def get_short_description(self):
         if re.search("memory error", self.description, re.IGNORECASE):
             return "DIMM Error"
         if re.search("voltage", self.description, re.IGNORECASE):
             match = re.search("Voltage SYS_\w+", self.description, re.IGNORECASE)
+            if match:
+                return match.group(0).strip()
+        if re.search("uart", self.description, re.IGNORECASE):
+            match = re.search("TTYUSB\w+", self.description, re.IGNORECASE)
             if match:
                 return match.group(0).strip()
         return "unknown"

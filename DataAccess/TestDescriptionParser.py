@@ -1,4 +1,5 @@
 from Models.Test import Test
+from Utils.ReverseReader import ReverseReader
 import logging
 import re
 
@@ -7,21 +8,32 @@ class TestDescriptionParser:
     def __init__(self) -> None:
         self._version = 1
 
-    def parse(self, fullPath: str) -> Test:
+    def parse(self, test: Test, fullPath: str) -> str:
         try:
-            with open(fullPath, "r") as fp:
-                dims: "list[str]" = []
-                voltageError = None
-                for l_no, line in enumerate(fp):
-                    if voltageError == None and self.search(
-                        ".*Voltage SYS.*Deasserted.*", line
-                    ):
-                        voltageError = line[31:].strip()
-                        continue
+            if test.is_chk_sel_error():
+                return self.extract_chk_sel_description(fullPath)
+            elif test.is_chk_serialuart_error():
+                return self.extract_chk_serialuart_description(fullPath)
+            else:
+                return ""
+        except Exception as e:
+            logging.error(str(e))
+            return ""
 
-                    if self.search("Occur Memory Error at", line):
-                        dims.append(self.extract_dim(line))
-                        continue
+    def extract_chk_sel_description(self, fullPath: str):
+        with open(fullPath, "r") as fp:
+            dims: "list[str]" = []
+            voltageError = None
+            for l_no, line in enumerate(fp):
+                if voltageError == None and self.search(
+                    ".*Voltage SYS.*Deasserted.*", line
+                ):
+                    voltageError = line[31:].strip()
+                    continue
+
+                if self.search("Occur Memory Error at", line):
+                    dims.append(self.extract_dim(line))
+                    continue
 
             description = ""
             description = self.append(description, voltageError)
@@ -32,9 +44,12 @@ class TestDescriptionParser:
                 )
 
             return description
-        except Exception as e:
-            logging.error(str(e))
-            return Test()
+
+    def extract_chk_serialuart_description(self, fullPath: str):
+        for line in ReverseReader().reverse_readline(fullPath):
+            if self.search(".*UART.*TTYUSB.*Fail.*", line):
+                return line.strip()
+        return ""
 
     def append(self, txt1, txt2):
         if txt1 == None and txt2 == None:

@@ -79,8 +79,7 @@ class TestParser:
                     if test.is_complete():
                         break
 
-                if test.is_chk_sel_error():
-                    test.description = self._testDescriptionParser.parse(fullPath)
+                test.description = self._testDescriptionParser.parse(test, fullPath)
                 return test
         except Exception as e:
             logging.error(str(e))

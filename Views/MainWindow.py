@@ -40,6 +40,7 @@ class MainWindow(QMainWindow):
         self.lblXandraVersion = QLabel(
             f"Xandra Version: {os.environ.get('XANDRA_VERSION')}"
         )
+        self.lblXandraVersion.setToolTip("Developed by David Ascencio\nFoxconn")
         self.footer.addWidget(self.lblXandraVersion, alignment=QtCore.Qt.AlignLeft)
         self.lblScriptVersion = QLabel(
             f"Script Version: {self._fctHostControlData.get_script_version()}"

@@ -30,6 +30,7 @@ class FctHostControlData:
                     f'"App_Path": "{PathHelper().get_root_path()}/Resources/chk_station_is_disabled.py",\n',
                 ),
                 ("Delay", f'"Delay": 5000\n'),
+                ("Timeout", f',"Timeout": 0\n'),
             ],
         )
 
@@ -43,6 +44,7 @@ class FctHostControlData:
                     f'"App_Path": "{PathHelper().get_root_path()}/Resources/chk_station_test_finished.py",\n',
                 ),
                 ("Delay", f'"Delay": 5000\n'),
+                ("Timeout", f',"Timeout": 0\n'),
             ],
         )
 

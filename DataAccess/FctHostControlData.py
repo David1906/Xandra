@@ -50,13 +50,13 @@ class FctHostControlData:
         self.write_config(
             "Check_Station",
             [
-                ("Enable", '"Enable": true,\n'),
+                ("Enable", "true"),
                 (
                     "App_Path",
-                    f'"App_Path": "{PathHelper().get_root_path()}/Resources/chk_station_is_disabled.py",\n',
+                    f'"{PathHelper().get_root_path()}/Resources/chk_station_is_disabled.py"',
                 ),
-                ("Delay", f'"Delay": 5000\n'),
-                ("Timeout", f',"Timeout": 0\n'),
+                ("Delay", f"5000"),
+                ("Timeout", f"0"),
             ],
         )
 
@@ -64,13 +64,13 @@ class FctHostControlData:
         self.write_config(
             "Test_End_Call",
             [
-                ("Enable", '"Enable": true,\n'),
+                ("Enable", "true"),
                 (
                     "App_Path",
-                    f'"App_Path": "{PathHelper().get_root_path()}/Resources/chk_station_test_finished.py",\n',
+                    f'"{PathHelper().get_root_path()}/Resources/chk_station_test_finished.py"',
                 ),
-                ("Delay", f'"Delay": 5000\n'),
-                ("Timeout", f',"Timeout": 0\n'),
+                ("Delay", f"5000"),
+                ("Timeout", f'0'),
             ],
         )
 
@@ -89,14 +89,22 @@ class FctHostControlData:
                     text = line
                     if inKey and not endKey:
                         for replace in replaces:
-                            key, newLine = replace
+                            key, newValue = replace
                             if key.casefold() in line.casefold():
-                                text = " " * (len(line) - len(line.lstrip())) + newLine
+                                text = self.replace_value(line, newValue)
                                 break
                     new_file.write(text)
         copymode(file_path, abs_path)
         remove(file_path)
         move(abs_path, file_path)
+
+    def replace_value(self, line: str, newValue: str):
+        start = line.find(":") + 1
+        end = len(line)
+        match = re.search("(\/\*)|,|\n|}", line)
+        if match:
+            end = match.start()
+        return "%s %s %s" % (line[:start], newValue, line[end:])
 
     def get_all_fixture_configs(self) -> "list[{}]":
         return self.data[FctHostControlData.FIXTURES_ARRAY_KEY]

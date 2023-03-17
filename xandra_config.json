@@ -4,12 +4,12 @@
 
     "fctHostControl": [
         {
-            "path": "/usr/local/Foxconn/automation/DA194/Bahubali_Sparrow_C3_4.2/FCTHostControl",
+            "path": "/usr/local/Foxconn/automation/DA194/Bahubali_Sparrow_C3_4.2",
             "executable": "FCTHostControl",
             "config": "FCTHostControl.config"
         },
         {
-            "path": "/usr/local/Foxconn/automation/DA194/Bahubali_Sparrow_C3/FCTHostControl",
+            "path": "/usr/local/Foxconn/automation/DA194/Bahubali_Sparrow_C3",
             "executable": "FCTHostControl",
             "config": "FCTHostControl.config"
         }

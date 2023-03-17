@@ -33,29 +33,27 @@ class FixtureGridView(QWidget):
         self.msgSt = QShortcut(QKeySequence("Ctrl+Shift+S"), self)
         self.msgSt.activated.connect(self.stop_all_fixtures)
 
-        if os.environ.get("ENABLE_RETEST") == "true":
-            self.msgSt = QShortcut(QKeySequence("Ctrl+Shift+R"), self)
-            self.msgSt.activated.connect(self.show_retest_mode)
-            self.msgForceTraceability = QShortcut(QKeySequence("Ctrl+Shift+T"), self)
-            self.msgForceTraceability.activated.connect(
-                self.toggle_force_traceability_enabled
-            )
+        self.msgSt = QShortcut(QKeySequence("Ctrl+Shift+R"), self)
+        self.msgSt.activated.connect(self.show_retest_mode)
+        self.msgForceTraceability = QShortcut(QKeySequence("Ctrl+Shift+T"), self)
+        self.msgForceTraceability.activated.connect(
+            self.toggle_force_traceability_enabled
+        )
 
     def show_retest_mode(self):
-        authView = AuthView()
-        if not self._isRetestMode:
-            authView.interact()
-        if authView.isAuthorized:
-            self._isRetestMode = not self._isRetestMode
-        else:
-            self._isRetestMode = False
+        self._isRetestMode = not self._isRetestMode
         for fixtureView in self._fixtureViews:
             fixtureView.set_retest_mode_visibility(self._isRetestMode)
             fixtureView.disableRetestMode()
 
     def toggle_force_traceability_enabled(self):
-        for fixtureView in self._fixtureViews:
-            fixtureView.toggle_force_traceability_enabled()
+        if not self._isRetestMode:
+            return
+        authView = AuthView()
+        authView.interact()
+        if authView.isAuthorized:
+            for fixtureView in self._fixtureViews:
+                fixtureView.toggle_force_traceability_enabled()
 
     def create_fixtureViews(self):
         fixtures = self._fixtureGridController.get_all_fixtures()

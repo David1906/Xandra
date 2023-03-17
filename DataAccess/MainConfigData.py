@@ -37,11 +37,22 @@ class MainConfigData:
     def get_fixture_ip_env_name(self) -> str:
         return self._get_value("fixtureIpEnvironmentName")
 
+    def get_fct_host_control_path(self) -> str:
+        return self._get_value("fctHostControl")["path"]
+
     def get_fct_host_control_fullpath(self) -> str:
-        return self._get_value("fctHostControl")
+        return (
+            self.get_fct_host_control_path()
+            + "/"
+            + self._get_value("fctHostControl")["executable"]
+        )
 
     def get_fct_host_config_fullpath(self) -> str:
-        return self._get_value("fctHostControlConfig")
+        return (
+            self.get_fct_host_control_path()
+            + "/"
+            + self._get_value("fctHostControl")["config"]
+        )
 
     def get_logs_path(self) -> str:
         return self._get_value("logsPath")
@@ -61,7 +72,7 @@ class MainConfigData:
     def get_unlock_pass_qty(self) -> str:
         return self._get_value("unlockPassQty")
 
-    def get_default_product_name(self) -> str:
+    def get_default_product_name(self) -> "list[str]":
         return self._get_value("defaultProductModelName")
 
     def get_upload_Sfc_sript(self) -> str:

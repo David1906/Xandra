@@ -90,7 +90,9 @@ class FctHostControlData:
         productName = self._mainConfigData.get_default_product_name()
         products = self.data[FctHostControlData.PRODUCT_MODELS_KEY]
         for product in products:
-            if product[FctHostControlData.PRODUCT_NAME_KEY] == productName:
+            if bool(
+                re.search(productName, product[FctHostControlData.PRODUCT_NAME_KEY])
+            ):
                 return self._extract_script_path(product)
         return ""
 

@@ -2,14 +2,15 @@
     "fixtureIpEnvironmentName": "XANDRA_FIXTURE_IP",
     "fixtureIpEnvironmentName_description":"Varible del entorno en la cuál se inyectará la ip de la fixtura",
 
-    "fctHostControl": "/usr/local/Foxconn/automation/DA194/Bahubali_Sparrow_C3/FCTHostControl",
-    "fctHostControl_description":"Ruta completa al ejecutable de FCTHostControl",
+    "fctHostControl": {
+        "path": "/usr/local/Foxconn/automation/DA194/Bahubali_Sparrow_C3/FCTHostControl",
+        "executable": "FCTHostControl",
+        "config": "FCTHostControl.config"
+    },        
+    "fctHostControl_description":"configuración de ruta completa a la carpeta que contiene los archivos FCTHostControl y FCTHostControl.config",
 
-    "fctHostControlConfig": "/usr/local/Foxconn/automation/DA194/Bahubali_Sparrow_C3/FCTHostControl.config",
-    "fctHostControlConfig_description":"Ruta completa al archivo de configuración de FCTHostControl.config",
-
-    "defaultProductModelName":  "C4",
-    "defaultProductModelName_description" : "Nombre del modelo seleccionado por defecto en FCTHostControl.config",
+    "defaultProductModelName":  "^C4.*",
+    "defaultProductModelName_description" : "Nombre del modelo seleccionado por defecto en FCTHostControl.config (se procesa como expresión regular)",
 
     "uploadSfcSript":  "/usr/local/Foxconn/automation/Xandra/Resources/up_sfc.sh",
     "uploadSfcSript_description" : "Ruta completa al script encargado de subir la trazabilidad al sistema SFC",

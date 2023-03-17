@@ -2,11 +2,18 @@
     "fixtureIpEnvironmentName": "XANDRA_FIXTURE_IP",
     "fixtureIpEnvironmentName_description":"Varible del entorno en la cuál se inyectará la ip de la fixtura",
 
-    "fctHostControl": {
-        "path": "./Resources",
-        "executable": "chk_station_is_disabled.py",
-        "config": "FCTHostControl.config"
-    },        
+    "fctHostControl": [
+        {
+            "path": "./Resources/FctHostControlTest",
+            "executable": "chk_station_is_disabled.py",
+            "config": "FCTHostControl.config"
+        },
+        {
+            "path": "./Resources",
+            "executable": "chk_station_is_disabled.py",
+            "config": "FCTHostControl.config"
+        }
+    ],
     "fctHostControl_description":"configuración de ruta completa a la carpeta que contiene los archivos FCTHostControl y FCTHostControl.config",
 
     "defaultProductModelName":  "^C4.*",

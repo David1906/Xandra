@@ -2,11 +2,18 @@
     "fixtureIpEnvironmentName": "XANDRA_FIXTURE_IP",
     "fixtureIpEnvironmentName_description":"Varible del entorno en la cuál se inyectará la ip de la fixtura",
 
-    "fctHostControl": {
-        "path": "/usr/local/Foxconn/automation/DA194/Bahubali_Sparrow_C3/FCTHostControl",
-        "executable": "FCTHostControl",
-        "config": "FCTHostControl.config"
-    },        
+    "fctHostControl": [
+        {
+            "path": "/usr/local/Foxconn/automation/DA194/Bahubali_Sparrow_C3_4.2/FCTHostControl",
+            "executable": "FCTHostControl",
+            "config": "FCTHostControl.config"
+        },
+        {
+            "path": "/usr/local/Foxconn/automation/DA194/Bahubali_Sparrow_C3/FCTHostControl",
+            "executable": "FCTHostControl",
+            "config": "FCTHostControl.config"
+        }
+    ],
     "fctHostControl_description":"configuración de ruta completa a la carpeta que contiene los archivos FCTHostControl y FCTHostControl.config",
 
     "defaultProductModelName":  "^C4.*",

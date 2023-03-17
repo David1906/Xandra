@@ -4,16 +4,21 @@ import os
 
 
 class MainConfigData:
-    fileName = (
+    FILE_NAME = (
         "/xandra_config_local.json"
         if os.environ.get("ENV") == "testing"
         else "/xandra_config.json"
     )
-    MAIN_CONFIG_JSON_PATH = PathHelper().get_root_path() + fileName
+    MAIN_CONFIG_JSON_PATH = PathHelper().get_root_path() + FILE_NAME
     YIELD_WARNING_MAX = 99
     YIELD_WARNING_THRESHOLD_FROM_ERROR = 10
     JSON_DATA = {}
     JSON_LAST_MODIFIED = None
+
+    def __new__(cls, *args, **kwargs):
+        if not hasattr(cls, "instance"):
+            cls.instance = super(MainConfigData, cls).__new__(cls, *args, **kwargs)
+        return cls.instance
 
     def _get_json_data(self):
         modifiedDate = os.path.getctime(MainConfigData.MAIN_CONFIG_JSON_PATH)
@@ -37,21 +42,27 @@ class MainConfigData:
     def get_fixture_ip_env_name(self) -> str:
         return self._get_value("fixtureIpEnvironmentName")
 
-    def get_fct_host_control_path(self) -> str:
-        return self._get_value("fctHostControl")["path"]
+    def get_fct_host_control(self) -> str:
+        return self._get_value("fctHostControl")
 
-    def get_fct_host_control_fullpath(self) -> str:
+    def get_fct_host_control_len(self) -> int:
+        return len(self.get_fct_host_control())
+
+    def get_fct_host_control_path(self, index: int = 0) -> str:
+        return self.get_fct_host_control()[index]["path"]
+
+    def get_fct_host_control_executable_fullpath(self, index: int = 0) -> str:
         return (
-            self.get_fct_host_control_path()
+            self.get_fct_host_control_path(index)
             + "/"
-            + self._get_value("fctHostControl")["executable"]
+            + self.get_fct_host_control()[index]["executable"]
         )
 
-    def get_fct_host_config_fullpath(self) -> str:
+    def get_fct_host_config_fullpath(self, index: int = 0) -> str:
         return (
-            self.get_fct_host_control_path()
+            self.get_fct_host_control_path(index)
             + "/"
-            + self._get_value("fctHostControl")["config"]
+            + self.get_fct_host_control()[index]["config"]
         )
 
     def get_logs_path(self) -> str:

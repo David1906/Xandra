@@ -1,3 +1,4 @@
+import os
 from DataAccess.MainConfigData import MainConfigData
 from os import fdopen, remove
 from shutil import move, copymode
@@ -14,11 +15,36 @@ class FctHostControlData:
     PRODUCT_MODELS_KEY = "ProductModels"
     PRODUCT_NAME_KEY = "Name"
 
+    def __new__(cls, *args, **kwargs):
+        if not hasattr(cls, "instance"):
+            cls.instance = super(FctHostControlData, cls).__new__(cls, *args, **kwargs)
+            cls.instance.initialized = False
+        return cls.instance
+
     def __init__(self):
+        if self.initialized:
+            return
+        else:
+            self.initialized = True
+
+        self.configIdx = 0
         self._mainConfigData = MainConfigData()
-        with open(self._mainConfigData.get_fct_host_config_fullpath()) as json_file:
+
+        self.load_data_from_first_valid_config()
+
+    def load_data_from_first_valid_config(self):
+        self.configIdx = self.get_first_valid_fct_host_config_index()
+        with open(
+            self._mainConfigData.get_fct_host_config_fullpath(self.configIdx)
+        ) as json_file:
             config = re.sub(r"\s*\/\*.*\*\/", " ", json_file.read())
             self.data = json.loads(config)
+
+    def get_first_valid_fct_host_config_index(self) -> str:
+        for idx in range(self._mainConfigData.get_fct_host_control_len()):
+            if os.path.exists(self._mainConfigData.get_fct_host_config_fullpath(idx)):
+                return idx
+        return 0
 
     def write_check_station_config(self):
         self.write_config(
@@ -49,7 +75,7 @@ class FctHostControlData:
         )
 
     def write_config(self, key: str, replaces: "tuple[str,str]"):
-        file_path = self._mainConfigData.get_fct_host_config_fullpath()
+        file_path = self._mainConfigData.get_fct_host_config_fullpath(self.configIdx)
         fh, abs_path = mkstemp()
         inKey = False
         endKey = False
@@ -83,8 +109,13 @@ class FctHostControlData:
                 return chunks[chunkIdx - 1]
         return "unknown"
 
+    def get_fct_host_control_executable_fullpath(self) -> str:
+        return self._mainConfigData.get_fct_host_control_executable_fullpath(
+            self.configIdx
+        )
+
     def get_upload_sfc_script_fullpath(self) -> str:
-        return self._mainConfigData.get_upload_Sfc_sript()
+        return self._mainConfigData.get_upload_Sfc_sript(self.configIdx)
 
     def get_script_fullpath(self) -> str:
         productName = self._mainConfigData.get_default_product_name()

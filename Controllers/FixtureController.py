@@ -1,3 +1,4 @@
+from DataAccess.FctHostControlData import FctHostControlData
 from DataAccess.FixtureConfigData import FixtureConfigData
 from DataAccess.FixtureData import FixtureData
 from DataAccess.MainConfigData import MainConfigData
@@ -11,9 +12,10 @@ class FixtureController:
         self._fixtureData = FixtureData()
         self._fixtureConfigData = FixtureConfigData()
         self._mainConfigData = MainConfigData()
+        self._fctHostControlData = FctHostControlData()
 
     def get_fct_host_cmd(self, fixture: Fixture, hasTraceability: bool):
-        fullpathSplit = self._mainConfigData.get_fct_host_control_fullpath().split("/")
+        fullpathSplit = self._fctHostControlData.get_fct_host_control_executable_fullpath().split("/")
         fileName = fullpathSplit[-1]
         path = "/".join(fullpathSplit[0:-1])
         cmd = f"cd {path} && {self._mainConfigData.get_fixture_ip_env_name()}={fixture.get_ip()} ./{fileName} -f {fixture.get_id()}"

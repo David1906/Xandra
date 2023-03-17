@@ -6,12 +6,20 @@ import math
 
 
 class Fixture:
+    OVER_ELAPSED = datetime.timedelta(hours=1, minutes=45)
+
     def __init__(self, fixtureConfig: FixtureConfig, test: Test = None) -> None:
         self._fixtureConfig = fixtureConfig
         self._test = test or Test(isNull=True)
         self.hasErrorUploadingToSfc = False
         self.errorMsg = ""
         self.startTimer = timer()
+
+    def is_over_elapsed(self):
+        if not self._fixtureConfig.isTesting:
+            return False
+        elapsed = datetime.timedelta(seconds=math.floor(timer() - self.startTimer))
+        return elapsed > Fixture.OVER_ELAPSED
 
     def get_status_string(self):
         if self._test.isNull:

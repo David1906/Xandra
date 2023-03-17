@@ -17,6 +17,7 @@ class FixtureView(QGroupBox):
         self.fixture = fixture
         self.forceTraceabilityEnabled = False
         self.w = None
+        self.lastOverElapsed = False
         self._fixtureController = FixtureController()
 
         self.setObjectName("fixture")
@@ -133,6 +134,11 @@ class FixtureView(QGroupBox):
         if self.fixture != None:
             self.lblResult.setText(self.fixture.get_status_string())
             self.lblResult.setToolTip(self.fixture.get_status_description())
+            if self.fixture.is_over_elapsed() != self.lastOverElapsed:
+                self.lastOverElapsed = not self.lastOverElapsed
+                self.lblResult.setStyleSheet(
+                    f"color: {'red' if self.lastOverElapsed else 'black'};"
+                )
 
     def on_btnStart_clicked(self):
         isStart = self.btnStart.text() == "Start"

@@ -58,11 +58,11 @@ class Test:
             return f"FAIL - {self.stepLabel}{shortDescription}"
 
     def is_chk_sel_error(self) -> bool:
-        match = re.search(self.stepLabel, "chk_sel", re.IGNORECASE)
+        match = re.search("chk_sel", self.stepLabel, re.IGNORECASE)
         return match != None
 
     def is_chk_serialuart_error(self) -> bool:
-        match = re.search(self.stepLabel, "chk_serialuart", re.IGNORECASE)
+        match = re.search("chk_serialuart", self.stepLabel, re.IGNORECASE)
         return match != None
 
     def get_short_description(self):

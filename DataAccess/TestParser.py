@@ -14,7 +14,18 @@ import sys
 class TestParser:
     REGEX_RESULT = "^result\s*:(pass|failed)+\s*"
 
+    def __new__(cls, *args, **kwargs):
+        if not hasattr(cls, "instance"):
+            cls.instance = super(TestParser, cls).__new__(cls, *args, **kwargs)
+            cls.instance.initialized = False
+        return cls.instance
+
     def __init__(self) -> None:
+        if self.initialized:
+            return
+        else:
+            self.initialized = True
+
         self._testDescriptionParser = TestDescriptionParser()
 
         self._sfcEventHandler = BaseEventHandler()

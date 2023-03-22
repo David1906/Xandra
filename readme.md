@@ -89,3 +89,6 @@ alias xandra-config='tmux new -d "gedit /usr/local/Foxconn/automation/Xandra/xan
 
 # Alias to cd Xandra path
 alias xandra-path='cd /usr/local/Foxconn/automation/Xandra'
+
+# Alias to update Xandra
+alias xandra-update='chmod +x /usr/local/Foxconn/automation/Xandra/update.sh && /usr/local/Foxconn/automation/Xandra/update.sh'

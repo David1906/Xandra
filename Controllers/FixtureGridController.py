@@ -1,4 +1,3 @@
-from DataAccess.FctHostControlData import FctHostControlData
 from DataAccess.FixtureData import FixtureData
 from DataAccess.MainConfigData import MainConfigData
 from DataAccess.TestData import TestData

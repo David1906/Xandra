@@ -10,6 +10,7 @@ class FixtureConfigDAO(Base):
     isDisabled = Column(Boolean)
     isSkipped = Column(Boolean)
     isRetestMode = Column(Boolean)
+    enableLock = Column(Boolean)
 
     def __init__(
         self,
@@ -18,9 +19,11 @@ class FixtureConfigDAO(Base):
         isDisabled: bool = False,
         isSkipped: bool = False,
         isRetestMode: bool = False,
+        enableLock: bool = False,
     ):
         self.id = id
         self.ip = ip
         self.isDisabled = isDisabled
         self.isSkipped = isSkipped
         self.isRetestMode = isRetestMode
+        self.enableLock = enableLock

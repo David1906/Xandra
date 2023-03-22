@@ -118,3 +118,6 @@ class Fixture:
         if self.errorMsg != None:
             description = description + self.errorMsg
         return description
+
+    def set_lock_enabled(self, value: bool):
+        self._fixtureConfig.enableLock = value

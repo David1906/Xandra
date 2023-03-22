@@ -213,3 +213,8 @@ class FixtureView(QGroupBox):
     def toggle_force_traceability_enabled(self):
         self.forceTraceabilityEnabled = not self.forceTraceabilityEnabled
         self._update_sw_traceability_enabled()
+
+    def set_lock_enabled(self, value: bool):
+        self.fixture.set_lock_enabled(value)
+        self._fixtureController.update(self.fixture)
+        self.update()

@@ -78,6 +78,15 @@ class FixtureConfigTests(unittest.TestCase):
                 yieldRate=0,
                 yieldErrorMin=70,
             ),
+            FixtureConfig(
+                isSkipped=False,
+                isRetestMode=False,
+                areLastTestPass=False,
+                areLastTestFail=True,
+                yieldRate=100,
+                yieldErrorMin=70,
+                enableLock=False,
+            ),
         ]
         for fixtureConfig in cases:
             result = fixtureConfig.is_disabled()

@@ -38,6 +38,7 @@ class FixtureConfigData:
                     isDisabled=fixtureConfig.is_disabled(),
                     isSkipped=fixtureConfig.isSkipped,
                     isRetestMode=fixtureConfig.isRetestMode,
+                    enableLock=fixtureConfig.enableLock,
                 )
             )
         session.commit()
@@ -56,6 +57,13 @@ class FixtureConfigData:
             return False
         else:
             return fixtureConfigDAO.isRetestMode
+
+    def is_lock_enabled(self, fixtureIp: str) -> bool:
+        fixtureConfigDAO = self.find_DAO(fixtureIp)
+        if fixtureConfigDAO == None:
+            return True
+        else:
+            return fixtureConfigDAO.enableLock
 
     def find_DAO(self, fixtureIp: str) -> FixtureConfigDAO:
         session = Session()
@@ -81,4 +89,5 @@ class FixtureConfigData:
                     self._mainConfigData.get_yield_warning_threshold(),
                     isRetestMode=self.is_retest_mode(fixtureIp),
                     areLastTestFail=self._testData.are_last_test_fail(fixtureIp),
+                    enableLock=self.is_lock_enabled(fixtureIp),
                 )

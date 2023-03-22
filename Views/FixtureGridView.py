@@ -1,10 +1,9 @@
-import os
 from Controllers.FixtureGridController import FixtureGridController
 from Models.Fixture import Fixture
-from Models.FixtureConfig import FixtureConfig
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QShortcut
-from PyQt5.QtGui import QKeySequence
 from Models.Test import Test
+from PyQt5 import QtCore
+from PyQt5.QtGui import QKeySequence
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QShortcut
 from Views.AuthView import AuthView
 from Views.FixtureView import FixtureView
 
@@ -12,6 +11,7 @@ from Views.FixtureView import FixtureView
 class FixtureGridView(QWidget):
     BOX_SPACING = 30
     ROW_NUMBER = 3
+    lock_changed = QtCore.pyqtSignal(bool)
 
     def __init__(self):
         super().__init__()
@@ -24,6 +24,7 @@ class FixtureGridView(QWidget):
             self.on_testing_status_changed
         )
         self._isRetestMode = False
+        self._isLockEnabled = False
 
         self.hBox = QHBoxLayout()
         self.setLayout(self.hBox)
@@ -42,6 +43,11 @@ class FixtureGridView(QWidget):
             self.toggle_force_traceability_enabled
         )
 
+        self.msgSt = QShortcut(QKeySequence("Ctrl+Shift+L"), self)
+        self.msgSt.activated.connect(self.toggle_lock_enabled_all_fixtures)
+
+        self.set_enable_lock(True)
+
     def show_retest_mode(self):
         self._isRetestMode = not self._isRetestMode
         for fixtureView in self._fixtureViews:
@@ -51,7 +57,7 @@ class FixtureGridView(QWidget):
     def toggle_force_traceability_enabled(self):
         if not self._isRetestMode:
             return
-        authView = AuthView()
+        authView = AuthView(self)
         authView.interact()
         if authView.isAuthorized:
             for fixtureView in self._fixtureViews:
@@ -91,6 +97,18 @@ class FixtureGridView(QWidget):
     def stop_all_fixtures(self):
         for fixtureView in self._fixtureViews:
             fixtureView.stop()
+
+    def toggle_lock_enabled_all_fixtures(self):
+        authView = AuthView(self)
+        authView.interact()
+        if authView.isAuthorized:
+            self.set_enable_lock(not self._isLockEnabled)
+
+    def set_enable_lock(self, value: bool):
+        self._isLockEnabled = value
+        for fixtureView in self._fixtureViews:
+            fixtureView.set_lock_enabled(self._isLockEnabled)
+        self.lock_changed.emit(self._isLockEnabled)
 
     def update_fixture(self, fixture: Fixture):
         for fixtureView in self._fixtureViews:

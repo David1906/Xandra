@@ -32,6 +32,7 @@ class MainWindow(QMainWindow):
         gridLayout.setContentsMargins(0, 0, 0, 0)
 
         self.fixtureView = FixtureGridView()
+        self.fixtureView.lock_changed.connect(self.on_lock_changed)
         gridLayout.addWidget(self.fixtureView, 0, 0, 99, 0)
 
         self.footer = QHBoxLayout()
@@ -42,6 +43,10 @@ class MainWindow(QMainWindow):
         )
         self.lblXandraVersion.setToolTip("Developed by David Ascencio\nFoxconn")
         self.footer.addWidget(self.lblXandraVersion, alignment=QtCore.Qt.AlignLeft)
+
+        self.lblStatus = QLabel()
+        self.footer.addWidget(self.lblStatus, alignment=QtCore.Qt.AlignCenter)
+
         self.lblScriptVersion = QLabel(
             f"Script Version: {self._fctHostControlData.get_script_version()}"
         )
@@ -67,3 +72,9 @@ class MainWindow(QMainWindow):
             event.accept()
         else:
             event.ignore()
+
+    def on_lock_changed(self, value: bool):
+        status = " "
+        if not value:
+            status = "Lock Disabled"
+        self.lblStatus.setText(status)

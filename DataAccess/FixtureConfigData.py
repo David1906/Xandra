@@ -80,4 +80,5 @@ class FixtureConfigData:
                     self._mainConfigData.get_yield_error_threshold(),
                     self._mainConfigData.get_yield_warning_threshold(),
                     isRetestMode=self.is_retest_mode(fixtureIp),
+                    areLastTestFail=self._testData.are_last_test_fail(fixtureIp),
                 )

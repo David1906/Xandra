@@ -2,6 +2,7 @@ from DataAccess.FctHostControlData import FctHostControlData
 from DataAccess.FixtureData import FixtureData
 from DataAccess.MainConfigData import MainConfigData
 from DataAccess.TestData import TestData
+from Models.Fixture import Fixture
 from Models.FixtureConfig import FixtureConfig
 from PyQt5 import QtCore
 from Models.Test import Test
@@ -13,6 +14,7 @@ import atexit
 
 
 class FixtureGridController(QtCore.QThread):
+    fixture_change = QtCore.pyqtSignal(Fixture)
     test_add = QtCore.pyqtSignal(Test)
     testing_status_changed = QtCore.pyqtSignal(str, bool)
 
@@ -51,6 +53,7 @@ class FixtureGridController(QtCore.QThread):
     def on_config_change(self, event):
         for fixture in self.get_all_fixtures():
             self._fixtureData.create_or_update(fixture)
+            self.fixture_change.emit(fixture)
 
     def get_all_fixtures(self) -> "list[FixtureConfig]":
         return self._fixtureData.find_all()

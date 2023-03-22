@@ -34,8 +34,11 @@
     "yieldCalcQty": 10,
     "yieldCalcQty_description" : "Cantidad de pruebas con las que se calculará el yield",
 
-    "unlockPassQty": 3,
+    "unlockPassQty": 1,
     "unlockPassQty_description" : "Cantidad de pruebas consecutivas con estatus PASS necesarias para desbloquear la fixtura",
+
+    "lockFailQty": 3,
+    "lockFailQty_description" : "Cantidad de pruebas consecutivas con estatus FAILED necesarias para bloquear la fixtura",
 
     "googleSheets": {
         "isActivated" : true,

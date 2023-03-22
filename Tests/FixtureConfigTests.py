@@ -23,6 +23,14 @@ class FixtureConfigTests(unittest.TestCase):
                 yieldRate=0,
                 yieldErrorMin=70,
             ),
+            FixtureConfig(
+                isSkipped=False,
+                isRetestMode=False,
+                areLastTestPass=False,
+                areLastTestFail=True,
+                yieldRate=100,
+                yieldErrorMin=70,
+            ),
         ]
         for fixtureConfig in cases:
             result = fixtureConfig.is_disabled()
@@ -51,6 +59,22 @@ class FixtureConfigTests(unittest.TestCase):
                 isSkipped=True,
                 isRetestMode=False,
                 areLastTestPass=True,
+                yieldRate=0,
+                yieldErrorMin=70,
+            ),
+            FixtureConfig(
+                isSkipped=False,
+                isRetestMode=False,
+                areLastTestPass=False,
+                areLastTestFail=False,
+                yieldRate=100,
+                yieldErrorMin=70,
+            ),
+            FixtureConfig(
+                isSkipped=False,
+                isRetestMode=False,
+                areLastTestPass=True,
+                areLastTestFail=True,
                 yieldRate=0,
                 yieldErrorMin=70,
             ),

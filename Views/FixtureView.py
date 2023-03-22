@@ -91,24 +91,24 @@ class FixtureView(QGroupBox):
             self.swTraceability.setChecked(True)
         else:
             self._fixtureController.update(self.fixture)
-            self._update()
+            self.update()
 
     def on_swTraceability_change(self, checked: bool):
         self.fixture.set_skipped(not checked)
         self._fixtureController.update(self.fixture)
-        self._update()
+        self.update()
 
     def set_test(self, test: Test):
         self.fixture.set_test(test, self.swTraceability.getChecked())
         self._fixtureController.add_test(self.fixture)
         self._fixtureController.refresh(self.fixture)
-        self._update()
+        self.update()
 
     def set_fixture(self, fixture: Fixture):
         self.fixture = fixture
-        self._update()
+        self.update()
 
-    def _update(self):
+    def update(self):
         self._update_status()
         self.lblYield.setText(f"Yield: {self.fixture.get_yield()}%")
         self.lblIp.setText(f"Ip: {self.fixture.get_ip()}")
@@ -184,7 +184,7 @@ class FixtureView(QGroupBox):
 
     def set_fixture_isTesting(self, value: bool):
         self.fixture.set_isTesting(value)
-        self._update()
+        self.update()
         if value:
             self._updateTimer.start(1000)
         else:
@@ -208,7 +208,7 @@ class FixtureView(QGroupBox):
 
     def disableRetestMode(self):
         self.swRetestMode.setChecked(False)
-        self._update()
+        self.update()
 
     def toggle_force_traceability_enabled(self):
         self.forceTraceabilityEnabled = not self.forceTraceabilityEnabled

@@ -83,6 +83,9 @@ class MainConfigData:
     def get_unlock_pass_qty(self) -> str:
         return self._get_value("unlockPassQty")
 
+    def get_lock_fail_qty(self) -> str:
+        return self._get_value("lockFailQty")
+
     def get_default_product_name(self) -> "list[str]":
         return self._get_value("defaultProductModelName")
 

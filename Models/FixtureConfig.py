@@ -10,11 +10,13 @@ class FixtureConfig:
         yieldWarningMin: float = 0,
         isTesting: bool = False,
         isRetestMode: bool = False,
+        areLastTestFail: bool = False,
     ):
         self.id = id
         self.ip = ip
         self.yieldRate = yieldRate
         self.areLastTestPass = areLastTestPass
+        self.areLastTestFail = areLastTestFail
         self.isSkipped = isSkipped
         self.yieldErrorMin = yieldErrorMin
         self.yieldWarningMin = yieldWarningMin
@@ -22,9 +24,11 @@ class FixtureConfig:
         self.isRetestMode = isRetestMode
 
     def is_disabled(self) -> bool:
-        return (
-            self.has_low_yield() and self.is_lock_enabled() and not self.areLastTestPass
-        )
+        if not self.is_lock_enabled():
+            return False
+        if self.areLastTestPass:
+            return False
+        return self.areLastTestFail or self.has_low_yield()
 
     def is_lock_enabled(self):
         return self.isSkipped == self.isRetestMode or (

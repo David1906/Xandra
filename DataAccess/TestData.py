@@ -47,6 +47,18 @@ class TestData:
                 return False
         return True
 
+    def are_last_test_fail(self, fixtureIp: str, qty: int = 0) -> bool:
+        configLockQty = self._mainConfigData.get_lock_fail_qty()
+        if configLockQty == 0:
+            return False
+        tests = self.find_last(fixtureIp, configLockQty if qty == 0 else qty)
+        if len(tests) == 0:
+            return False
+        for test in tests:
+            if test.status:
+                return False
+        return True
+
     def find_last(
         self,
         fixtureIp: str,

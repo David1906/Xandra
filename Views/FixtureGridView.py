@@ -1,5 +1,6 @@
 import os
 from Controllers.FixtureGridController import FixtureGridController
+from Models.Fixture import Fixture
 from Models.FixtureConfig import FixtureConfig
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QShortcut
 from PyQt5.QtGui import QKeySequence
@@ -17,6 +18,7 @@ class FixtureGridView(QWidget):
 
         self._fixtureViews: "list[FixtureView]" = []
         self._fixtureGridController = FixtureGridController()
+        self._fixtureGridController.fixture_change.connect(self.update_fixture)
         self._fixtureGridController.test_add.connect(self.on_test_add)
         self._fixtureGridController.testing_status_changed.connect(
             self.on_testing_status_changed
@@ -89,3 +91,8 @@ class FixtureGridView(QWidget):
     def stop_all_fixtures(self):
         for fixtureView in self._fixtureViews:
             fixtureView.stop()
+
+    def update_fixture(self, fixture: Fixture):
+        for fixtureView in self._fixtureViews:
+            if fixtureView.equalsIp(fixture.get_ip()):
+                fixtureView.set_fixture(fixture)

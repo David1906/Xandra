@@ -69,3 +69,23 @@ alembic upgrade head
 yum install -y tmux xterm
 pip3 install --upgrade pip
 pip3 install -r requirements.txt
+
+## Aliases
+gedit ~/.bashrc
+if [ -f ~/.bash_aliases ]; then
+. ~/.bash_aliases
+fi
+
+gedit ~/.bash_aliases
+
+# Alias to open Xandra
+alias xandra='tmux new -d "cd /usr/local/Foxconn/automation/Xandra && python3 /usr/local/Foxconn/automation/Xandra/xandra.py"'
+
+# Alias to open Xandra in testing mode
+alias xandra-testing='ENV=testing python3 /usr/local/Foxconn/automation/Xandra/xandra.py'
+
+# Alias to open Xandra config
+alias xandra-config='tmux new -d "gedit /usr/local/Foxconn/automation/Xandra/xandra_config.json"'
+
+# Alias to cd Xandra path
+alias xandra-path='cd /usr/local/Foxconn/automation/Xandra'

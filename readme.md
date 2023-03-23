@@ -29,6 +29,8 @@ pip install requests-futures
 pip3 install -r requirements.txt
 pip install pymysql
 alembic
+pip3 uninstall alembic
+python3 -m pip install alembic --user
 
 ## shortcut
 [Desktop Entry]

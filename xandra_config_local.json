@@ -14,14 +14,14 @@
             "config": "FCTHostControl.config"
         }
     ],
-    "fctHostControl_description":"configuración de ruta completa a la carpeta que contiene los archivos FCTHostControl y FCTHostControl.config",
+    "fctHostControl_description":"Configuración de ruta completa a la carpeta que contiene los archivos FCTHostControl y FCTHostControl.config",
 
     "defaultProductModelName":  "^C4.*",
     "defaultProductModelName_description" : "Nombre del modelo seleccionado por defecto en FCTHostControl.config (se procesa como expresión regular)",
 
 
-    "uploadSfcSript":  "/home/david/Xandra/Resources/up_sfc.sh",
-    "uploadSfcSript_description" : "Ruta completa al script encargado de subir la trazabilidad al sistema SFC",
+    "uploadSfcScript":  "/home/david/Xandra/Resources/up_sfc.sh",
+    "uploadSfcScript_description" : "Ruta completa al script encargado de subir la trazabilidad al sistema SFC",
 
     "logsPath": "/home/david/Documents/logs",
     "logsPath_description":"Ruta donde se guardan los logs de las pruebas realizadas",
@@ -35,7 +35,7 @@
     "yieldCalcQty": 10,
     "yieldCalcQty_description" : "Cantidad de pruebas con las que se calculará el yield",
 
-    "unlockPassQty": 1,
+    "unlockPassQty": 10,
     "unlockPassQty_description" : "Cantidad de pruebas consecutivas con estatus PASS necesarias para desbloquear la fixtura",
 
     "lockFailQty": 3,

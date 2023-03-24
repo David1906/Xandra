@@ -81,7 +81,7 @@ fi
 gedit ~/.bash_aliases
 
 # Alias to open Xandra
-alias xandra='tmux new -d "cd /usr/local/Foxconn/automation/Xandra && python3 /usr/local/Foxconn/automation/Xandra/xandra.py"'
+alias xandra='systemctl start xampp.service && tmux new -d "cd /usr/local/Foxconn/automation/Xandra && python3 /usr/local/Foxconn/automation/Xandra/xandra.py"'
 
 # Alias to open Xandra in testing mode
 alias xandra-testing='ENV=testing python3 /usr/local/Foxconn/automation/Xandra/xandra.py'

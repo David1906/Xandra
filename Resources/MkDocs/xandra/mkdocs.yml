@@ -1,0 +1,40 @@
+site_name: Xandra
+
+nav:
+  - index.md
+  - install.md
+  - configs.md
+  - operation.md
+  - modes.md
+  - commands.md
+  - troubleshooting.md
+
+theme:
+  name: material
+  language: es
+  icon:
+    logo: material/server
+  palette:
+    - scheme: default
+      primary: pink
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+
+    - scheme: slate
+      primary: pink
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - content.code.copy
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+
+copyright: Foxconn &copy; David Ascencio
+
+extra:
+  generator: false

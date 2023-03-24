@@ -90,7 +90,7 @@ class MainConfigData:
         return self._get_value("defaultProductModelName")
 
     def get_upload_Sfc_sript(self) -> str:
-        return self._get_value("uploadSfcSript")
+        return self._get_value("uploadSfcScript")
 
     def get_google_isActivated(self):
         return self._get_value("googleSheets")["isActivated"]

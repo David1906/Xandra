@@ -1,6 +1,6 @@
 {
     "fixtureIpEnvironmentName": "XANDRA_FIXTURE_IP",
-    "fixtureIpEnvironmentName_description":"Varible del entorno en la cuál se inyectará la ip de la fixtura",
+    "fixtureIpEnvironmentName_description":"Variable del entorno en la cuál se inyectará la ip de la fixtura",
 
     "fctHostControl": [
         {
@@ -14,13 +14,13 @@
             "config": "FCTHostControl.config"
         }
     ],
-    "fctHostControl_description":"configuración de ruta completa a la carpeta que contiene los archivos FCTHostControl y FCTHostControl.config",
+    "fctHostControl_description":"Configuración de ruta completa a la carpeta que contiene los archivos FCTHostControl y FCTHostControl.config",
 
     "defaultProductModelName":  "^C4.*",
     "defaultProductModelName_description" : "Nombre del modelo seleccionado por defecto en FCTHostControl.config (se procesa como expresión regular)",
 
-    "uploadSfcSript":  "/usr/local/Foxconn/automation/Xandra/Resources/up_sfc.sh",
-    "uploadSfcSript_description" : "Ruta completa al script encargado de subir la trazabilidad al sistema SFC",
+    "uploadSfcScript":  "/usr/local/Foxconn/automation/Xandra/Resources/up_sfc.sh",
+    "uploadSfcScript_description" : "Ruta completa al script encargado de subir la trazabilidad al sistema SFC",
 
     "logsPath": "/log/diag",
     "logsPath_description":"Ruta donde se guardan los logs de las pruebas realizadas",
@@ -29,7 +29,7 @@
     "yieldErrorThreshold_description": "Porcentaje de yield el cual una vez alcanzado bloqueará la fixtura y lo pintará de color rojo en la interfaz",
 
     "yieldWarningThreshold": 80,
-    "yieldWarningThreshold_description": "Porcentaje de yield el cual una vez alcanzado pintará la fixtuae de color amarillo en la interfaz",
+    "yieldWarningThreshold_description": "Porcentaje de yield el cual una vez alcanzado pintará la fixtura de color amarillo en la interfaz",
 
     "yieldCalcQty": 10,
     "yieldCalcQty_description" : "Cantidad de pruebas con las que se calculará el yield",

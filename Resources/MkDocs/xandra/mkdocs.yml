@@ -36,5 +36,7 @@ markdown_extensions:
 
 copyright: Foxconn &copy; David Ascencio
 
+use_directory_urls: false
+
 extra:
   generator: false

@@ -191,21 +191,24 @@ Para agregar los alias de Xandra realice los siguientes pasos:
 * Copiar y pegar el siguiente texto en el archivo `~/.bash_aliases`:
 
     ```
+    # Set environment variable
+    export XANDRA_BASE_PATH=/usr/local/Foxconn/automation/Xandra
+
     # Alias to open Xandra
-    alias xandra='systemctl start xampp.service && tmux new -d "cd /usr/local/Foxconn/automation/Xandra && python3 /usr/local/Foxconn/automation/Xandra/xandra.py"'
+    alias xandra='systemctl start xampp.service && tmux new -d "cd $XANDRA_BASE_PATH && python3 $XANDRA_BASE_PATH/xandra.py"'
 
     # Alias to open Xandra in testing mode
-    alias xandra-testing='ENV=testing python3 /usr/local/Foxconn/automation/Xandra/xandra.py'
+    alias xandra-testing='ENV=testing python3 $XANDRA_BASE_PATH/xandra.py'
 
     # Alias to open Xandra config
-    alias xandra-config='tmux new -d "gedit /usr/local/Foxconn/automation/Xandra/xandra_config.json"'
+    alias xandra-config='tmux new -d "gedit $XANDRA_BASE_PATH/xandra_config.json"'
 
     # Alias to cd Xandra path
-    alias xandra-path='cd /usr/local/Foxconn/automation/Xandra'
+    alias xandra-path='cd $XANDRA_BASE_PATH'
 
     # Alias to update Xandra
-    alias xandra-update='chmod +x /usr/local/Foxconn/automation/Xandra/update.sh && /usr/local/Foxconn/automation/Xandra/update.sh'
-    
+    alias xandra-update='chmod +x $XANDRA_BASE_PATH/update.sh && $XANDRA_BASE_PATH/update.sh'
+
     # Alias to kill Xandra
     alias xandra-kill='xandra-path && fuser xandra.py 2> /dev/null | xargs kill'
     ```
@@ -280,7 +283,7 @@ En el caso de Xandra dicho acceso directo se crea en la carpeta Desktop del usua
     ```
     [Desktop Entry]
     Name=Xandra
-    Exec=tmux new -d "cd /usr/local/Foxconn/automation/Xandra && python3 /usr/local/Foxconn/automation/Xandra/xandra.py"
+    Exec=xandra
     Terminal=true
     Type=Application
     Icon=/usr/local/Foxconn/automation/Xandra/Static/icon.png

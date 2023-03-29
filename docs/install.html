@@ -695,20 +695,23 @@ MariaDB [(none)]&gt;
 </li>
 <li>
 <p>Copiar y pegar el siguiente texto en el archivo <code>~/.bash_aliases</code>:</p>
-<div class="highlight"><pre><span></span><code># Alias to open Xandra
-alias xandra=&#39;systemctl start xampp.service &amp;&amp; tmux new -d &quot;cd /usr/local/Foxconn/automation/Xandra &amp;&amp; python3 /usr/local/Foxconn/automation/Xandra/xandra.py&quot;&#39;
+<div class="highlight"><pre><span></span><code># Set environment variable
+export XANDRA_BASE_PATH=/usr/local/Foxconn/automation/Xandra
+
+# Alias to open Xandra
+alias xandra=&#39;systemctl start xampp.service &amp;&amp; tmux new -d &quot;cd $XANDRA_BASE_PATH &amp;&amp; python3 $XANDRA_BASE_PATH/xandra.py&quot;&#39;
 
 # Alias to open Xandra in testing mode
-alias xandra-testing=&#39;ENV=testing python3 /usr/local/Foxconn/automation/Xandra/xandra.py&#39;
+alias xandra-testing=&#39;ENV=testing python3 $XANDRA_BASE_PATH/xandra.py&#39;
 
 # Alias to open Xandra config
-alias xandra-config=&#39;tmux new -d &quot;gedit /usr/local/Foxconn/automation/Xandra/xandra_config.json&quot;&#39;
+alias xandra-config=&#39;tmux new -d &quot;gedit $XANDRA_BASE_PATH/xandra_config.json&quot;&#39;
 
 # Alias to cd Xandra path
-alias xandra-path=&#39;cd /usr/local/Foxconn/automation/Xandra&#39;
+alias xandra-path=&#39;cd $XANDRA_BASE_PATH&#39;
 
 # Alias to update Xandra
-alias xandra-update=&#39;chmod +x /usr/local/Foxconn/automation/Xandra/update.sh &amp;&amp; /usr/local/Foxconn/automation/Xandra/update.sh&#39;
+alias xandra-update=&#39;chmod +x $XANDRA_BASE_PATH/update.sh &amp;&amp; $XANDRA_BASE_PATH/update.sh&#39;
 
 # Alias to kill Xandra
 alias xandra-kill=&#39;xandra-path &amp;&amp; fuser xandra.py 2&gt; /dev/null | xargs kill&#39;
@@ -776,7 +779,7 @@ alias xandra-kill=&#39;xandra-path &amp;&amp; fuser xandra.py 2&gt; /dev/null | 
 <p>Copiar y pegar el siguiente texto en el archivo <code>xandra.desktop</code>:</p>
 <div class="highlight"><pre><span></span><code>[Desktop Entry]
 Name=Xandra
-Exec=tmux new -d &quot;cd /usr/local/Foxconn/automation/Xandra &amp;&amp; python3 /usr/local/Foxconn/automation/Xandra/xandra.py&quot;
+Exec=xandra
 Terminal=true
 Type=Application
 Icon=/usr/local/Foxconn/automation/Xandra/Static/icon.png

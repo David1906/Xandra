@@ -191,14 +191,15 @@ Para agregar los alias de Xandra realice los siguientes pasos:
 * Copiar y pegar el siguiente texto en el archivo `~/.bash_aliases`:
 
     ```
-    # Set environment variable
+    # Set environment variables
     export XANDRA_BASE_PATH=/usr/local/Foxconn/automation/Xandra
+    export XANDRA_MAIN_SCRIPT=$XANDRA_BASE_PATH/xandra.py
 
     # Alias to open Xandra
-    alias xandra='systemctl start xampp.service && tmux new -d "cd $XANDRA_BASE_PATH && python3 $XANDRA_BASE_PATH/xandra.py"'
+    alias xandra='systemctl start xampp.service && tmux new -d "cd $XANDRA_BASE_PATH && python3 $XANDRA_MAIN_SCRIPT"'
 
     # Alias to open Xandra in testing mode
-    alias xandra-testing='ENV=testing python3 $XANDRA_BASE_PATH/xandra.py'
+    alias xandra-testing='ENV=testing python3 $XANDRA_MAIN_SCRIPT'
 
     # Alias to open Xandra config
     alias xandra-config='tmux new -d "gedit $XANDRA_BASE_PATH/xandra_config.json"'
@@ -207,10 +208,13 @@ Para agregar los alias de Xandra realice los siguientes pasos:
     alias xandra-path='cd $XANDRA_BASE_PATH'
 
     # Alias to update Xandra
-    alias xandra-update='chmod +x $XANDRA_BASE_PATH/update.sh && $XANDRA_BASE_PATH/update.sh'
+    alias xandra-update='sudo chmod +x $XANDRA_BASE_PATH/update.sh && $XANDRA_BASE_PATH/update.sh'
 
     # Alias to kill Xandra
-    alias xandra-kill='xandra-path && fuser xandra.py 2> /dev/null | xargs kill'
+    alias xandra-kill='fuser $XANDRA_MAIN_SCRIPT 2> /dev/null | xargs kill'
+
+    # Alias to open docs
+    alias xandra-docs='xdg-open $XANDRA_BASE_PATH/docs/index.html'
     ```
 
 * Guardar los cambios.

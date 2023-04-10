@@ -47,6 +47,18 @@ class TestData:
                 return False
         return True
 
+    def get_remaining_to_unlock(self, fixtureIp: str, qty: int = 0) -> bool:
+        configUnlockQty = self._mainConfigData.get_unlock_pass_qty()
+        tests = self.find_last(fixtureIp, configUnlockQty if qty == 0 else qty)
+        totalPass = 0
+        for test in tests:
+            if test.status:
+                totalPass = totalPass + 1
+        total = configUnlockQty - totalPass
+        if len(tests) == 0 or total < 0:
+            return 0
+        return total
+
     def are_last_test_fail(self, fixtureIp: str, qty: int = 0) -> bool:
         configLockQty = self._mainConfigData.get_lock_fail_qty()
         if configLockQty == 0:

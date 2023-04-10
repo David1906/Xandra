@@ -12,7 +12,11 @@ class EmbeddedTerminal(QtWidgets.QFrame):
 
         self.terminal = QtWidgets.QFrame()
         self.setStyleSheet(
-            "border: 1px solid gray; background-color: lightgray;"
+            """
+            border-radius: 5px;
+            border: 1px solid #cccccc; 
+            background-color: #e6ebe7;
+            """
         )
 
     def start(self, args: "list[str]" = []):

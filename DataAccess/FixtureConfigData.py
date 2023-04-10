@@ -90,4 +90,5 @@ class FixtureConfigData:
                     isRetestMode=self.is_retest_mode(fixtureIp),
                     areLastTestFail=self._testData.are_last_test_fail(fixtureIp),
                     enableLock=self.is_lock_enabled(fixtureIp),
+                    lockFailQty=self._mainConfigData.get_lock_fail_qty(),
                 )

@@ -32,8 +32,7 @@ class LedIndicator(QAbstractButton):
         painter.translate(self.width() / 2, self.height() / 2)
         painter.scale(realSize / self.scaledSize, realSize / self.scaledSize)
 
-        gradient = QRadialGradient(
-            QPointF(-500, -500), 1500, QPointF(-500, -500))
+        gradient = QRadialGradient(QPointF(-500, -500), 1500, QPointF(-500, -500))
         gradient.setColorAt(0, QColor(224, 224, 224))
         gradient.setColorAt(1, QColor(28, 28, 28))
         painter.setPen(pen)
@@ -49,13 +48,11 @@ class LedIndicator(QAbstractButton):
 
         painter.setPen(pen)
         if self.isChecked():
-            gradient = QRadialGradient(
-                QPointF(-500, -500), 1500, QPointF(-500, -500))
+            gradient = QRadialGradient(QPointF(-500, -500), 1500, QPointF(-500, -500))
             gradient.setColorAt(0, self.on_color_1)
             gradient.setColorAt(1, self.on_color_2)
         else:
-            gradient = QRadialGradient(
-                QPointF(500, 500), 1500, QPointF(500, 500))
+            gradient = QRadialGradient(QPointF(500, 500), 1500, QPointF(500, 500))
             gradient.setColorAt(0, self.off_color_1)
             gradient.setColorAt(1, self.off_color_2)
 
@@ -93,3 +90,15 @@ class LedIndicator(QAbstractButton):
     @offColor2.setter
     def offColor2(self, color):
         self.off_color_2 = color
+
+    def set_color_red(self):
+        self.on_color_1 = QColor(255, 0, 0)
+        self.on_color_2 = QColor(192, 0, 0)
+        self.off_color_1 = QColor(28, 0, 0)
+        self.off_color_2 = QColor(128, 0, 0)
+
+    def set_color_green(self):
+        self.on_color_1 = QColor(0, 255, 0)
+        self.on_color_2 = QColor(0, 192, 0)
+        self.off_color_1 = QColor(0, 28, 0)
+        self.off_color_2 = QColor(0, 128, 0)

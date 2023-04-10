@@ -45,3 +45,9 @@ class FixtureController:
 
     def get_last_test_pass_qty(self):
         return self._mainConfigData.get_unlock_pass_qty()
+    
+    def get_lock_fail_qty(self):
+        return self._mainConfigData.get_lock_fail_qty()
+
+    def get_remaining_to_unlock(self, fixture: Fixture):
+        return self._testData.get_remaining_to_unlock(fixture.get_ip())

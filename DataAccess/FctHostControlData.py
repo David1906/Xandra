@@ -106,7 +106,7 @@ class FctHostControlData:
             end = match.start()
         return "%s %s %s" % (line[:start], newValue, line[end:])
 
-    def get_all_fixture_configs(self) -> "list[{}]":
+    def get_all_fixture_configs(self) -> "list[dict]":
         return self.data[FctHostControlData.FIXTURES_ARRAY_KEY]
 
     def get_script_version(self):
@@ -123,7 +123,7 @@ class FctHostControlData:
         )
 
     def get_upload_sfc_script_fullpath(self) -> str:
-        return self._mainConfigData.get_upload_Sfc_sript(self.configIdx)
+        return self._mainConfigData.get_upload_sfc_script(self.configIdx)
 
     def get_script_fullpath(self) -> str:
         productName = self._mainConfigData.get_default_product_name()

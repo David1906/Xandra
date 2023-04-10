@@ -1,3 +1,7 @@
+from Core.Enums.LockType import LockType
+from Core.Enums.TestMode import TestMode
+
+
 class FixtureConfig:
     def __init__(
         self,
@@ -12,6 +16,7 @@ class FixtureConfig:
         isRetestMode: bool = False,
         areLastTestFail: bool = False,
         enableLock: bool = True,
+        lockFailQty: int = 0,
     ):
         self.id = id
         self.ip = ip
@@ -24,13 +29,24 @@ class FixtureConfig:
         self.isTesting = isTesting
         self.isRetestMode = isRetestMode
         self.enableLock = enableLock
+        self.lockFailQty = lockFailQty
 
-    def is_disabled(self) -> bool:
+    def get_lock(self) -> LockType:
         if not self.is_lock_enabled():
-            return False
+            return LockType.UNLOCKED
         if self.areLastTestPass:
-            return False
-        return self.areLastTestFail or self.has_low_yield()
+            return LockType.UNLOCKED
+        if self.areLastTestFail:
+            return LockType.LAST_TEST_FAILED
+        if self.has_low_yield():
+            return LockType.LOW_YIELD
+        return LockType.UNLOCKED
+
+    def get_lock_description(self) -> str:
+        lock = self.get_lock()
+        if lock == LockType.LAST_TEST_FAILED:
+            return self.get_lock().description.format(self.lockFailQty)
+        return self.get_lock().description
 
     def is_lock_enabled(self):
         if not self.enableLock:
@@ -38,6 +54,9 @@ class FixtureConfig:
         return self.isSkipped == self.isRetestMode or (
             not self.isSkipped and self.isRetestMode
         )
+
+    def is_disabled(self) -> bool:
+        return self.get_lock() != LockType.UNLOCKED
 
     def has_low_yield(self) -> bool:
         return self.yieldRate <= self.yieldErrorMin
@@ -59,12 +78,21 @@ class FixtureConfig:
         if self.isRetestMode:
             return "orange"
         if self.isSkipped:
-            return "gray"
+            return "#B8B8B8"
         if self.is_disabled():
             return "lightcoral"
         elif self.is_warning():
-            return "yellow"
+            return "#DED851"
         return ""
+
+    def get_mode(self) -> TestMode:
+        if self.isSkipped and self.isRetestMode:
+            return TestMode.ONLY_REPORT_PASS
+        if self.isRetestMode:
+            return TestMode.RETEST
+        if self.isSkipped:
+            return TestMode.OFFLINE
+        return TestMode.ONLINE
 
     def reset(self):
         self.isTesting = False

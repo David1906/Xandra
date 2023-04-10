@@ -28,20 +28,6 @@ class TestParser:
 
         self._testDescriptionParser = TestDescriptionParser()
 
-        self._sfcEventHandler = BaseEventHandler()
-        self._sfcEventHandler.modified.connect(self.on_modified)
-        self._fileWatchdog = FileWatchdog(self._sfcEventHandler)
-        atexit.register(lambda: self._fileWatchdog.stop())
-        self._fileWatchdog.start(
-            PathHelper().get_root_path() + "/DataAccess/TestDescriptionParser.py"
-        )
-
-    def on_modified(self):
-        importlib.reload(sys.modules["DataAccess.TestDescriptionParser"])
-        from DataAccess.TestDescriptionParser import TestDescriptionParser
-
-        self._testDescriptionParser = TestDescriptionParser()
-
     def parse(self, fullPath: str) -> Test:
         try:
             with open(fullPath, "r") as fp:

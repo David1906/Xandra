@@ -1,8 +1,17 @@
 from Controllers.FixtureController import FixtureController
+from Core.Enums.TestMode import TestMode
 from Models.Fixture import Fixture
 from Models.Test import Test
-from PyQt5 import QtCore
-from PyQt5.QtWidgets import QGroupBox, QLabel, QPushButton, QGridLayout, QMessageBox
+from PyQt5 import QtCore, QtGui
+from PyQt5.QtWidgets import (
+    QGroupBox,
+    QLabel,
+    QPushButton,
+    QGridLayout,
+    QMessageBox,
+    QVBoxLayout,
+    QHBoxLayout,
+)
 from Views.EmbeddedTerminal import EmbeddedTerminal
 from Views.LastFailuresWindow import LastFailuresWindow
 from Views.LastTestsWindow import LastTestsWindow
@@ -22,54 +31,91 @@ class FixtureView(QGroupBox):
 
         self.setObjectName("fixture")
         gridLayout = QGridLayout()
+        gridLayout.setColumnStretch(0, 1)
+        gridLayout.setColumnStretch(1, 0)
+        gridLayout.setColumnMinimumWidth(1, 130)
+        gridLayout.setRowStretch(0, 1)
+        gridLayout.setRowStretch(1, 0)
         self.setLayout(gridLayout)
 
-        self.lblRetestMode = QLabel("Retest Mode")
-        gridLayout.addWidget(self.lblRetestMode, 0, 5)
-        self.swRetestMode = Switch()
-        self.swRetestMode.setChecked(fixture.is_retest_mode())
-        self.swRetestMode.toggled.connect(self.on_swRetestMode_change)
-        gridLayout.addWidget(self.swRetestMode, 0, 6)
-        self.set_retest_mode_visibility(False)
+        sideGridLayout = QGridLayout()
+        sideGridLayout.setRowStretch(0, 0)
+        sideGridLayout.setRowStretch(1, 1)
+        sideGridLayout.setRowStretch(2, 0)
+        gridLayout.addLayout(sideGridLayout, 0, 1, 1, 1)
+
+        infoLayout = QVBoxLayout()
+        sideGridLayout.addLayout(infoLayout, 0, 0)
+
+        self.lblYield = QLabel("Yield:")
+        infoLayout.addWidget(self.lblYield, alignment=QtCore.Qt.AlignCenter)
+
+        self.lblMode = QLabel("Mode:")
+        infoLayout.addWidget(self.lblMode, alignment=QtCore.Qt.AlignCenter)
 
         self.lblIp = QLabel("IP:")
-        gridLayout.addWidget(self.lblIp, 1, 0, 1, 2, QtCore.Qt.AlignLeft)
+        infoLayout.addWidget(self.lblIp, alignment=QtCore.Qt.AlignCenter)
 
-        self.btnStart = QPushButton("Start")
-        self.btnStart.clicked.connect(self.on_btnStart_clicked)
-        gridLayout.addWidget(self.btnStart, 1, 3, 1, 2, QtCore.Qt.AlignLeft)
+        selectorsLayout = QVBoxLayout()
+        selectorsLayout.addStretch()
+        sideGridLayout.addLayout(selectorsLayout, 1, 0)
 
+        indicatorLayout = QHBoxLayout()
+        self.lblLock = QLabel()
+        indicatorLayout.addWidget(self.lblLock)
+        self.led = LedIndicator()
+        self.led.setEnabled(False)
+        indicatorLayout.addWidget(self.led, alignment=QtCore.Qt.AlignRight)
+        selectorsLayout.addLayout(indicatorLayout)
+
+        traceabilityLayout = QHBoxLayout()
         self.lblTraceability = QLabel("Traceability")
-        gridLayout.addWidget(self.lblTraceability, 1, 5)
+        traceabilityLayout.addWidget(self.lblTraceability)
         self.swTraceability = Switch()
         self.swTraceability.setChecked(not fixture.is_skipped())
         self.swTraceability.toggled.connect(self.on_swTraceability_change)
-        gridLayout.addWidget(self.swTraceability, 1, 6)
+        traceabilityLayout.addWidget(
+            self.swTraceability, alignment=QtCore.Qt.AlignRight
+        )
+        selectorsLayout.addLayout(traceabilityLayout)
 
-        self.lblYield = QLabel("Yield:")
-        gridLayout.addWidget(self.lblYield, 2, 0, 1, 2)
+        retestLayout = QHBoxLayout()
+        self.lblRetestMode = QLabel("Retest Mode")
+        retestLayout.addWidget(self.lblRetestMode)
+        self.swRetestMode = Switch()
+        self.swRetestMode.setChecked(fixture.is_retest_mode())
+        self.swRetestMode.toggled.connect(self.on_swRetestMode_change)
+        self.set_retest_mode_visibility(False)
+        retestLayout.addWidget(self.swRetestMode, alignment=QtCore.Qt.AlignRight)
+        selectorsLayout.addLayout(retestLayout)
 
-        self.lblPassed = QLabel("Passed Last 3 Tests :")
-        gridLayout.addWidget(self.lblPassed, 2, 5, 1, 1)
-        self.led = LedIndicator()
-        self.led.setEnabled(False)
-        gridLayout.addWidget(self.led, 2, 6, 1, 1, QtCore.Qt.AlignRight)
+        selectorsLayout.addStretch()
 
-        self.terminal = EmbeddedTerminal()
-        self.terminal.finished.connect(self.on_terminal_finished)
-        gridLayout.addWidget(self.terminal, 3, 0, 8, 7)
+        buttonsLayout = QVBoxLayout()
+        self.btnStart = QPushButton("Start")
+        self.btnStart.setStyleSheet("font-size: 12px; font-weight: 300;")
+        self.btnStart.setFixedHeight(50)
+        self.btnStart.clicked.connect(self.on_btnStart_clicked)
+        buttonsLayout.addWidget(self.btnStart)
 
+        sideGridLayout.addLayout(buttonsLayout, 2, 0)
         self.btnLastTests = QPushButton("Last Tests")
         self.btnLastTests.clicked.connect(self.on_btnLastTests_clicked)
-        gridLayout.addWidget(self.btnLastTests, 11, 0)
+        buttonsLayout.addWidget(self.btnLastTests)
 
         self.btnLastFailures = QPushButton("Last Failures")
         self.btnLastFailures.clicked.connect(self.on_btnLastFailures_clicked)
-        gridLayout.addWidget(self.btnLastFailures, 11, 1)
+        buttonsLayout.addWidget(self.btnLastFailures)
+
+        self.terminal = EmbeddedTerminal()
+        self.terminal.finished.connect(self.on_terminal_finished)
+        gridLayout.addWidget(self.terminal, 0, 0, 1, 1)
 
         self.lblResult = QLabel("Status: IDLE")
-        self.lblResult.setStyleSheet("font-size: 12px;")
-        gridLayout.addWidget(self.lblResult, 11, 2, 1, 5, QtCore.Qt.AlignRight)
+        self.lblResult.setStyleSheet("font-size: 12px; font-weight: bold; margin: 5px;")
+        gridLayout.addWidget(
+            self.lblResult, 2, 0, 1, 3, alignment=QtCore.Qt.AlignCenter
+        )
 
         self.set_fixture(fixture)
 
@@ -112,19 +158,20 @@ class FixtureView(QGroupBox):
         self._update_status()
         self.lblYield.setText(f"Yield: {self.fixture.get_yield()}%")
         self.lblIp.setText(f"Ip: {self.fixture.get_ip()}")
-        self.lblPassed.setText(
-            f"Passed Last {self._fixtureController.get_last_test_pass_qty()} Tests:"
+        self.lblLock.setText(
+            f"Failed last {self._fixtureController.get_lock_fail_qty()} Tests:"
         )
-        self.led.setChecked(self.fixture.get_are_last_test_pass())
         self.btnStart.setEnabled(
             not self.fixture.is_disabled() or self.btnStart.text() == "Stop"
         )
+        self.lblMode.setText(f"Mode: {self.fixture.get_mode_description()}")
+        self.update_lock_indicator()
 
         self.setStyleSheet(
             f"""
             QGroupBox#fixture{{
                 border-radius: 5px;
-                border: 1px solid gray;
+                border: 1px solid #cccccc;
                 background-color: {self.fixture.get_status_color()};
             }}
             """
@@ -139,6 +186,33 @@ class FixtureView(QGroupBox):
                 self.lblResult.setStyleSheet(
                     f"color: {'red' if self.lastOverElapsed else 'black'};"
                 )
+
+    def update_lock_indicator(self):
+        self.lblLock.setText(self.fixture.get_lock_description())
+        isVisible = self.fixture.is_disabled()
+        self.led.set_color_red()
+        isLedOn = self.fixture.is_disabled()
+        tooltipTxt = (
+            f"Fixture locked due to {self.fixture.get_lock_description().lower()}"
+        )
+
+        if self.fixture.get_mode() == TestMode.OFFLINE:
+            isVisible = True
+            self.led.set_color_green()
+            isLedOn = self.fixture.get_are_last_test_pass()
+            tooltipTxt = f"Fixture unlocked"
+            if not isLedOn:
+                remainingToUnlock = self._fixtureController.get_remaining_to_unlock(
+                    self.fixture
+                )
+                self.lblLock.setText(f"Test {remainingToUnlock} to unlock")
+                tooltipTxt = f"Pass another {remainingToUnlock} test{'s' if remainingToUnlock > 1 else ''} to unlock the fixture"
+
+        self.lblLock.setHidden(not isVisible)
+        self.lblLock.setToolTip(tooltipTxt)
+        self.led.setToolTip(tooltipTxt)
+        self.led.setHidden(not isVisible)
+        self.led.setChecked(isLedOn)
 
     def on_btnStart_clicked(self):
         isStart = self.btnStart.text() == "Start"

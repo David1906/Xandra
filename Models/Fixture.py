@@ -1,3 +1,4 @@
+from Core.Enums.LockType import LockType
 from Models.FixtureConfig import FixtureConfig
 from Models.Test import Test
 from timeit import default_timer as timer
@@ -28,14 +29,16 @@ class Fixture:
                 elapsedTime = f"... ({self.get_elapsed_time()})"
             return f"Status: {self._fixtureConfig.get_status_text()}{elapsedTime}"
         error = "(Upload SFC Error)" if self.hasErrorUploadingToSfc else ""
-        mode = f"{error}" if self.is_online() else "(Offline)"
-        return f"SN: {self._test.serialNumber}      Result: {self._test.get_result_string()} {mode}"
+        return f"SN: {self._test.serialNumber}      Result: {self._test.get_result_string()} {error}"
 
     def get_elapsed_time(self) -> str:
         return str(datetime.timedelta(seconds=math.floor(timer() - self.startTimer)))
 
     def is_online(self) -> bool:
         return self.is_upload_to_sfc() or not self._fixtureConfig.isSkipped
+
+    def get_lock_description(self) -> str:
+        return self._fixtureConfig.get_lock_description()
 
     def is_upload_to_sfc(self) -> bool:
         return (
@@ -71,11 +74,20 @@ class Fixture:
     def get_are_last_test_pass(self) -> bool:
         return self._fixtureConfig.areLastTestPass
 
+    def get_are_last_test_fail(self) -> bool:
+        return self._fixtureConfig.areLastTestFail
+
     def is_disabled(self) -> bool:
         return self._fixtureConfig.is_disabled()
 
     def get_status_color(self) -> bool:
         return self._fixtureConfig.get_status_color()
+
+    def get_mode(self) -> str:
+        return self._fixtureConfig.get_mode()
+
+    def get_mode_description(self) -> str:
+        return self._fixtureConfig.get_mode().description
 
     def set_test(self, test: Test, traceability: bool):
         self.hasErrorUploadingToSfc = False

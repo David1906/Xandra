@@ -93,17 +93,19 @@ class FixtureView(QGroupBox):
 
         buttonsLayout = QVBoxLayout()
         self.btnStart = QPushButton("Start")
-        self.btnStart.setStyleSheet("font-size: 12px; font-weight: 300;")
+        self.btnStart.setStyleSheet("font-weight: 500;")
         self.btnStart.setFixedHeight(50)
         self.btnStart.clicked.connect(self.on_btnStart_clicked)
         buttonsLayout.addWidget(self.btnStart)
 
         sideGridLayout.addLayout(buttonsLayout, 2, 0)
         self.btnLastTests = QPushButton("Last Tests")
+        self.btnLastTests.setStyleSheet("font-size: 12px; font-weight: 300;")
         self.btnLastTests.clicked.connect(self.on_btnLastTests_clicked)
         buttonsLayout.addWidget(self.btnLastTests)
 
         self.btnLastFailures = QPushButton("Last Failures")
+        self.btnLastFailures.setStyleSheet("font-size: 12px; font-weight: 300;")
         self.btnLastFailures.clicked.connect(self.on_btnLastFailures_clicked)
         buttonsLayout.addWidget(self.btnLastFailures)
 

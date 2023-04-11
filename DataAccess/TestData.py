@@ -1,10 +1,10 @@
 from automapper import mapper
+from Core.Enums.TestMode import TestMode
 from DataAccess.GoogleSheet import GoogleSheet
 from DataAccess.MainConfigData import MainConfigData
 from DataAccess.SqlAlchemyBase import Session
 from Models.DAO.TestDAO import TestDAO
 from Models.Fixture import Test
-from sqlalchemy import or_
 
 
 class TestData:
@@ -12,13 +12,12 @@ class TestData:
         self._googleSheet = GoogleSheet()
         self._mainConfigData = MainConfigData()
 
-    def add(self, test: Test, countInYield: bool = False, uploadToSfc: bool = False):
+    def add(self, test: Test, mode: int):
         if test.fixtureIp == None:
             return
         session = Session()
         testDTO = mapper.to(TestDAO).map(test)
-        testDTO.countInYield = countInYield
-        testDTO.uploadToSFC = uploadToSfc
+        testDTO.mode = mode
         session.add(testDTO)
         session.commit()
         session.close()
@@ -26,7 +25,7 @@ class TestData:
         self._googleSheet.add(test)
 
     def get_yield(self, fixtureIp: str) -> float:
-        tests = self.find_last(fixtureIp, onlyCountInYield=True)
+        tests = self.find_last(fixtureIp)
         if len(tests) == 0:
             return 100
         passTests = 0
@@ -35,35 +34,32 @@ class TestData:
                 passTests += 1
         return round((passTests / len(tests)) * 100, 2)
 
-    def are_last_test_pass(self, fixtureIp: str, qty: int = 0) -> bool:
-        configUnlockQty = self._mainConfigData.get_unlock_pass_qty()
-        if configUnlockQty == 0:
-            return True
-        tests = self.find_last(fixtureIp, configUnlockQty if qty == 0 else qty)
-        if len(tests) == 0:
-            return False
-        for test in tests:
-            if not test.status:
-                return False
-        return True
+    def are_last_test_pass(self, fixtureIp: str) -> bool:
+        return self.get_remaining_to_unlock(fixtureIp) <= 0
 
-    def get_remaining_to_unlock(self, fixtureIp: str, qty: int = 0) -> bool:
+    def get_remaining_to_unlock(self, fixtureIp: str) -> bool:
         configUnlockQty = self._mainConfigData.get_unlock_pass_qty()
-        tests = self.find_last(fixtureIp, configUnlockQty if qty == 0 else qty)
+        configLockQty = self._mainConfigData.get_lock_fail_qty()
+        tests = self.find_last(fixtureIp, configUnlockQty + configLockQty - 1)
         totalPass = 0
         for test in tests:
             if test.status:
                 totalPass = totalPass + 1
         total = configUnlockQty - totalPass
-        if len(tests) == 0 or total < 0:
+        if len(tests) == 0 or total <= 0:
             return 0
+        if tests[0].status == False:
+            return configUnlockQty
         return total
 
-    def are_last_test_fail(self, fixtureIp: str, qty: int = 0) -> bool:
+    def are_last_test_fail(self, fixtureIp: str) -> bool:
+        if self.are_last_test_pass(fixtureIp):
+            return True
+
         configLockQty = self._mainConfigData.get_lock_fail_qty()
         if configLockQty == 0:
             return False
-        tests = self.find_last(fixtureIp, configLockQty if qty == 0 else qty)
+        tests = self.find_last(fixtureIp, configLockQty, ignoreOffline=True)
         if len(tests) == 0:
             return False
         for test in tests:
@@ -76,7 +72,8 @@ class TestData:
         fixtureIp: str,
         qty: int = 0,
         onlyFailures: bool = False,
-        onlyCountInYield: bool = False,
+        ignoreOffline: bool = False,
+        ignoreRetest: bool = False,
     ) -> "list[Test]":
         session = Session()
         query = (
@@ -88,8 +85,11 @@ class TestData:
         if onlyFailures:
             query = query.filter(TestDAO.status == False)
 
-        if onlyCountInYield:
-            query = query.filter(TestDAO.countInYield == True)
+        if ignoreOffline:
+            query = query.filter(TestDAO.mode != TestMode.OFFLINE.value)
+
+        if ignoreRetest:
+            query = query.filter(TestDAO.mode != TestMode.RETEST.value)
 
         query = query.limit(
             self._mainConfigData.get_yield_calc_qty() if qty == 0 else qty
@@ -105,8 +105,5 @@ class TestData:
         self,
         fixtureIp: str,
         qty: int,
-        onlyCountInYield: bool = False,
     ) -> "list[Test]":
-        return self.find_last(
-            fixtureIp, qty=qty, onlyFailures=True, onlyCountInYield=onlyCountInYield
-        )
+        return self.find_last(fixtureIp, qty=qty, onlyFailures=True)

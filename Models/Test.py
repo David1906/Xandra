@@ -17,8 +17,7 @@ class Test:
         fullPath: str = None,
         isNull: bool = False,
         description: str = None,
-        traceability: bool = False,
-        countInYield: bool = False,
+        mode: int = 0,
     ) -> None:
         self.serialNumber = serialNumber
         self.project = project
@@ -30,8 +29,7 @@ class Test:
         self.status = status
         self.stepLabel = stepLabel
         self.description = description
-        self.traceability = traceability
-        self.countInYield = countInYield
+        self.mode = mode
         self.fullPath = fullPath
         self.isNull = isNull
 

@@ -1,3 +1,4 @@
+from Utils.Interval import Interval
 from Utils.PathHelper import PathHelper
 import json
 import os
@@ -10,8 +11,11 @@ class MainConfigData:
         else "/xandra_config.json"
     )
     MAIN_CONFIG_JSON_PATH = PathHelper().get_root_path() + FILE_NAME
-    YIELD_WARNING_MAX = 99
-    YIELD_WARNING_THRESHOLD_FROM_ERROR = 10
+    YIELD_ERROR_THRESHOLD_INTERVAL = Interval(0, 100)
+    YIELD_WARNING_THRESHOLD_INTERVAL = Interval(0, 99)
+    YIELD_CALC_QTY_INTERVAL = Interval(0, 1000)
+    UNLOCK_PASS_QTY_INTERVAL = Interval(1, 5)
+    LOCK_FAIL_QTY_INTERVAL = Interval(0, 10)
     JSON_DATA = {}
     JSON_LAST_MODIFIED = None
 
@@ -69,22 +73,24 @@ class MainConfigData:
         return self._get_value("logsPath")
 
     def get_yield_error_threshold(self) -> float:
-        return self._get_value("yieldErrorThreshold")
+        value = self._get_value("yieldErrorThreshold")
+        return self.YIELD_ERROR_THRESHOLD_INTERVAL.normalize(value)
 
     def get_yield_warning_threshold(self) -> float:
-        yieldWarning = self._get_value("yieldWarningThreshold")
-        if yieldWarning > MainConfigData.YIELD_WARNING_MAX:
-            return MainConfigData.YIELD_WARNING_MAX
-        return yieldWarning
+        value = self._get_value("yieldWarningThreshold")
+        return self.YIELD_WARNING_THRESHOLD_INTERVAL.normalize(value)
 
     def get_yield_calc_qty(self) -> int:
-        return self._get_value("yieldCalcQty")
+        value = self._get_value("yieldCalcQty")
+        return self.YIELD_CALC_QTY_INTERVAL.normalize(value)
 
     def get_unlock_pass_qty(self) -> str:
-        return self._get_value("unlockPassQty")
+        value = self._get_value("unlockPassQty")
+        return self.UNLOCK_PASS_QTY_INTERVAL.normalize(value)
 
     def get_lock_fail_qty(self) -> str:
-        return self._get_value("lockFailQty")
+        value = self._get_value("lockFailQty")
+        return self.LOCK_FAIL_QTY_INTERVAL.normalize(value)
 
     def get_default_product_name(self) -> "list[str]":
         return self._get_value("defaultProductModelName")

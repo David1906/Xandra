@@ -17,10 +17,9 @@ class TestDAO(Base):
     stepLabel = Column(String(512))
     operator = Column(String(512))
     fullPath = Column(String(2048))
-    countInYield = Column(Boolean)
     uploadToSFC = Column(Boolean)
     description = Column(String(2048))
-    traceability = Column(Boolean)
+    mode = Column(Integer)
 
     def __init__(
         self,
@@ -34,10 +33,9 @@ class TestDAO(Base):
         stepLabel: str = None,
         operator: str = None,
         fullPath: str = None,
-        countInYield: bool = False,
         uploadToSFC: bool = False,
         description: str = None,
-        traceability: bool = False,
+        mode: int = None,
     ) -> None:
         self.serialNumber = serialNumber
         self.project = project
@@ -49,7 +47,6 @@ class TestDAO(Base):
         self.stepLabel = stepLabel
         self.operator = operator
         self.fullPath = fullPath
-        self.countInYield = countInYield
         self.uploadToSFC = uploadToSFC
         self.description = description
-        self.traceability = traceability
+        self.mode = mode

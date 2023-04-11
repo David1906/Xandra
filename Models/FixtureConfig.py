@@ -34,12 +34,12 @@ class FixtureConfig:
     def get_lock(self) -> LockType:
         if not self.is_lock_enabled():
             return LockType.UNLOCKED
+        if self.has_low_yield() and self.yieldErrorMin > 0:
+            return LockType.LOW_YIELD
         if self.areLastTestPass:
             return LockType.UNLOCKED
-        if self.areLastTestFail:
+        if self.areLastTestFail and self.lockFailQty > 0:
             return LockType.LAST_TEST_FAILED
-        if self.has_low_yield():
-            return LockType.LOW_YIELD
         return LockType.UNLOCKED
 
     def get_lock_description(self) -> str:
@@ -51,9 +51,7 @@ class FixtureConfig:
     def is_lock_enabled(self):
         if not self.enableLock:
             return False
-        return self.isSkipped == self.isRetestMode or (
-            not self.isSkipped and self.isRetestMode
-        )
+        return self.get_mode().isLockEnabled
 
     def is_disabled(self) -> bool:
         return self.get_lock() != LockType.UNLOCKED

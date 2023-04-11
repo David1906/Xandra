@@ -1,4 +1,5 @@
 from Core.Enums.LockType import LockType
+from Core.Enums.TestMode import TestMode
 from Models.FixtureConfig import FixtureConfig
 from Models.Test import Test
 from timeit import default_timer as timer
@@ -83,7 +84,7 @@ class Fixture:
     def get_status_color(self) -> bool:
         return self._fixtureConfig.get_status_color()
 
-    def get_mode(self) -> str:
+    def get_mode(self) -> TestMode:
         return self._fixtureConfig.get_mode()
 
     def get_mode_description(self) -> str:

@@ -6,4 +6,4 @@ class ImageWidget(QtWidgets.QLabel):
         super(ImageWidget, self).__init__(parent)
         pixMap = QtGui.QPixmap(imagePath)
         self.setPixmap(pixMap.scaledToHeight(16))
-        self.setStyleSheet("margin-left:50%; margin-right:50%;")
+        self.setMargin(3)

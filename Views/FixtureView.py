@@ -166,6 +166,7 @@ class FixtureView(QGroupBox):
         )
         self.lblMode.setText(f"Mode: {self.fixture.get_mode_description()}")
         self.update_lock_indicator()
+        self._update_sw_retest_enabled()
 
         self.setStyleSheet(
             f"""
@@ -206,7 +207,7 @@ class FixtureView(QGroupBox):
                     self.fixture
                 )
                 self.lblLock.setText(f"Test {remainingToUnlock} to unlock")
-                tooltipTxt = f"Pass another {remainingToUnlock} test{'s' if remainingToUnlock > 1 else ''} to unlock the fixture"
+                tooltipTxt = f"Test another {remainingToUnlock} board{'s' if remainingToUnlock > 1 else ''} which result is pass to unlock the fixture"
 
         self.lblLock.setHidden(not isVisible)
         self.lblLock.setToolTip(tooltipTxt)
@@ -216,7 +217,6 @@ class FixtureView(QGroupBox):
 
     def on_btnStart_clicked(self):
         isStart = self.btnStart.text() == "Start"
-        self.swRetestMode.setEnabled(not isStart)
         if isStart:
             cmd = self._fixtureController.get_fct_host_cmd(
                 self.fixture, self.swTraceability.getChecked()
@@ -235,7 +235,21 @@ class FixtureView(QGroupBox):
             if reply == QMessageBox.Yes:
                 self.terminal.Stop()
                 self.btnStart.setText("Start")
+        self._update_sw_retest_enabled()
         self._update_sw_traceability_enabled()
+
+    def on_terminal_finished(self, exitStatus):
+        self.btnStart.setText("Start")
+        self._update_sw_retest_enabled()
+        self._update_sw_traceability_enabled()
+        self.set_fixture_isTesting(False)
+
+    def _update_sw_retest_enabled(self):
+        isStart = self.btnStart.text() == "Start"
+        isDisabled = self.fixture.is_disabled()
+        if self.fixture.is_skipped():
+            isDisabled = not self.fixture.get_are_last_test_pass()
+        self.swRetestMode.setEnabled(isStart and not isDisabled)
 
     def _update_sw_traceability_enabled(self):
         isStart = self.btnStart.text() == "Start"
@@ -243,12 +257,6 @@ class FixtureView(QGroupBox):
             self.swTraceability.setEnabled(False)
         else:
             self.swTraceability.setEnabled(isStart)
-
-    def on_terminal_finished(self, exitStatus):
-        self.btnStart.setText("Start")
-        self.swRetestMode.setEnabled(True)
-        self._update_sw_traceability_enabled()
-        self.set_fixture_isTesting(False)
 
     def equals(self, fixture: Fixture) -> bool:
         return self.fixture.equals(fixture)

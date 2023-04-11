@@ -15,7 +15,11 @@ class FixtureController:
         self._fctHostControlData = FctHostControlData()
 
     def get_fct_host_cmd(self, fixture: Fixture, hasTraceability: bool):
-        fullpathSplit = self._fctHostControlData.get_fct_host_control_executable_fullpath().split("/")
+        fullpathSplit = (
+            self._fctHostControlData.get_fct_host_control_executable_fullpath().split(
+                "/"
+            )
+        )
         fileName = fullpathSplit[-1]
         path = "/".join(fullpathSplit[0:-1])
         cmd = f"cd {path} && {self._mainConfigData.get_fixture_ip_env_name()}={fixture.get_ip()} ./{fileName} -f {fixture.get_id()}"
@@ -30,9 +34,7 @@ class FixtureController:
         return self._fixtureData.find(fixtureIp)
 
     def add_test(self, fixture: Fixture):
-        self._testData.add(
-            fixture._test, fixture.is_affecting_yield(), fixture.is_upload_to_sfc()
-        )
+        self._testData.add(fixture._test, fixture.get_mode().value)
         if fixture.is_upload_to_sfc():
             isUploadOk, message = self._fixtureData.upload_pass_to_sfc(
                 fixture._test.serialNumber
@@ -45,7 +47,7 @@ class FixtureController:
 
     def get_last_test_pass_qty(self):
         return self._mainConfigData.get_unlock_pass_qty()
-    
+
     def get_lock_fail_qty(self):
         return self._mainConfigData.get_lock_fail_qty()
 

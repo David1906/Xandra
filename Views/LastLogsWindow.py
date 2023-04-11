@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from Core.Enums.TestMode import TestMode
 from DataAccess.MainConfigData import MainConfigData
 from DataAccess.TestData import TestData
 from Models.Fixture import Test
@@ -9,6 +10,7 @@ from PyQt5.QtGui import QPen
 from Utils.PathHelper import PathHelper
 from Views.ImageWidget import ImageWidget
 from Views.LogButton import LogButton
+from Views.TestModeView import TestModeView
 
 
 class LastLogsWindow(QtWidgets.QWidget):
@@ -32,8 +34,8 @@ class LastLogsWindow(QtWidgets.QWidget):
         self.chart = QChart()
         self.chart.setAnimationOptions(QChart.SeriesAnimations)
         self.chart.setTheme(QChart.ChartThemeDark)
-        chartview = QChartView(self.chart)
-        self.gridLayout.addWidget(chartview, 0, 0)
+        chartView = QChartView(self.chart)
+        self.gridLayout.addWidget(chartView, 0, 0)
 
         self.table = QtWidgets.QTableWidget()
         self.table.setMaximumHeight(450)
@@ -69,18 +71,8 @@ class LastLogsWindow(QtWidgets.QWidget):
 
         self.cmbSize.activated[str].connect(self.on_cmb_size_change)
         footer.addWidget(self.cmbSize)
-
-        self.chkOnlyCountInYield = QtWidgets.QCheckBox(
-            "Show only records that count in yield"
-        )
-        self.chkOnlyCountInYield.stateChanged.connect(self.on_chk_only_count_in_yield)
-        footer.addWidget(self.chkOnlyCountInYield)
         self.gridLayout.addLayout(footer, 2, 0, QtCore.Qt.AlignCenter)
 
-        self.refresh(int(self.cmbSize.currentText()))
-
-    def on_chk_only_count_in_yield(self):
-        self.showOnliCountInYield = self.chkOnlyCountInYield.isChecked()
         self.refresh(int(self.cmbSize.currentText()))
 
     def is_only_count_in_yield(self):
@@ -128,12 +120,12 @@ class LastLogsWindow(QtWidgets.QWidget):
                     btn = LogButton(item)
                     btn.setToolTip(item)
                     self.table.setCellWidget(row, column, btn)
-                elif keys[column] == "traceability" or keys[column] == "countInYield":
-                    if item == True:
-                        img = ImageWidget(
-                            PathHelper().join_root_path("/Static/check.png"), self.table
-                        )
-                        self.table.setCellWidget(row, column, img)
+                elif keys[column] == "mode":
+                    self.table.setCellWidget(
+                        row,
+                        column,
+                        TestModeView(TestMode(int(item))),
+                    )
                 else:
                     self.table.setItem(
                         row, column, QtWidgets.QTableWidgetItem(str(item))

@@ -214,7 +214,7 @@ Para agregar los alias de Xandra realice los siguientes pasos:
     alias xandra-kill='fuser $XANDRA_MAIN_SCRIPT 2> /dev/null | xargs kill'
 
     # Alias to open docs
-    alias xandra-docs='xdg-open $XANDRA_BASE_PATH/docs/index.html'
+    alias xandra-docs='gio open $XANDRA_BASE_PATH/docs/index.html'
     ```
 
 * Guardar los cambios.

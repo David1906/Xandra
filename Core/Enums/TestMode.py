@@ -17,4 +17,4 @@ class TestMode(enum.Enum):
     ONLINE = "Online", True, False
     OFFLINE = "Offline", False, False
     RETEST = "Retest", False, False
-    ONLY_REPORT_PASS = "Report Only Pass", True, True
+    ONLY_REPORT_PASS = "Only Report Pass", True, True

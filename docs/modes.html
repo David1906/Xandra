@@ -464,15 +464,11 @@
 <th align="center">Bloqueo</th>
 <th align="center">SFC Pass</th>
 <th align="center">SFC Fail</th>
-<th align="center">Afecta Yield Pass</th>
-<th align="center">Afecta Yield Fail</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td align="left">En línea</td>
-<td align="center">✅</td>
-<td align="center">✅</td>
 <td align="center">✅</td>
 <td align="center">✅</td>
 <td align="center">✅</td>
@@ -482,23 +478,17 @@
 <td align="center">❌</td>
 <td align="center">❌</td>
 <td align="center">❌</td>
-<td align="center">✅</td>
-<td align="center">❌</td>
 </tr>
 <tr>
 <td align="left">Retest</td>
-<td align="center">✅</td>
-<td align="center">✅</td>
-<td align="center">✅</td>
 <td align="center">❌</td>
-<td align="center">❌</td>
+<td align="center">✅</td>
+<td align="center">✅</td>
 </tr>
 <tr>
 <td align="left">Only Report Pass</td>
 <td align="center">✅</td>
 <td align="center">✅</td>
-<td align="center">❌</td>
-<td align="center">❌</td>
 <td align="center">❌</td>
 </tr>
 </tbody>
@@ -506,8 +496,6 @@
 <p><code>Bloqueo</code>: Si la fixtura cumple las <a href="operation.html#logica-para-el-bloqueo-de-fixturas">condiciones de bloqueo</a> ésta no permite probar más tarjetas hasta que sus condiciones sean optimas nuevamente.</p>
 <p><code>SFC Pass</code>: Reporta en SFC las tarjetas que pasan las pruebas.</p>
 <p><code>SFC Fail</code>: Reporta en SFC las tarjetas que fallan las pruebas.</p>
-<p><code>Afecta yield Pass</code>: Las tarjetas que pasan las pruebas afectan el yield de la fixtura.</p>
-<p><code>Afecta yield Fail</code>: Las tarjetas que fallan las pruebas afectan el yield de la fixtura.</p>
 <h2 id="en-linea-trazabilidad-activa">En línea (trazabilidad activa)</h2>
 <p>En este modo se ejecuta el sistema <code>FCTHostControl</code> con la trazabilidad habilitada, por lo tanto cada que falle o pase una tarjeta ésta se verá reflejada en el sistema SFC.</p>
 <div class="admonition info">
@@ -546,6 +534,10 @@
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Al activar el modo <strong>Retest</strong> el selector de trazabilidad se deshabilita automáticamente y viceversa.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Si al desactivar el modo de <code>Retest</code> se cumple una de las condiciones en la <a href="operation.html#logica-para-el-bloqueo-de-fixturas">lógica de bloqueo</a> la fixtura se bloqueará automáticamente y tendrá que ser desbloqueada para activar de nuevo el modo <code>Retest</code>.</p>
 </div>
 <p>El comando con el que se inicia el secuenciador <code>FCTHostControl</code> es similar al siguiente:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>/local/Foxconn/automation/DA194/Bahubali_Sparrow<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nv">XANDRA_FIXTURE_IP</span><span class="o">=</span><span class="m">192</span>.167.1.119<span class="w"> </span>/local/Foxconn/automation/DA194/Bahubali_Sparrow/FCTHostControl<span class="w"> </span>-f<span class="w"> </span><span class="m">1</span>

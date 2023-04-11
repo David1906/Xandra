@@ -25,15 +25,15 @@ El archivo de configuración principal de xandra se encuentra escrito en formato
 
 `logsPath`: Ruta donde se guardan los logs de las pruebas realizadas.
 
-`yieldErrorThreshold`: Porcentaje de yield el cual una vez alcanzado bloqueará la fixtura y la pintará de color rojo en la interfaz.
+`yieldErrorThreshold`: **[0-100; 0 = deshabilitado]** - Porcentaje de yield el cual una vez alcanzado bloqueará la fixtura y la pintará de color rojo en la interfaz.
  
-`yieldWarningThreshold`: Porcentaje de yield el cual una vez alcanzado pintará la fixtura de color amarillo en la interfaz.
+`yieldWarningThreshold`: **[0-99]** - Porcentaje de yield el cual una vez alcanzado pintará la fixtura de color amarillo en la interfaz.
 
-`yieldCalcQty`: Cantidad de pruebas con las que se calculará el yield.
+`yieldCalcQty`: **[0-1000]** - Cantidad de pruebas con las que se calculará el yield.
 
-`unlockPassQty`: Cantidad de pruebas consecutivas con estatus PASS necesarias para desbloquear la fixtura.
+`unlockPassQty`: **[1-5]** - Cantidad de pruebas consecutivas con estatus PASS necesarias para desbloquear la fixtura.
 
-`lockFailQty`: Cantidad de pruebas consecutivas con estatus FAILED necesarias para bloquear la fixtura.
+`lockFailQty`: **[0-10; 0 = deshabilitado]** - Cantidad de pruebas consecutivas con estatus FAILED necesarias para bloquear la fixtura.
 
 `googleSheets`: Configuración para subir resultados de las pruebas realizadas a google sheets (ver sección acerca de [google sheets](#hoja-de-calculo-de-google-sheets)). 
 
@@ -73,20 +73,20 @@ El archivo de configuración principal de xandra se encuentra escrito en formato
     "logsPath": "/log/diag",
     "logsPath_description":"Ruta donde se guardan los logs de las pruebas realizadas",
 
-    "yieldErrorThreshold": 50,
-    "yieldErrorThreshold_description": "Porcentaje de yield el cual una vez alcanzado bloqueará la fixtura y lo pintará de color rojo en la interfaz",
+    "yieldErrorThreshold": 0,
+    "yieldErrorThreshold_description": "[0-100; 0 = deshabilitado] - Porcentaje de yield el cual una vez alcanzado bloqueará la fixtura y lo pintará de color rojo en la interfaz (0 para deshabilitar)",
 
-    "yieldWarningThreshold": 80,
-    "yieldWarningThreshold_description": "Porcentaje de yield el cual una vez alcanzado pintará la fixtura de color amarillo en la interfaz",
+    "yieldWarningThreshold": 70,
+    "yieldWarningThreshold_description": "[0-99] - Porcentaje de yield el cual una vez alcanzado pintará la fixtura de color amarillo en la interfaz",
 
     "yieldCalcQty": 10,
-    "yieldCalcQty_description" : "Cantidad de pruebas con las que se calculará el yield",
+    "yieldCalcQty_description" : "[0-1000] - Cantidad de pruebas con las que se calculará el yield",
 
     "unlockPassQty": 1,
-    "unlockPassQty_description" : "Cantidad de pruebas consecutivas con estatus PASS necesarias para desbloquear la fixtura",
+    "unlockPassQty_description" : "[1-5] - Cantidad de pruebas consecutivas con estatus PASS necesarias para desbloquear la fixtura",
 
     "lockFailQty": 3,
-    "lockFailQty_description" : "Cantidad de pruebas consecutivas con estatus FAILED necesarias para bloquear la fixtura",
+    "lockFailQty_description" : "[0-10; 0 = deshabilitado] - Cantidad de pruebas consecutivas con estatus FAILED necesarias para bloquear la fixtura",
 
     "googleSheets": {
         "isActivated" : true,

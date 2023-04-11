@@ -4,22 +4,18 @@ Xandra cuenta con múltiples modos de operación cuyo objetivo es atacar las nec
 
 Los modos disponibles son `En línea`, `Fuera de línea`, `Retest`, `Only Report Pass` cuyo comportamiento puede observarse en la siguiente tabla:
 
-Modo | Bloqueo | SFC Pass | SFC Fail | Afecta Yield Pass | Afecta Yield Fail
-:--- | :---: | :---: | :---: | :---: | :---:
-En línea | ✅ | ✅ | ✅ | ✅ | ✅ 
-Fuera de línea | ❌ | ❌ | ❌ | ✅ | ❌
-Retest | ✅ | ✅ | ✅ | ❌ | ❌
-Only Report Pass | ✅ | ✅ | ❌ | ❌ | ❌
+Modo | Bloqueo | SFC Pass | SFC Fail 
+:--- | :---: | :---: | :---:
+En línea | ✅ | ✅ | ✅
+Fuera de línea | ❌ | ❌ | ❌
+Retest | ❌ | ✅ | ✅ |
+Only Report Pass | ✅ | ✅ | ❌
 
 `Bloqueo`: Si la fixtura cumple las [condiciones de bloqueo](operation.md#logica-para-el-bloqueo-de-fixturas) ésta no permite probar más tarjetas hasta que sus condiciones sean optimas nuevamente.
 
 `SFC Pass`: Reporta en SFC las tarjetas que pasan las pruebas.
 
 `SFC Fail`: Reporta en SFC las tarjetas que fallan las pruebas.
-
-`Afecta yield Pass`: Las tarjetas que pasan las pruebas afectan el yield de la fixtura.
-
-`Afecta yield Fail`: Las tarjetas que fallan las pruebas afectan el yield de la fixtura.
 
 ## En línea (trazabilidad activa)
 
@@ -69,6 +65,9 @@ El modo retest está pensado para probar tarjetas que provienen de reparación, 
 
 !!! note
     Al activar el modo **Retest** el selector de trazabilidad se deshabilita automáticamente y viceversa.
+
+!!! warning
+    Si al desactivar el modo de `Retest` se cumple una de las condiciones en la [lógica de bloqueo](operation.md#logica-para-el-bloqueo-de-fixturas) la fixtura se bloqueará automáticamente y tendrá que ser desbloqueada para activar de nuevo el modo `Retest`.
 
 El comando con el que se inicia el secuenciador `FCTHostControl` es similar al siguiente:
 

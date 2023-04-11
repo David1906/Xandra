@@ -81,6 +81,8 @@ class FixtureEnabledChecker:
 
 
 if FixtureEnabledChecker().check():
+    input("asdf..")
     exit(0)
 else:
+    input("asdf..")
     exit(1)

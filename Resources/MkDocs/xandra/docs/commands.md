@@ -10,6 +10,7 @@ Xandra cuenta con distintos comandos que pueden ejecutarse directamente en la te
 * `xandra-path` - Ingresa a la carpeta de instalación de Xandra mediante el comando cd.
 * `xandra-update` - Actualiza y configura Xandra a su versión más reciente.
 * `xandra-kill` - Cierra xandra terminando el proceso python3 sobre el cual se ejecuta.
+* `xandra-docs` - Abre la documentación de Xandra.
 
 ## Atajos de teclado
 
@@ -20,3 +21,25 @@ Dentro de Xandra es posible utilizar distintos atajos de teclado para activar al
 * `Ctrl+Shift+R` - Habilita o deshabilita el modo retest.
 * `Ctrl+Shift+T` - Si se encuentra habilitado el modo retest, con este atajo se permite desbloquear o bloquear el selector de trazabilidad (requiere contraseña).
 * `Ctrl+Shift+L` - Habilita o deshabilita el bloqueo de las fixturas (requiere contraseña).
+
+## Comandos para desarrollo
+
+* Crear nueva migración: 
+``` shell
+alembic revision --autogenerate -m ""
+```
+
+* Aplicar migración: 
+``` shell
+alembic upgrade head
+```
+
+* Servir documentación: 
+``` shell
+mkdocs serve 
+```
+
+* Hacer build de documentación: 
+``` shell
+mkdocs build -d ../../../docs  
+```

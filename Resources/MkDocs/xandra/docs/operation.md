@@ -7,7 +7,7 @@ En el escritorio de cada servidor de prueba (PXE) se encuentra el ícono de la a
 De forma alternativa es posible ejecutar el comando `xandra` en una terminal para lanzar una nueva ventana.
 
 !!! info
-    Si obtiene un error al intentar abrir el programa diríjase a la sección [solución de problemas](troubleshooting.md#xandra-no-permite-abrir-nueva-ventana) para intentar encontrar un arreglo a la situación.
+    Si obtiene un error al intentar abrir el programa diríjase a la sección [solución de problemas](troubleshooting.md#xandra-no-permite-abrir-nueva-ventana) para intentar encontrar un remedio a la situación.
 
 ## Componentes de la ventana principal
 
@@ -15,7 +15,7 @@ La ventana principal muestra un arreglo de 9 componentes dispuestos de forma id�
 
 En la parte inferior puede apreciarse la versión de Xandra, la versión del script de pruebas que está siendo utilizado, así como el estado general del programa.
 
-Sus partes principales son las siguientes:
+Sus componentes son los siguientes:
 
 ![](static/operation/main_window.png "Componentes de  ventana principal")
 
@@ -32,7 +32,7 @@ Sus componentes son los siguientes:
 Para iniciar el secuenciador `FCTHostControl` en una fixtura basta con presionar el botón `Start` y Xandra iniciará una nueva terminal con la configuración correspondiente.
 
 !!! tip
-    Si presionas el atajo de teclado `Ctrl+Shift+A` puedes inicializar todas las fixturas al mismo tiempo.
+    Si presiona el atajo de teclado `Ctrl+Shift+A` puedes inicializar todas las fixturas al mismo tiempo.
 
 * Una vez inicializada la terminal seleccione el modelo que desea correr:
 
@@ -67,15 +67,11 @@ Existen tres formas distintas para detener la terminal en una fixtura.
 
 ## Estadísticas de últimas pruebas realizadas
 
-Para visualizar un reporte de las últimas pruebas ejecutadas puedes hacer click en el botón `Last Test`, en ésta ventana se encuentra un gráfico de pastel indicando el porcentaje de pruebas aprobadas y falladas, así como una tabla con el resumen de cada una de ellas.
+Para visualizar un reporte de las últimas pruebas ejecutadas puedes hacer click en el botón `Last Tests`, en ésta ventana se encuentra un gráfico de pastel indicando el porcentaje de pruebas aprobadas y falladas, así como una tabla con el resumen de cada una de ellas.
 
-En la última columna de la tabla se encuentra un botón con el cual puedes acceder directamente al logfile completo de la prueba para ver en detalle el resultado de cada paso ejecutado durante su ejecución.
+En la última columna de la tabla se encuentra un botón con el cual es posible acceder directamente al logfile completo de la prueba para ver en detalle el resultado de cada paso realizado durante su ejecución.
 
 ![](static/operation/last_tests.png "Ventana últimas pruebas")
-
-### Mostrar sólo pruebas que afectan al cálculo del yield
-
-Cuando la fixtura se encuentra en ciertos modos, las pruebas realizadas no se ven reflejadas en el cálculo del yield, por ejemplo cuando se activa el `modo retest` o `modo fuera de línea` ([ver sección modos para mayor información](modes.md#modos-de-operación)) por lo tanto si desea visualizar sólo aquellas pruebas que son tomadas en cuenta para dicho cálculo basta con seleccionar el checkbox `Show only records that count in yield` localizado en la parte inferior de la ventana.
 
 ## Incrementar o disminuir la cantidad de pruebas visualizadas
 
@@ -88,13 +84,9 @@ Si requiere visualizar un número diferente de registros puede seleccionar la ca
 
 En esta columna se guarda una síntesis de la causa por la cual falló la prueba, listando errores como problemas de dimm o el voltaje que provocó dicho comportamiento inesperado.
 
-### Columna Traceability
+### Columna Mode
 
-En esta columna se especifica si la prueba fue ejecutada con trazabilidad activa, es decir, si su resultado fue reflejado en el sistema SFC. Si la columna contiene una palomita significa que la trazabilidad se encontraba activa al momento de ejecutar la prueba, de lo contrario, ésta característica estaba deshabilitada.
-
-### Columna Count In Yield
-
-Esta columna indica si la prueba está siendo tomada en cuenta para el cálculo del yield, su valor es calculado en base al modo con el cuál fue ejecutada la prueba. Si la columna contiene una palomita significa que el resultado está siendo considerado para el calculo del yield, de lo contrario, está siendo ignorada.
+En esta columna se especifica el modo con el cual fué ejecutada la prueba ([ver sección modos para mayor información](modes.md#modos-de-operación)).
 
 ## Estadísticas de últimas fallas
 
@@ -147,6 +139,16 @@ Una vez bloqueada la fixtura existen 2 posibilidades para desbloquearla:
 2. La fixtura pasa de manera consecutiva la cantidad de pruebas especificadas en la configuración `unlockPassQty`.
 
 Una vez cumplida una de las dos condiciones el control de la fixtura remueve el color rojo del mismo.
+
+Para desbloquear una fixtura realice los siguientes pasos:
+
+- Activar el modo `Offline` en la fixtura para desbloquearla, se debe tomar en cuenta que la prueba no reflejará los resultados en el sistema de trazabilidad.
+- Pruebe la cantidad de tarjetas especificadas en la leyenda `Test * to unlock`.
+    ![](static/operation/fixture_unlock_1.png "Fixtura bloqueada, cantidad para desbloqueo especificada en indicador")
+- Repita el paso anterior hasta que el led se ilumine en color verde y la leyenda cambie a `Unlocked`.
+    ![](static/operation/fixture_unlock_2.png "Fixtura desbloqueada")
+- Presione el botón stop.
+- Active el [modo de operación](modes.md) deseado.
 
 ## Detección de resultados
 

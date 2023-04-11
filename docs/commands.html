@@ -334,6 +334,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#comandos-para-desarrollo" class="md-nav__link">
+    Comandos para desarrollo
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -397,6 +404,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#comandos-para-desarrollo" class="md-nav__link">
+    Comandos para desarrollo
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -422,6 +436,7 @@
 <li><code>xandra-path</code> - Ingresa a la carpeta de instalación de Xandra mediante el comando cd.</li>
 <li><code>xandra-update</code> - Actualiza y configura Xandra a su versión más reciente.</li>
 <li><code>xandra-kill</code> - Cierra xandra terminando el proceso python3 sobre el cual se ejecuta.</li>
+<li><code>xandra-docs</code> - Abre la documentación de Xandra.</li>
 </ul>
 <h2 id="atajos-de-teclado">Atajos de teclado</h2>
 <p>Dentro de Xandra es posible utilizar distintos atajos de teclado para activar alguna funcionalidad o agilizar el trabajo del usuario, se ha optado por ésta opción sobre la incorporación de menús debido a que se pretende reducir al mínimo la incorrecta manipulación del sistema por parte de usuarios no capacitados para éste fin, como lo puede ser un operador.</p>
@@ -431,6 +446,29 @@
 <li><code>Ctrl+Shift+R</code> - Habilita o deshabilita el modo retest.</li>
 <li><code>Ctrl+Shift+T</code> - Si se encuentra habilitado el modo retest, con este atajo se permite desbloquear o bloquear el selector de trazabilidad (requiere contraseña).</li>
 <li><code>Ctrl+Shift+L</code> - Habilita o deshabilita el bloqueo de las fixturas (requiere contraseña).</li>
+</ul>
+<h2 id="comandos-para-desarrollo">Comandos para desarrollo</h2>
+<ul>
+<li>
+<p>Crear nueva migración: 
+<div class="highlight"><pre><span></span><code>alembic<span class="w"> </span>revision<span class="w"> </span>--autogenerate<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;&quot;</span>
+</code></pre></div></p>
+</li>
+<li>
+<p>Aplicar migración: 
+<div class="highlight"><pre><span></span><code>alembic<span class="w"> </span>upgrade<span class="w"> </span>head
+</code></pre></div></p>
+</li>
+<li>
+<p>Servir documentación: 
+<div class="highlight"><pre><span></span><code>mkdocs<span class="w"> </span>serve<span class="w"> </span>
+</code></pre></div></p>
+</li>
+<li>
+<p>Hacer build de documentación: 
+<div class="highlight"><pre><span></span><code>mkdocs<span class="w"> </span>build<span class="w"> </span>-d<span class="w"> </span>../../../docs<span class="w">  </span>
+</code></pre></div></p>
+</li>
 </ul>
 
 

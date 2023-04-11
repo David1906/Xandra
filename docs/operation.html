@@ -357,19 +357,6 @@
     Estadísticas de últimas pruebas realizadas
   </a>
   
-    <nav class="md-nav" aria-label="Estadísticas de últimas pruebas realizadas">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#mostrar-solo-pruebas-que-afectan-al-calculo-del-yield" class="md-nav__link">
-    Mostrar sólo pruebas que afectan al cálculo del yield
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
         <li class="md-nav__item">
@@ -388,15 +375,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#columna-traceability" class="md-nav__link">
-    Columna Traceability
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#columna-count-in-yield" class="md-nav__link">
-    Columna Count In Yield
+  <a href="#columna-mode" class="md-nav__link">
+    Columna Mode
   </a>
   
 </li>
@@ -600,19 +580,6 @@
     Estadísticas de últimas pruebas realizadas
   </a>
   
-    <nav class="md-nav" aria-label="Estadísticas de últimas pruebas realizadas">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#mostrar-solo-pruebas-que-afectan-al-calculo-del-yield" class="md-nav__link">
-    Mostrar sólo pruebas que afectan al cálculo del yield
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
         <li class="md-nav__item">
@@ -631,15 +598,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#columna-traceability" class="md-nav__link">
-    Columna Traceability
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#columna-count-in-yield" class="md-nav__link">
-    Columna Count In Yield
+  <a href="#columna-mode" class="md-nav__link">
+    Columna Mode
   </a>
   
 </li>
@@ -718,12 +678,12 @@
 <p>De forma alternativa es posible ejecutar el comando <code>xandra</code> en una terminal para lanzar una nueva ventana.</p>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
-<p>Si obtiene un error al intentar abrir el programa diríjase a la sección <a href="troubleshooting.html#xandra-no-permite-abrir-nueva-ventana">solución de problemas</a> para intentar encontrar un arreglo a la situación.</p>
+<p>Si obtiene un error al intentar abrir el programa diríjase a la sección <a href="troubleshooting.html#xandra-no-permite-abrir-nueva-ventana">solución de problemas</a> para intentar encontrar un remedio a la situación.</p>
 </div>
 <h2 id="componentes-de-la-ventana-principal">Componentes de la ventana principal</h2>
 <p>La ventana principal muestra un arreglo de 9 componentes dispuestos de forma idéntica a como pueden ser localizadas físicamente las fixturas sobre los racks, cuenta con 3 columnas de 3 fixturas cada una. </p>
 <p>En la parte inferior puede apreciarse la versión de Xandra, la versión del script de pruebas que está siendo utilizado, así como el estado general del programa.</p>
-<p>Sus partes principales son las siguientes:</p>
+<p>Sus componentes son los siguientes:</p>
 <p><img alt="" src="static/operation/main_window.png" title="Componentes de  ventana principal" /></p>
 <h2 id="componentes-de-la-fixtura">Componentes de la fixtura</h2>
 <p>Cada fixtura se encuentra representada en la ventana principal por un componente gráfico cuya finalidad es facilitar la visualización del estado y configuración de la misma. Todos los componentes pueden ajustarse y manipularse de manera independiente debido a que todos sus procesos se ejecutan en hilos separados para garantizar un aislamiento concurrente adecuado.</p>
@@ -733,7 +693,7 @@
 <p>Para iniciar el secuenciador <code>FCTHostControl</code> en una fixtura basta con presionar el botón <code>Start</code> y Xandra iniciará una nueva terminal con la configuración correspondiente.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>Si presionas el atajo de teclado <code>Ctrl+Shift+A</code> puedes inicializar todas las fixturas al mismo tiempo.</p>
+<p>Si presiona el atajo de teclado <code>Ctrl+Shift+A</code> puedes inicializar todas las fixturas al mismo tiempo.</p>
 </div>
 <ul>
 <li>
@@ -769,11 +729,9 @@
 <p>Se recomienda siempre utilizar el botón <code>Stop</code> para detener la terminal de una fixtura ya que de esta manera se evita finalizar alguna prueba por accidente.</p>
 </div>
 <h2 id="estadisticas-de-ultimas-pruebas-realizadas">Estadísticas de últimas pruebas realizadas</h2>
-<p>Para visualizar un reporte de las últimas pruebas ejecutadas puedes hacer click en el botón <code>Last Test</code>, en ésta ventana se encuentra un gráfico de pastel indicando el porcentaje de pruebas aprobadas y falladas, así como una tabla con el resumen de cada una de ellas.</p>
-<p>En la última columna de la tabla se encuentra un botón con el cual puedes acceder directamente al logfile completo de la prueba para ver en detalle el resultado de cada paso ejecutado durante su ejecución.</p>
+<p>Para visualizar un reporte de las últimas pruebas ejecutadas puedes hacer click en el botón <code>Last Tests</code>, en ésta ventana se encuentra un gráfico de pastel indicando el porcentaje de pruebas aprobadas y falladas, así como una tabla con el resumen de cada una de ellas.</p>
+<p>En la última columna de la tabla se encuentra un botón con el cual es posible acceder directamente al logfile completo de la prueba para ver en detalle el resultado de cada paso realizado durante su ejecución.</p>
 <p><img alt="" src="static/operation/last_tests.png" title="Ventana últimas pruebas" /></p>
-<h3 id="mostrar-solo-pruebas-que-afectan-al-calculo-del-yield">Mostrar sólo pruebas que afectan al cálculo del yield</h3>
-<p>Cuando la fixtura se encuentra en ciertos modos, las pruebas realizadas no se ven reflejadas en el cálculo del yield, por ejemplo cuando se activa el <code>modo retest</code> o <code>modo fuera de línea</code> (<a href="modes.html#modos-de-operación">ver sección modos para mayor información</a>) por lo tanto si desea visualizar sólo aquellas pruebas que son tomadas en cuenta para dicho cálculo basta con seleccionar el checkbox <code>Show only records that count in yield</code> localizado en la parte inferior de la ventana.</p>
 <h2 id="incrementar-o-disminuir-la-cantidad-de-pruebas-visualizadas">Incrementar o disminuir la cantidad de pruebas visualizadas</h2>
 <p>Si requiere visualizar un número diferente de registros puede seleccionar la cantidad que mejor se adecúe a sus necesidades en el combobox ubicado sobre la parte inferior de la ventana. Los valores posibles son <code>10</code>, <code>25</code>, <code>50</code>, <code>100</code>,<code>200</code>.</p>
 <div class="admonition info">
@@ -782,10 +740,8 @@
 </div>
 <h3 id="columna-description">Columna Description</h3>
 <p>En esta columna se guarda una síntesis de la causa por la cual falló la prueba, listando errores como problemas de dimm o el voltaje que provocó dicho comportamiento inesperado.</p>
-<h3 id="columna-traceability">Columna Traceability</h3>
-<p>En esta columna se especifica si la prueba fue ejecutada con trazabilidad activa, es decir, si su resultado fue reflejado en el sistema SFC. Si la columna contiene una palomita significa que la trazabilidad se encontraba activa al momento de ejecutar la prueba, de lo contrario, ésta característica estaba deshabilitada.</p>
-<h3 id="columna-count-in-yield">Columna Count In Yield</h3>
-<p>Esta columna indica si la prueba está siendo tomada en cuenta para el cálculo del yield, su valor es calculado en base al modo con el cuál fue ejecutada la prueba. Si la columna contiene una palomita significa que el resultado está siendo considerado para el calculo del yield, de lo contrario, está siendo ignorada.</p>
+<h3 id="columna-mode">Columna Mode</h3>
+<p>En esta columna se especifica el modo con el cual fué ejecutada la prueba (<a href="modes.html#modos-de-operación">ver sección modos para mayor información</a>).</p>
 <h2 id="estadisticas-de-ultimas-fallas">Estadísticas de últimas fallas</h2>
 <p>Si requiere visualizar un reporte con las últimas fallas presentadas en la fixtura presione el botón <code>Last Failures</code>, en ésta ventana se encuentra un gráfico de pastel indicando las fallas y su porcentaje de incidencia según su clasificación (stepLabel), así como una tabla con el resumen de cada una de ellas.</p>
 <p>El objetivo de ésta ventana es identificar las fallas que está teniendo la fixtura para realizar un mejor mantenimiento preventivo y correctivo.</p>
@@ -827,6 +783,16 @@
 <li>La fixtura pasa de manera consecutiva la cantidad de pruebas especificadas en la configuración <code>unlockPassQty</code>.</li>
 </ol>
 <p>Una vez cumplida una de las dos condiciones el control de la fixtura remueve el color rojo del mismo.</p>
+<p>Para desbloquear una fixtura realice los siguientes pasos:</p>
+<ul>
+<li>Activar el modo <code>Offline</code> en la fixtura para desbloquearla, se debe tomar en cuenta que la prueba no reflejará los resultados en el sistema de trazabilidad.</li>
+<li>Pruebe la cantidad de tarjetas especificadas en la leyenda <code>Test * to unlock</code>.
+    <img alt="" src="static/operation/fixture_unlock_1.png" title="Fixtura bloqueada, cantidad para desbloqueo especificada en indicador" /></li>
+<li>Repita el paso anterior hasta que el led se ilumine en color verde y la leyenda cambie a <code>Unlocked</code>.
+    <img alt="" src="static/operation/fixture_unlock_2.png" title="Fixtura desbloqueada" /></li>
+<li>Presione el botón stop.</li>
+<li>Active el <a href="modes.html">modo de operación</a> deseado.</li>
+</ul>
 <h2 id="deteccion-de-resultados">Detección de resultados</h2>
 <p>Xandra detecta los resultados al escuchar la carpeta especificada en la configuración <code>logsPath</code>, cada que se crea un nuevo archivo en esta ruta su contenido es procesado y almacenado, de igual manera se ve reflejado en la interfaz gráfica afectando el estado de la fixtura asociada al resultado de la prueba detectada.</p>
 <h2 id="deteccion-de-final-de-la-prueba">Detección de final de la prueba</h2>

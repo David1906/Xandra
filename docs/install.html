@@ -281,6 +281,55 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#instalar-dependencias-del-sistema" class="md-nav__link">
+    Instalar dependencias del sistema
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#agregar-comandos-alias-al-sistema" class="md-nav__link">
+    Agregar comandos alias al sistema
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#clonar-repositorio-de-github" class="md-nav__link">
+    Clonar repositorio de Github
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#instalar-dependencias-python" class="md-nav__link">
+    Instalar dependencias python
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crear-acceso-directo" class="md-nav__link">
+    Crear acceso directo
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#correr-script-de-actualizacion" class="md-nav__link">
+    Correr script de actualización
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validar-configuracion" class="md-nav__link">
+    Validar configuración
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -407,6 +456,55 @@
         <li class="md-nav__item">
   <a href="#crear-base-de-datos" class="md-nav__link">
     Crear base de datos
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#instalar-dependencias-del-sistema" class="md-nav__link">
+    Instalar dependencias del sistema
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#agregar-comandos-alias-al-sistema" class="md-nav__link">
+    Agregar comandos alias al sistema
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#clonar-repositorio-de-github" class="md-nav__link">
+    Clonar repositorio de Github
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#instalar-dependencias-python" class="md-nav__link">
+    Instalar dependencias python
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crear-acceso-directo" class="md-nav__link">
+    Crear acceso directo
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#correr-script-de-actualizacion" class="md-nav__link">
+    Correr script de actualización
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validar-configuracion" class="md-nav__link">
+    Validar configuración
   </a>
   
 </li>
@@ -543,210 +641,211 @@ MariaDB [(none)]&gt;
 </code></pre></div>
 </li>
 <li>
-<p>Introduzca el siguiente comando para crear el esquema <code>xandra_dbo</code>:
-<div class="highlight"><pre><span></span><code>    ``` sql
-    CREATE DATABASE IF NOT EXISTS xandra_dbo;
-    ```
-
-* Si la respuesta es semejante a la que se muestra a continuación, el procedimiento fue realizado correctamente:
-
-    !!! success
-        MariaDB [(none)]&gt; CREATE DATABASE IF NOT EXISTS xandra_dbo;
-
-        Query OK, 1 row affected (0.039 sec)
-
-* Salir de la consola MariaDB escriba el comando:
-``` shell
-exit
-
-## Instalar dependencias del sistema
-
-Xandra tiene dependencias externas relacionadas con el sistema operativo, las mismas son instaladas mediante el gestor de paquetes propio de CentOS, es decir, yum.
-
-Para instalar dichas dependencias es necesario contar con una conexión estable a internet debido a que los repositorios en los que se encuentran alojadas sólo son accesibles a través de éste medio.
-
-* Para instalar las dependencias del sistema ejecute el siguiente comando:
-
-    ``` shell
-    sudo yum install -y tmux xterm
-    ```
-
-## Agregar comandos alias al sistema
-
-Los alias son similares, salvando las distancias, a los accesos directos de Windows. Permiten representar un comando o conjunto de comandos asociándolos con una palabra clave dentro de la terminal. Su uso principal es el de abreviar órdenes o añadir argumentos de forma predeterminada a una orden que se usa con mucha frecuencia.
-
-Para agregar los alias de Xandra realice los siguientes pasos:
-
-* Modificar archivo `~/.bashrc`:
-
-    ``` shell
-    gedit ~/.bashrc
-    ```
-
-* Copiar y pegar el siguiente texto al final del archivo `~/.bashrc`:
-
-    ``` shell
-    if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
-    fi
-    ```
-
-* Guardar los cambios.
-
-* Crear archivo `~/.bash_aliases`:
-
-    ``` shell
-    touch ~/.bash_aliases
-    ```
-
-* Abrir en el editor de texto gráfico al archivo `~/.bash_aliases`:
-
-    ``` shell
-    gedit ~/.bash_aliases
-    ```
-
-* Copiar y pegar el siguiente texto en el archivo `~/.bash_aliases`:
-
-    ```
-    # Set environment variables
-    export XANDRA_BASE_PATH=/usr/local/Foxconn/automation/Xandra
-    export XANDRA_MAIN_SCRIPT=$XANDRA_BASE_PATH/xandra.py
-
-    # Alias to open Xandra
-    alias xandra=&#39;systemctl start xampp.service &amp;&amp; tmux new -d &quot;cd $XANDRA_BASE_PATH &amp;&amp; python3 $XANDRA_MAIN_SCRIPT&quot;&#39;
-
-    # Alias to open Xandra in testing mode
-    alias xandra-testing=&#39;ENV=testing python3 $XANDRA_MAIN_SCRIPT&#39;
-
-    # Alias to open Xandra config
-    alias xandra-config=&#39;tmux new -d &quot;gedit $XANDRA_BASE_PATH/xandra_config.json&quot;&#39;
-
-    # Alias to cd Xandra path
-    alias xandra-path=&#39;cd $XANDRA_BASE_PATH&#39;
-
-    # Alias to update Xandra
-    alias xandra-update=&#39;sudo chmod +x $XANDRA_BASE_PATH/update.sh &amp;&amp; $XANDRA_BASE_PATH/update.sh&#39;
-
-    # Alias to kill Xandra
-    alias xandra-kill=&#39;fuser $XANDRA_MAIN_SCRIPT 2&gt; /dev/null | xargs kill&#39;
-
-    # Alias to open docs
-    alias xandra-docs=&#39;gio open $XANDRA_BASE_PATH/docs/index.html&#39;
-    ```
-
-* Guardar los cambios.
-
-* Ejecutar comando para cargar los alias a la terminal:
-
-    ``` shell
-    source ~/.bash_aliases
-    ```
-
-!!! warning
-    En ocasiones es necesario reiniciar la terminal para poder ejecutar los comandos alias de Xandra.
-
-!!! tip
-    La lista completa de comandos se puede consultar en la sección [comandos](commands.md).
-
-## Clonar repositorio de Github
-
-El proyecto Xandra se encuentra alojado en el servidor Github.com para facilitar la gestión de versiones y su distribución.
-
-Al clonar un repositorio se extrae una copia integral de todos los datos del repositorio que GitHub.com tiene en ese momento, incluidas todas las versiones de cada archivo y carpeta del proyecto.
-
-* Para clonar el programa Xandra a la computadora local ejecute los siguientes comandos:
-
-    ```
-    mkdir /usr/local/Foxconn/automation
-    ```
-    ```
-    cd /usr/local/Foxconn/automation
-    ```
-    ```
-    git clone https://github.com/David1906/Xandra.git
-    ```
-
-## Instalar dependencias python
-
-Pip es un sistema de gestión de paquetes utilizado para instalar y administrar paquetes de software escritos en Python. Xandra hace uso de dichos paquetes para enriquecer su funcionalidad proveyéndolo de características tales como una interfaz gráfica.
-
-* Para instalar las dependencias de python ejecute los siguientes comandos:
-
-* Ingresar a la carpeta de Xandra:
-    ```
-    xandra-path
-    ```
-
-* Instalar dependencias de Xandra:
-    ```
-    python -m pip install --upgrade pip
-    ```
-
-* Instalar dependencias de Xandra:
-    ```
-    pip3 install -r requirements.txt
-    ```
-
-* Instalar alembic (encargado de las migraciones en base de datos):
-    ```
-    pip3 uninstall alembic
-    ```
-
-* Ingresar &quot;Y&quot; para confirmar la desinstalación de alembic.
-
-* Instalar nuevamente Alembic
-    ```
-    python3 -m pip install alembic --user
-    ```
-
-## Crear acceso directo
-
-En Gnu/Linux es fácil crear accesos directos personalizados que estén registrados por el escritorio y que los muestre en donde corresponda de manera automática, para ello solo hemos de crear un archivo .desktop con la configuración necesaria dentro de la carpeta correspondiente.
-
-En el caso de Xandra dicho acceso directo se crea en la carpeta Desktop del usuario root, para ello realice los siguientes pasos:
-
-* Crear archivo `xandra.desktop`:
-
-    ```
-    touch /root/Desktop/xandra.desktop
-    ```
-
-* Abrir en el editor de texto gráfico al archivo `xandra.desktop`:
-    ```
-    gedit /root/Desktop/xandra.desktop
-    ```
-
-* Copiar y pegar el siguiente texto en el archivo `xandra.desktop`:
-
-    ```
-    [Desktop Entry]
-    Name=Xandra
-    Exec=xandra
-    Terminal=true
-    Type=Application
-    Icon=/usr/local/Foxconn/automation/Xandra/Static/icon.png
-    ```
-
-* Guardar los cambios.
-
-* Una vez realizados los pasos anteriores debe aparecer un acceso directo en el escritorio del usuario root con el ícono de Xandra.
-
-!!! tip
-    También es posible abrir el programa Xandra ejecutando el comando `xandra` en una terminal.
-
-
-## Correr script de actualización
-
-Xandra cuenta con un script especializado en buscar, descargar y configurar las nuevas versiones lanzadas del mismo, para ello basta con ejecutar el comando `xandra-update` en una terminal.
+<p>Introduzca el siguiente comando para crear el esquema <code>xandra_dbo</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">DATABASE</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">xandra_dbo</span><span class="p">;</span>
 </code></pre></div>
-xandra-update
-<div class="highlight"><pre><span></span><code>## Validar configuración
-Antes de iniciar Xandra es importante validar la configuración por defecto incluida en la versión actual, para ello ejecuta el comando `xandra-config`, si requiere ver la descripción de cada configuración diríjase a la sección [configuraciones](configs.md).
-</code></pre></div>
-xandra-config
-```</p>
+</li>
+<li>
+<p>Si la respuesta es semejante a la que se muestra a continuación, el procedimiento fue realizado correctamente:</p>
+<div class="admonition success">
+<p class="admonition-title">Success</p>
+<p>MariaDB [(none)]&gt; CREATE DATABASE IF NOT EXISTS xandra_dbo;</p>
+<p>Query OK, 1 row affected (0.039 sec)</p>
+</div>
+</li>
+<li>
+<p>Salir de la consola MariaDB escriba el comando:
+    <div class="highlight"><pre><span></span><code><span class="nb">exit</span>
+</code></pre></div></p>
 </li>
 </ul>
+<h2 id="instalar-dependencias-del-sistema">Instalar dependencias del sistema</h2>
+<p>Xandra tiene dependencias externas relacionadas con el sistema operativo, las mismas son instaladas mediante el gestor de paquetes propio de CentOS, es decir, yum.</p>
+<p>Para instalar dichas dependencias es necesario contar con una conexión estable a internet debido a que los repositorios en los que se encuentran alojadas sólo son accesibles a través de éste medio.</p>
+<ul>
+<li>
+<p>Para instalar las dependencias del sistema ejecute el siguiente comando:</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>yum<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>tmux<span class="w"> </span>xterm
+</code></pre></div>
+</li>
+</ul>
+<h2 id="agregar-comandos-alias-al-sistema">Agregar comandos alias al sistema</h2>
+<p>Los alias son similares, salvando las distancias, a los accesos directos de Windows. Permiten representar un comando o conjunto de comandos asociándolos con una palabra clave dentro de la terminal. Su uso principal es el de abreviar órdenes o añadir argumentos de forma predeterminada a una orden que se usa con mucha frecuencia.</p>
+<p>Para agregar los alias de Xandra realice los siguientes pasos:</p>
+<ul>
+<li>
+<p>Modificar archivo <code>~/.bashrc</code>:</p>
+<div class="highlight"><pre><span></span><code>gedit<span class="w"> </span>~/.bashrc
+</code></pre></div>
+</li>
+<li>
+<p>Copiar y pegar el siguiente texto al final del archivo <code>~/.bashrc</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-f<span class="w"> </span>~/.bash_aliases<span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+.<span class="w"> </span>~/.bash_aliases
+<span class="k">fi</span>
+</code></pre></div>
+</li>
+<li>
+<p>Guardar los cambios.</p>
+</li>
+<li>
+<p>Crear archivo <code>~/.bash_aliases</code>:</p>
+<div class="highlight"><pre><span></span><code>touch<span class="w"> </span>~/.bash_aliases
+</code></pre></div>
+</li>
+<li>
+<p>Abrir en el editor de texto gráfico al archivo <code>~/.bash_aliases</code>:</p>
+<div class="highlight"><pre><span></span><code>gedit<span class="w"> </span>~/.bash_aliases
+</code></pre></div>
+</li>
+<li>
+<p>Copiar y pegar el siguiente texto en el archivo <code>~/.bash_aliases</code>:</p>
+<div class="highlight"><pre><span></span><code># Set environment variables
+export XANDRA_BASE_PATH=/usr/local/Foxconn/automation/Xandra
+export XANDRA_MAIN_SCRIPT=$XANDRA_BASE_PATH/xandra.py
+export XANDRA_VENV=venv/bin/activate
+
+# Open Xandra path and source venv
+alias xandra-source-venv=&#39;cd $XANDRA_BASE_PATH &amp;&amp; source $XANDRA_VENV&#39;
+
+# Alias to open Xandra
+alias xandra=&#39;systemctl start xampp.service &amp;&amp; tmux new -d &quot;cd $XANDRA_BASE_PATH &amp;&amp; source $XANDRA_VENV &amp;&amp; python3 $XANDRA_MAIN_SCRIPT&quot;&#39;
+
+# Alias to open Xandra in testing mode
+alias xandra-testing=&#39;ENV=testing python3 $XANDRA_MAIN_SCRIPT&#39;
+
+# Alias to open Xandra config
+alias xandra-config=&#39;tmux new -d &quot;gedit $XANDRA_BASE_PATH/xandra_config.json&quot;&#39;
+
+# Alias to cd Xandra path
+alias xandra-path=&#39;cd $XANDRA_BASE_PATH&#39;
+
+# Alias to update Xandra
+alias xandra-update=&#39;sudo chmod +x $XANDRA_BASE_PATH/update.sh &amp;&amp; $XANDRA_BASE_PATH/update.sh&#39;
+
+# Alias to kill Xandra
+alias xandra-kill=&#39;fuser $XANDRA_MAIN_SCRIPT 2&gt; /dev/null | xargs kill&#39;
+
+# Alias to open docs
+alias xandra-docs=&#39;gio open $XANDRA_BASE_PATH/docs/index.html&#39;
+</code></pre></div>
+</li>
+<li>
+<p>Guardar los cambios.</p>
+</li>
+<li>
+<p>Ejecutar comando para cargar los alias a la terminal:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">source</span><span class="w"> </span>~/.bash_aliases
+</code></pre></div>
+</li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>En ocasiones es necesario reiniciar la terminal para poder ejecutar los comandos alias de Xandra.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>La lista completa de comandos se puede consultar en la sección <a href="commands.html">comandos</a>.</p>
+</div>
+<h2 id="clonar-repositorio-de-github">Clonar repositorio de Github</h2>
+<p>El proyecto Xandra se encuentra alojado en el servidor Github.com para facilitar la gestión de versiones y su distribución.</p>
+<p>Al clonar un repositorio se extrae una copia integral de todos los datos del repositorio que GitHub.com tiene en ese momento, incluidas todas las versiones de cada archivo y carpeta del proyecto.</p>
+<ul>
+<li>
+<p>Para clonar el programa Xandra a la computadora local ejecute los siguientes comandos:</p>
+<p><div class="highlight"><pre><span></span><code>mkdir /usr/local/Foxconn/automation
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>cd /usr/local/Foxconn/automation
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>git clone https://github.com/David1906/Xandra.git
+</code></pre></div></p>
+</li>
+</ul>
+<h2 id="instalar-dependencias-python">Instalar dependencias python</h2>
+<p>Pip es un sistema de gestión de paquetes utilizado para instalar y administrar paquetes de software escritos en Python. Xandra hace uso de dichos paquetes para enriquecer su funcionalidad proveyéndolo de características tales como una interfaz gráfica.</p>
+<ul>
+<li>
+<p>Para instalar las dependencias de python ejecute los siguientes comandos:</p>
+</li>
+<li>
+<p>Ingresar a la carpeta de Xandra:
+    <div class="highlight"><pre><span></span><code>xandra-path
+</code></pre></div></p>
+</li>
+<li>
+<p>Actualizar gestor de paquetes <code>pip</code>:
+    <div class="highlight"><pre><span></span><code>python3 -m pip install --upgrade pip
+</code></pre></div></p>
+</li>
+<li>
+<p>Instalar alembic (encargado de las migraciones en base de datos):
+    <div class="highlight"><pre><span></span><code>python3 -m pip install alembic --user
+</code></pre></div></p>
+</li>
+<li>
+<p>Crear entorno virtual
+    <div class="highlight"><pre><span></span><code>python3 -m venv venv --prompt=&quot;Xandra&quot;
+</code></pre></div></p>
+</li>
+<li>
+<p>Activar entorno virtual
+    <div class="highlight"><pre><span></span><code>source venv/bin/activate
+</code></pre></div></p>
+</li>
+<li>
+<p>Actualizar gestor de paquetes <code>pip</code> en venv:
+    <div class="highlight"><pre><span></span><code>python3 -m pip install --upgrade pip
+</code></pre></div></p>
+</li>
+<li>
+<p>Instalar dependencias de Xandra:
+    <div class="highlight"><pre><span></span><code>python3 -m pip install -r requirements.txt
+</code></pre></div></p>
+</li>
+</ul>
+<h2 id="crear-acceso-directo">Crear acceso directo</h2>
+<p>En Gnu/Linux es fácil crear accesos directos personalizados que estén registrados por el escritorio y que los muestre en donde corresponda de manera automática, para ello solo hemos de crear un archivo .desktop con la configuración necesaria dentro de la carpeta correspondiente.</p>
+<p>En el caso de Xandra dicho acceso directo se crea en la carpeta Desktop del usuario root, para ello realice los siguientes pasos:</p>
+<ul>
+<li>
+<p>Crear archivo <code>xandra.desktop</code>:</p>
+<div class="highlight"><pre><span></span><code>touch /root/Desktop/xandra.desktop
+</code></pre></div>
+</li>
+<li>
+<p>Abrir en el editor de texto gráfico al archivo <code>xandra.desktop</code>:
+    <div class="highlight"><pre><span></span><code>gedit /root/Desktop/xandra.desktop
+</code></pre></div></p>
+</li>
+<li>
+<p>Copiar y pegar el siguiente texto en el archivo <code>xandra.desktop</code>:</p>
+<div class="highlight"><pre><span></span><code>[Desktop Entry]
+Name=Xandra
+Exec=bash -ic xandra
+Terminal=true
+Type=Application
+Icon=/usr/local/Foxconn/automation/Xandra/Static/icon.png
+</code></pre></div>
+</li>
+<li>
+<p>Guardar los cambios.</p>
+</li>
+<li>
+<p>Una vez realizados los pasos anteriores debe aparecer un acceso directo en el escritorio del usuario root con el ícono de Xandra.</p>
+</li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>También es posible abrir el programa Xandra ejecutando el comando <code>xandra</code> en una terminal.</p>
+</div>
+<h2 id="correr-script-de-actualizacion">Correr script de actualización</h2>
+<p>Xandra cuenta con un script especializado en buscar, descargar y configurar las nuevas versiones lanzadas del mismo, para ello basta con ejecutar el comando <code>xandra-update</code> en una terminal.</p>
+<div class="highlight"><pre><span></span><code>xandra-update
+</code></pre></div>
+<h2 id="validar-configuracion">Validar configuración</h2>
+<p>Antes de iniciar Xandra es importante validar la configuración por defecto incluida en la versión actual, para ello ejecuta el comando <code>xandra-config</code>, si requiere ver la descripción de cada configuración diríjase a la sección <a href="configs.html">configuraciones</a>.</p>
+<div class="highlight"><pre><span></span><code>xandra-config
+</code></pre></div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Cada vez que se ejecuta el comando <code>xandra-update</code> el archivo de configuración es regresado a sus valores por defecto.</p>

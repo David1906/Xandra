@@ -129,7 +129,6 @@ Para crear la base de datos `xandra_dbo` dentro de `MySQL` ejecute los siguiente
     ```
 
 * Introduzca el siguiente comando para crear el esquema `xandra_dbo`:
-```
 
     ``` sql
     CREATE DATABASE IF NOT EXISTS xandra_dbo;
@@ -143,8 +142,9 @@ Para crear la base de datos `xandra_dbo` dentro de `MySQL` ejecute los siguiente
         Query OK, 1 row affected (0.039 sec)
 
 * Salir de la consola MariaDB escriba el comando:
-``` shell
-exit
+    ``` shell
+    exit
+    ```
 
 ## Instalar dependencias del sistema
 
@@ -198,9 +198,13 @@ Para agregar los alias de Xandra realice los siguientes pasos:
     # Set environment variables
     export XANDRA_BASE_PATH=/usr/local/Foxconn/automation/Xandra
     export XANDRA_MAIN_SCRIPT=$XANDRA_BASE_PATH/xandra.py
+    export XANDRA_VENV=venv/bin/activate
+
+    # Open Xandra path and source venv
+    alias xandra-source-venv='cd $XANDRA_BASE_PATH && source $XANDRA_VENV'
 
     # Alias to open Xandra
-    alias xandra='systemctl start xampp.service && tmux new -d "cd $XANDRA_BASE_PATH && python3 $XANDRA_MAIN_SCRIPT"'
+    alias xandra='systemctl start xampp.service && tmux new -d "cd $XANDRA_BASE_PATH && source $XANDRA_VENV && python3 $XANDRA_MAIN_SCRIPT"'
 
     # Alias to open Xandra in testing mode
     alias xandra-testing='ENV=testing python3 $XANDRA_MAIN_SCRIPT'
@@ -264,26 +268,34 @@ Pip es un sistema de gestión de paquetes utilizado para instalar y administrar 
     xandra-path
     ```
 
-* Instalar dependencias de Xandra:
+* Actualizar gestor de paquetes `pip`:
     ```
-    python -m pip install --upgrade pip
-    ```
-
-* Instalar dependencias de Xandra:
-    ```
-    pip3 install -r requirements.txt
+    python3 -m pip install --upgrade pip
     ```
 
 * Instalar alembic (encargado de las migraciones en base de datos):
     ```
-    pip3 uninstall alembic
-    ```
-
-* Ingresar "Y" para confirmar la desinstalación de alembic.
-
-* Instalar nuevamente Alembic
-    ```
     python3 -m pip install alembic --user
+    ```
+
+* Crear entorno virtual
+    ```
+    python3 -m venv venv --prompt="Xandra"
+    ```
+
+* Activar entorno virtual
+    ```
+    source venv/bin/activate
+    ```
+
+* Actualizar gestor de paquetes `pip` en venv:
+    ```
+    python3 -m pip install --upgrade pip
+    ```
+
+* Instalar dependencias de Xandra:
+    ```
+    python3 -m pip install -r requirements.txt
     ```
 
 ## Crear acceso directo
@@ -308,7 +320,7 @@ En el caso de Xandra dicho acceso directo se crea en la carpeta Desktop del usua
     ```
     [Desktop Entry]
     Name=Xandra
-    Exec=xandra
+    Exec=bash -ic xandra
     Terminal=true
     Type=Application
     Icon=/usr/local/Foxconn/automation/Xandra/Static/icon.png

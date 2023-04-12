@@ -1,3 +1,4 @@
+venv
 **/errors.log
 **/chk_station_yield.result
 ./station_yield.result

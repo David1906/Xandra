@@ -28,6 +28,7 @@ class FixtureConfigTests(unittest.TestCase):
                 isRetestMode=False,
                 areLastTestPass=False,
                 areLastTestFail=True,
+                lockFailQty=3,
                 yieldRate=100,
                 yieldErrorMin=70,
             ),
@@ -97,7 +98,6 @@ class FixtureConfigTests(unittest.TestCase):
 
     def test_lock_enabled_returns_true(self):
         cases = [
-            FixtureConfig(isSkipped=False, isRetestMode=True),
             FixtureConfig(isSkipped=False, isRetestMode=False),
             FixtureConfig(isSkipped=True, isRetestMode=True),
         ]
@@ -110,6 +110,7 @@ class FixtureConfigTests(unittest.TestCase):
 
     def test_lock_enabled_returns_false(self):
         cases = [
+            FixtureConfig(isSkipped=False, isRetestMode=True),
             FixtureConfig(isSkipped=True, isRetestMode=False),
         ]
         for fixtureConfig in cases:

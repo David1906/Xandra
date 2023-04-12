@@ -42,11 +42,7 @@ class Fixture:
         return self._fixtureConfig.get_lock_description()
 
     def is_upload_to_sfc(self) -> bool:
-        return (
-            self._test.status
-            and self._fixtureConfig.isRetestMode
-            and self._fixtureConfig.isSkipped
-        )
+        return self._test.status and self.get_mode().uploadToSfc
 
     def is_affecting_yield(self) -> bool:
         if self._test.status:

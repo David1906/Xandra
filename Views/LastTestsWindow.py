@@ -4,11 +4,15 @@ from Views.LastLogsWindow import LastLogsWindow
 
 
 class LastTestsWindow(LastLogsWindow):
-    def __init__(self, fixtureIp: str):
-        super().__init__(fixtureIp, title=f"Last Tests - Fixture {fixtureIp}")
+    def __init__(self, fixtureIp: str, showRetest: bool = False):
+        super().__init__(
+            fixtureIp, title=f"Last Tests - Fixture {fixtureIp}", showRetest=showRetest
+        )
 
     def getTests(self, qty: int):
-        return self._testData.find_last(self.fixtureIp, qty=qty)
+        return self._testData.find_last(
+            self.fixtureIp, qty=qty, ignoreRetest=not self.is_show_retest()
+        )
 
     def getResults(self, tests: "list[Test]"):
         results = {}

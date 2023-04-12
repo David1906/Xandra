@@ -24,8 +24,8 @@ class TestData:
         Session.remove()
         self._googleSheet.add(test)
 
-    def get_yield(self, fixtureIp: str) -> float:
-        tests = self.find_last(fixtureIp)
+    def get_yield(self, fixtureIp: str, ignoreRetest: bool = False) -> float:
+        tests = self.find_last(fixtureIp, ignoreRetest=ignoreRetest)
         if len(tests) == 0:
             return 100
         passTests = 0
@@ -40,7 +40,9 @@ class TestData:
     def get_remaining_to_unlock(self, fixtureIp: str) -> bool:
         configUnlockQty = self._mainConfigData.get_unlock_pass_qty()
         configLockQty = self._mainConfigData.get_lock_fail_qty()
-        tests = self.find_last(fixtureIp, configUnlockQty + configLockQty - 1)
+        tests = self.find_last(
+            fixtureIp, configUnlockQty + configLockQty - 1, ignoreRetest=True
+        )
         totalPass = 0
         for test in tests:
             if test.status:
@@ -59,7 +61,9 @@ class TestData:
         configLockQty = self._mainConfigData.get_lock_fail_qty()
         if configLockQty == 0:
             return False
-        tests = self.find_last(fixtureIp, configLockQty, ignoreOffline=True)
+        tests = self.find_last(
+            fixtureIp, configLockQty, ignoreOffline=True, ignoreRetest=True
+        )
         if len(tests) == 0:
             return False
         for test in tests:
@@ -105,5 +109,8 @@ class TestData:
         self,
         fixtureIp: str,
         qty: int,
+        ignoreRetest: bool = False,
     ) -> "list[Test]":
-        return self.find_last(fixtureIp, qty=qty, onlyFailures=True)
+        return self.find_last(
+            fixtureIp, qty=qty, onlyFailures=True, ignoreRetest=ignoreRetest
+        )

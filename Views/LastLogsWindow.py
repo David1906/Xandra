@@ -16,7 +16,13 @@ from Views.TestModeView import TestModeView
 class LastLogsWindow(QtWidgets.QWidget):
     PAGE_SIZES = [10, 25, 50, 100, 200]
 
-    def __init__(self, fixtureIp: str, title: str = "", biggestSliceColor=Qt.green):
+    def __init__(
+        self,
+        fixtureIp: str,
+        title: str = "",
+        biggestSliceColor=Qt.green,
+        showRetest: bool = False,
+    ):
         super().__init__()
 
         self.fixtureIp = fixtureIp
@@ -24,7 +30,7 @@ class LastLogsWindow(QtWidgets.QWidget):
         self._mainConfigData = MainConfigData()
         self.biggestSliceColor = biggestSliceColor
         self.series = None
-        self.showOnliCountInYield = False
+        self.showRetest = showRetest
 
         self.setWindowTitle(title)
 
@@ -71,12 +77,21 @@ class LastLogsWindow(QtWidgets.QWidget):
 
         self.cmbSize.activated[str].connect(self.on_cmb_size_change)
         footer.addWidget(self.cmbSize)
+
+        self.chkShowRetest = QtWidgets.QCheckBox("Show Retest")
+        self.chkShowRetest.setChecked(showRetest)
+        self.chkShowRetest.stateChanged.connect(self.on_chk_show_retest)
+        footer.addWidget(self.chkShowRetest)
         self.gridLayout.addLayout(footer, 2, 0, QtCore.Qt.AlignCenter)
 
         self.refresh(int(self.cmbSize.currentText()))
 
-    def is_only_count_in_yield(self):
-        return self.showOnliCountInYield
+    def on_chk_show_retest(self):
+        self.showRetest = self.chkShowRetest.isChecked()
+        self.refresh(int(self.cmbSize.currentText()))
+
+    def is_show_retest(self):
+        return self.showRetest
 
     def on_cmb_size_change(self, size):
         self.refresh(int(size))
@@ -150,10 +165,10 @@ class LastLogsWindow(QtWidgets.QWidget):
 
         keys = list(results.keys())
         biggestSliceIdx = 0
-        greatter = 0
+        greater = 0
         for key in keys:
-            if greatter < results[key]:
-                greatter = results[key]
+            if greater < results[key]:
+                greater = results[key]
                 biggestSliceIdx = len(self.series)
             self.series.append(key, results[key])
 

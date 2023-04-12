@@ -79,10 +79,11 @@ class FixtureConfigData:
     def find(self, fixtureIp: str) -> FixtureConfig:
         for fixture in self._fctHostControlData.get_all_fixture_configs():
             if fixtureIp == fixture[FctHostControlData.PLC_IP_KEY]:
+                isRetestMode = self.is_retest_mode(fixtureIp)
                 return FixtureConfig(
                     fixture[FctHostControlData.PLC_ID_KEY],
                     fixtureIp,
-                    self._testData.get_yield(fixtureIp),
+                    self._testData.get_yield(fixtureIp, ignoreRetest=not isRetestMode),
                     self._testData.are_last_test_pass(fixtureIp),
                     self.is_skipped(fixtureIp),
                     self._mainConfigData.get_yield_error_threshold(),

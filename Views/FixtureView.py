@@ -125,11 +125,15 @@ class FixtureView(QGroupBox):
         self._updateTimer.timeout.connect(self._update_status)
 
     def on_btnLastTests_clicked(self):
-        self.w = LastTestsWindow(self.fixture.get_ip())
+        self.w = LastTestsWindow(
+            self.fixture.get_ip(), showRetest=self.swRetestMode.getChecked()
+        )
         self.w.showMaximized()
 
     def on_btnLastFailures_clicked(self):
-        self.w = LastFailuresWindow(self.fixture.get_ip())
+        self.w = LastFailuresWindow(
+            self.fixture.get_ip(), showRetest=self.swRetestMode.getChecked()
+        )
         self.w.showMaximized()
 
     def on_swRetestMode_change(self, checked: bool):
@@ -137,9 +141,9 @@ class FixtureView(QGroupBox):
         self._update_sw_traceability_enabled()
         if not self.swTraceability.getChecked():
             self.swTraceability.setChecked(True)
-        else:
-            self._fixtureController.update(self.fixture)
-            self.update()
+        self._fixtureController.update(self.fixture)
+        self._fixtureController.refresh(self.fixture)
+        self.update()
 
     def on_swTraceability_change(self, checked: bool):
         self.fixture.set_skipped(not checked)

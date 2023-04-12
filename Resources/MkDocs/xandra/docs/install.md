@@ -70,18 +70,18 @@ Para crear el servicio del paquete XAMPP es necesario realizar los siguientes pa
 * Habilitar el servicio para que XAMPP sea inicializado automáticamente en el arranque:
 
     ``` shell
-    $ systemctl enable xampp.service
+    systemctl enable xampp.service
     ```
 
 * Iniciar el servicio:
 
     ``` shell
-    $ systemctl start xampp.service
+    systemctl start xampp.service
     ```
 
 * Validar que todo se ha inicializado correctamente: 
     ``` shell
-    $ systemctl status xampp.service
+    systemctl status xampp.service
     ```
 
 * Se debe mostrar una salida similar a la siguiente:
@@ -111,7 +111,7 @@ Para crear la base de datos `xandra_dbo` dentro de `MySQL` ejecute los siguiente
 * Escriba en la terminal el comando para ejecutar el motor de la base de datos:
 
     ``` shell
-    $ /opt/lampp/bin/mysql -u root
+    /opt/lampp/bin/mysql -u root
     ```
 
 * Se iniciara la consola de `MariaDB` y mostrara una información similar a la siguiente:
@@ -129,6 +129,7 @@ Para crear la base de datos `xandra_dbo` dentro de `MySQL` ejecute los siguiente
     ```
 
 * Introduzca el siguiente comando para crear el esquema `xandra_dbo`:
+```
 
     ``` sql
     CREATE DATABASE IF NOT EXISTS xandra_dbo;
@@ -141,6 +142,9 @@ Para crear la base de datos `xandra_dbo` dentro de `MySQL` ejecute los siguiente
 
         Query OK, 1 row affected (0.039 sec)
 
+* Salir de la consola MariaDB escriba el comando:
+``` shell
+exit
 
 ## Instalar dependencias del sistema
 
@@ -255,12 +259,29 @@ Pip es un sistema de gestión de paquetes utilizado para instalar y administrar 
 
 * Para instalar las dependencias de python ejecute los siguientes comandos:
 
+* Ingresar a la carpeta de Xandra:
+    ```
+    xandra-path
+    ```
+
+* Instalar dependencias de Xandra:
+    ```
+    python -m pip install --upgrade pip
+    ```
+
+* Instalar dependencias de Xandra:
     ```
     pip3 install -r requirements.txt
     ```
+
+* Instalar alembic (encargado de las migraciones en base de datos):
     ```
     pip3 uninstall alembic
     ```
+
+* Ingresar "Y" para confirmar la desinstalación de alembic.
+
+* Instalar nuevamente Alembic
     ```
     python3 -m pip install alembic --user
     ```

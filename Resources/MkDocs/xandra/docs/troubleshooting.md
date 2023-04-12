@@ -159,10 +159,10 @@ netstat: error while loading shared libraries: libc.so.6: cannot open shared obj
 * Guardar los cambios realizados en el archivo.
 * Ejecutar los siguientes comandos:
     ``` shell
-    $ sudo systemctl start xampp.service
+    sudo systemctl start xampp.service
     ```
     ``` shell
-    $ sudo systemctl status xampp.service
+    sudo systemctl status xampp.service
     ```
 
 * Debe mostrarse una salida similar a la siguiente:

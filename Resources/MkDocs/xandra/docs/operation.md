@@ -80,6 +80,12 @@ Si requiere visualizar un número diferente de registros puede seleccionar la ca
 !!! info
     La cantidad por defecto del combobox es la que mejor se adecúe a la configuración `yieldCalcQty`.
 
+## Mostrar resultados de pruebas realizadas en modo Retest (Show Retest)
+
+Muestra u oculta las pruebas realizadas en modo `Retest`.
+
+De manera automática se sincroniza el checkbox `Show Retests` con el modo actual de la fixtura, dando como resultado que una vez entrando en modo Retest al abrir la ventana de últimos resultados la tabla muestre todas las pruebas incluyendo aquellas realizadas bajo el modo retest, por el contrario, si la fixtura se encuentra en cualquier otro modo, el selector estará deshabilitado de manera predeterminada.
+
 ### Columna Description
 
 En esta columna se guarda una síntesis de la causa por la cual falló la prueba, listando errores como problemas de dimm o el voltaje que provocó dicho comportamiento inesperado.

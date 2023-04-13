@@ -11,6 +11,8 @@ Xandra cuenta con distintos comandos que pueden ejecutarse directamente en la te
 * `xandra-update` - Actualiza y configura Xandra a su versión más reciente.
 * `xandra-kill` - Cierra xandra terminando el proceso python3 sobre el cual se ejecuta.
 * `xandra-docs` - Abre la documentación de Xandra.
+* `xandra-pyenv-activate` - Ingresa a la carpeta de instalación de Xandra mediante el comando cd y activa el entorno virtual de python.
+* `xandra-pyenv-deactivate` - Desactiva el entorno virtual de python.
 
 ## Atajos de teclado
 

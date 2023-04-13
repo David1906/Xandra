@@ -198,16 +198,18 @@ Para agregar los alias de Xandra realice los siguientes pasos:
     # Set environment variables
     export XANDRA_BASE_PATH=/usr/local/Foxconn/automation/Xandra
     export XANDRA_MAIN_SCRIPT=$XANDRA_BASE_PATH/xandra.py
-    export XANDRA_VENV=venv/bin/activate
 
-    # Open Xandra path and source venv
-    alias xandra-source-venv='cd $XANDRA_BASE_PATH && source $XANDRA_VENV'
+    # Open Xandra path and activate pyenv
+    alias xandra-pyenv-activate='cd $XANDRA_BASE_PATH && pyenv activate xandra'
+
+    # Deactivate pyvenv
+    alias xandra-pyenv-deactivate='pyenv deactivate'
 
     # Alias to open Xandra
-    alias xandra='systemctl start xampp.service && tmux new -d "cd $XANDRA_BASE_PATH && source $XANDRA_VENV && python3 $XANDRA_MAIN_SCRIPT"'
+    alias xandra='systemctl start xampp.service && tmux new -d "source $HOME/.bashrc && cd $XANDRA_BASE_PATH && pyenv activate xandra && python3 $XANDRA_MAIN_SCRIPT"'
 
     # Alias to open Xandra in testing mode
-    alias xandra-testing='ENV=testing python3 $XANDRA_MAIN_SCRIPT'
+    alias xandra-testing='ENV=testing && xandra'
 
     # Alias to open Xandra config
     alias xandra-config='tmux new -d "gedit $XANDRA_BASE_PATH/xandra_config.json"'
@@ -257,6 +259,83 @@ Al clonar un repositorio se extrae una copia integral de todos los datos del rep
     git clone https://github.com/David1906/Xandra.git
     ```
 
+## Instalar entorno virtual de Python
+
+Pyenv en es una herramienta que nos permite instalar diferentes versiones de Python y cambiar entre ellas según los requerimientos del proyecto con el cual necesitamos trabajar. De igual manera permite aislar por completo las dependencias del proyecto para evitar conflictos.
+
+Para instalar pyenv ejecute los siguientes comandos:
+
+* Instalar dependencias de `pyenv`:
+* 
+    ``` shell
+    yum install gcc zlib-devel bzip2 bzip2-devel readline readline-devel sqlite sqlite-devel openssl openssl-devel git libffi-devel
+    ```
+
+* Clonar código fuente del repositorio de `pyenv`:
+* 
+    ``` shell
+    git clone https://github.com/pyenv/pyenv.git ~/.pyenv
+    ```
+
+* Abrir en el editor de texto gráfico al archivo `~/.bashrc`:
+   
+    ``` shell
+    gedit ~/.bashrc
+    ```
+
+* Copiar y pegar el siguiente texto en el archivo `~/.bashrc`:
+    ``` shell
+    # Pyenv environment variables
+    export PYENV_ROOT="$HOME/.pyenv"
+    export PATH="$PYENV_ROOT/bin:$PATH"
+
+    # Pyenv initialization
+    if command -v pyenv 1>/dev/null 2>&1; then
+        eval "$(pyenv init --path)"
+        eval "$(pyenv init -)"
+        eval "$(pyenv virtualenv-init -)"
+    fi
+    ```
+* Guardar los cambios del archivo `~/.bashrc`.
+  
+* Abrir en el editor de texto gráfico al archivo `~/.bash_profile`:
+   
+    ``` shell
+    gedit ~/.bash_profile
+    ```
+
+* Copiar y pegar el siguiente texto en el archivo `~/.bash_profile`:
+    ``` shell
+    # Source bashrc
+    if [ -n "$BASH_VERSION" ]; then
+        if [ -f "$HOME/.bashrc" ]; then
+        . "$HOME/.bashrc"
+        fi
+    fi
+    ```
+
+* Guardar los cambios del archivo `~/.bash_profile`.
+
+* Recargar configuración de la terminal:
+    ``` shell
+    exec "$SHELL"
+    ```
+
+* Instalar versión **3.8.2** en entorno virtual:
+    ``` shell
+    pyenv install 3.8.2
+    ```
+
+* Instalar `virtualenv` para poder aislar la instalación de dependencias:
+    ``` shell
+    git clone https://github.com/pyenv/pyenv-virtualenv.git $(pyenv root)/plugins/pyenv-virtualenv
+    ```
+
+* Recargar configuración de la terminal:
+    ``` shell
+    exec "$SHELL"
+    ```
+
 ## Instalar dependencias python
 
 Pip es un sistema de gestión de paquetes utilizado para instalar y administrar paquetes de software escritos en Python. Xandra hace uso de dichos paquetes para enriquecer su funcionalidad proveyéndolo de características tales como una interfaz gráfica.
@@ -280,15 +359,15 @@ Pip es un sistema de gestión de paquetes utilizado para instalar y administrar 
 
 * Crear entorno virtual
     ```
-    python3 -m venv venv --prompt="Xandra"
+    pyenv virtualenv 3.8.2 xandra
     ```
 
 * Activar entorno virtual
     ```
-    source venv/bin/activate
+    pyenv activate xandra
     ```
 
-* Actualizar gestor de paquetes `pip` en venv:
+* Actualizar gestor de paquetes `pip` en virtualenv:
     ```
     python3 -m pip install --upgrade pip
     ```

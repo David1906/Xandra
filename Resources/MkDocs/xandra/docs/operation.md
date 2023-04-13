@@ -150,9 +150,13 @@ Para desbloquear una fixtura realice los siguientes pasos:
 
 - Activar el modo `Offline` en la fixtura para desbloquearla, se debe tomar en cuenta que la prueba no reflejará los resultados en el sistema de trazabilidad.
 - Pruebe la cantidad de tarjetas especificadas en la leyenda `Test * to unlock`.
+ 
     ![](static/operation/fixture_unlock_1.png "Fixtura bloqueada, cantidad para desbloqueo especificada en indicador")
+
 - Repita el paso anterior hasta que el led se ilumine en color verde y la leyenda cambie a `Unlocked`.
+ 
     ![](static/operation/fixture_unlock_2.png "Fixtura desbloqueada")
+
 - Presione el botón stop.
 - Active el [modo de operación](modes.md) deseado.
 

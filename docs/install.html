@@ -303,6 +303,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#instalar-entorno-virtual-de-python" class="md-nav__link">
+    Instalar entorno virtual de Python
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#instalar-dependencias-python" class="md-nav__link">
     Instalar dependencias python
   </a>
@@ -477,6 +484,13 @@
         <li class="md-nav__item">
   <a href="#clonar-repositorio-de-github" class="md-nav__link">
     Clonar repositorio de Github
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#instalar-entorno-virtual-de-python" class="md-nav__link">
+    Instalar entorno virtual de Python
   </a>
   
 </li>
@@ -703,16 +717,18 @@ MariaDB [(none)]&gt;
 <div class="highlight"><pre><span></span><code># Set environment variables
 export XANDRA_BASE_PATH=/usr/local/Foxconn/automation/Xandra
 export XANDRA_MAIN_SCRIPT=$XANDRA_BASE_PATH/xandra.py
-export XANDRA_VENV=venv/bin/activate
 
-# Open Xandra path and source venv
-alias xandra-source-venv=&#39;cd $XANDRA_BASE_PATH &amp;&amp; source $XANDRA_VENV&#39;
+# Open Xandra path and activate pyenv
+alias xandra-pyenv-activate=&#39;cd $XANDRA_BASE_PATH &amp;&amp; pyenv activate xandra&#39;
+
+# Deactivate pyvenv
+alias xandra-pyenv-deactivate=&#39;pyenv deactivate&#39;
 
 # Alias to open Xandra
-alias xandra=&#39;systemctl start xampp.service &amp;&amp; tmux new -d &quot;cd $XANDRA_BASE_PATH &amp;&amp; source $XANDRA_VENV &amp;&amp; python3 $XANDRA_MAIN_SCRIPT&quot;&#39;
+alias xandra=&#39;systemctl start xampp.service &amp;&amp; tmux new -d &quot;source $HOME/.bashrc &amp;&amp; cd $XANDRA_BASE_PATH &amp;&amp; pyenv activate xandra &amp;&amp; python3 $XANDRA_MAIN_SCRIPT&quot;&#39;
 
 # Alias to open Xandra in testing mode
-alias xandra-testing=&#39;ENV=testing python3 $XANDRA_MAIN_SCRIPT&#39;
+alias xandra-testing=&#39;ENV=testing &amp;&amp; xandra&#39;
 
 # Alias to open Xandra config
 alias xandra-config=&#39;tmux new -d &quot;gedit $XANDRA_BASE_PATH/xandra_config.json&quot;&#39;
@@ -761,6 +777,83 @@ alias xandra-docs=&#39;gio open $XANDRA_BASE_PATH/docs/index.html&#39;
 </code></pre></div></p>
 </li>
 </ul>
+<h2 id="instalar-entorno-virtual-de-python">Instalar entorno virtual de Python</h2>
+<p>Pyenv en es una herramienta que nos permite instalar diferentes versiones de Python y cambiar entre ellas según los requerimientos del proyecto con el cual necesitamos trabajar. De igual manera permite aislar por completo las dependencias del proyecto para evitar conflictos.</p>
+<p>Para instalar pyenv ejecute los siguientes comandos:</p>
+<ul>
+<li>Instalar dependencias de <code>pyenv</code>:</li>
+<li>
+<div class="highlight"><pre><span></span><code>yum<span class="w"> </span>install<span class="w"> </span>gcc<span class="w"> </span>zlib-devel<span class="w"> </span>bzip2<span class="w"> </span>bzip2-devel<span class="w"> </span>readline<span class="w"> </span>readline-devel<span class="w"> </span>sqlite<span class="w"> </span>sqlite-devel<span class="w"> </span>openssl<span class="w"> </span>openssl-devel<span class="w"> </span>git<span class="w"> </span>libffi-devel
+</code></pre></div>
+</li>
+<li>
+<p>Clonar código fuente del repositorio de <code>pyenv</code>:</p>
+</li>
+<li>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/pyenv/pyenv.git<span class="w"> </span>~/.pyenv
+</code></pre></div>
+</li>
+<li>
+<p>Abrir en el editor de texto gráfico al archivo <code>~/.bashrc</code>:</p>
+<div class="highlight"><pre><span></span><code>gedit<span class="w"> </span>~/.bashrc
+</code></pre></div>
+</li>
+<li>
+<p>Copiar y pegar el siguiente texto en el archivo <code>~/.bashrc</code>:
+    <div class="highlight"><pre><span></span><code><span class="c1"># Pyenv environment variables</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">PYENV_ROOT</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$HOME</span><span class="s2">/.pyenv&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$PYENV_ROOT</span><span class="s2">/bin:</span><span class="nv">$PATH</span><span class="s2">&quot;</span>
+
+<span class="c1"># Pyenv initialization</span>
+<span class="k">if</span><span class="w"> </span><span class="nb">command</span><span class="w"> </span>-v<span class="w"> </span>pyenv<span class="w"> </span><span class="m">1</span>&gt;/dev/null<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">    </span><span class="nb">eval</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>pyenv<span class="w"> </span>init<span class="w"> </span>--path<span class="k">)</span><span class="s2">&quot;</span>
+<span class="w">    </span><span class="nb">eval</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>pyenv<span class="w"> </span>init<span class="w"> </span>-<span class="k">)</span><span class="s2">&quot;</span>
+<span class="w">    </span><span class="nb">eval</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>pyenv<span class="w"> </span>virtualenv-init<span class="w"> </span>-<span class="k">)</span><span class="s2">&quot;</span>
+<span class="k">fi</span>
+</code></pre></div></p>
+</li>
+<li>
+<p>Guardar los cambios del archivo <code>~/.bashrc</code>.</p>
+</li>
+<li>
+<p>Abrir en el editor de texto gráfico al archivo <code>~/.bash_profile</code>:</p>
+<div class="highlight"><pre><span></span><code>gedit<span class="w"> </span>~/.bash_profile
+</code></pre></div>
+</li>
+<li>
+<p>Copiar y pegar el siguiente texto en el archivo <code>~/.bash_profile</code>:
+    <div class="highlight"><pre><span></span><code><span class="c1"># Source bashrc</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$BASH_VERSION</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$HOME</span><span class="s2">/.bashrc&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">    </span>.<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$HOME</span><span class="s2">/.bashrc&quot;</span>
+<span class="w">    </span><span class="k">fi</span>
+<span class="k">fi</span>
+</code></pre></div></p>
+</li>
+<li>
+<p>Guardar los cambios del archivo <code>~/.bash_profile</code>.</p>
+</li>
+<li>
+<p>Recargar configuración de la terminal:
+    <div class="highlight"><pre><span></span><code><span class="nb">exec</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$SHELL</span><span class="s2">&quot;</span>
+</code></pre></div></p>
+</li>
+<li>
+<p>Instalar versión <strong>3.8.2</strong> en entorno virtual:
+    <div class="highlight"><pre><span></span><code>pyenv<span class="w"> </span>install<span class="w"> </span><span class="m">3</span>.8.2
+</code></pre></div></p>
+</li>
+<li>
+<p>Instalar <code>virtualenv</code> para poder aislar la instalación de dependencias:
+    <div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/pyenv/pyenv-virtualenv.git<span class="w"> </span><span class="k">$(</span>pyenv<span class="w"> </span>root<span class="k">)</span>/plugins/pyenv-virtualenv
+</code></pre></div></p>
+</li>
+<li>
+<p>Recargar configuración de la terminal:
+    <div class="highlight"><pre><span></span><code><span class="nb">exec</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$SHELL</span><span class="s2">&quot;</span>
+</code></pre></div></p>
+</li>
+</ul>
 <h2 id="instalar-dependencias-python">Instalar dependencias python</h2>
 <p>Pip es un sistema de gestión de paquetes utilizado para instalar y administrar paquetes de software escritos en Python. Xandra hace uso de dichos paquetes para enriquecer su funcionalidad proveyéndolo de características tales como una interfaz gráfica.</p>
 <ul>
@@ -784,16 +877,16 @@ alias xandra-docs=&#39;gio open $XANDRA_BASE_PATH/docs/index.html&#39;
 </li>
 <li>
 <p>Crear entorno virtual
-    <div class="highlight"><pre><span></span><code>python3 -m venv venv --prompt=&quot;Xandra&quot;
+    <div class="highlight"><pre><span></span><code>pyenv virtualenv 3.8.2 xandra
 </code></pre></div></p>
 </li>
 <li>
 <p>Activar entorno virtual
-    <div class="highlight"><pre><span></span><code>source venv/bin/activate
+    <div class="highlight"><pre><span></span><code>pyenv activate xandra
 </code></pre></div></p>
 </li>
 <li>
-<p>Actualizar gestor de paquetes <code>pip</code> en venv:
+<p>Actualizar gestor de paquetes <code>pip</code> en virtualenv:
     <div class="highlight"><pre><span></span><code>python3 -m pip install --upgrade pip
 </code></pre></div></p>
 </li>

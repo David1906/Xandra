@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
 )
+from Utils.PathHelper import PathHelper
 from Views.EmbeddedTerminal import EmbeddedTerminal
 from Views.LastFailuresWindow import LastFailuresWindow
 from Views.LastTestsWindow import LastTestsWindow
@@ -28,6 +29,7 @@ class FixtureView(QGroupBox):
         self.w = None
         self.lastOverElapsed = False
         self._fixtureController = FixtureController()
+        self.isStarted = False
 
         self.setObjectName("fixture")
         gridLayout = QGridLayout()
@@ -91,23 +93,38 @@ class FixtureView(QGroupBox):
 
         selectorsLayout.addStretch()
 
-        buttonsLayout = QVBoxLayout()
+        buttonsLayout = QGridLayout()
         self.btnStart = QPushButton("Start")
+        self.btnStart.setIcon(
+            QtGui.QIcon(PathHelper().join_root_path("/Static/start.png"))
+        )
         self.btnStart.setStyleSheet("font-weight: 500;")
         self.btnStart.setFixedHeight(50)
         self.btnStart.clicked.connect(self.on_btnStart_clicked)
-        buttonsLayout.addWidget(self.btnStart)
+        buttonsLayout.addWidget(self.btnStart, 0, 0, 1, 2)
 
         sideGridLayout.addLayout(buttonsLayout, 2, 0)
-        self.btnLastTests = QPushButton("Last Tests")
-        self.btnLastTests.setStyleSheet("font-size: 12px; font-weight: 300;")
+        self.btnLastTests = QPushButton()
+        self.btnLastTests.setToolTip("Last Tests")
+        self.btnLastTests.setStyleSheet(
+            "font-size: 12px; font-weight: 300; padding: 3px;"
+        )
+        self.btnLastTests.setIcon(
+            QtGui.QIcon(PathHelper().join_root_path("/Static/report.png"))
+        )
         self.btnLastTests.clicked.connect(self.on_btnLastTests_clicked)
-        buttonsLayout.addWidget(self.btnLastTests)
+        buttonsLayout.addWidget(self.btnLastTests, 1, 0, 1, 1)
 
-        self.btnLastFailures = QPushButton("Last Failures")
-        self.btnLastFailures.setStyleSheet("font-size: 12px; font-weight: 300;")
+        self.btnLastFailures = QPushButton()
+        self.btnLastFailures.setToolTip("Last Failures")
+        self.btnLastFailures.setIcon(
+            QtGui.QIcon(PathHelper().join_root_path("/Static/error.png"))
+        )
+        self.btnLastFailures.setStyleSheet(
+            "font-size: 12px; font-weight: 300; padding: 3px;"
+        )
         self.btnLastFailures.clicked.connect(self.on_btnLastFailures_clicked)
-        buttonsLayout.addWidget(self.btnLastFailures)
+        buttonsLayout.addWidget(self.btnLastFailures, 1, 1, 1, 1)
 
         self.terminal = EmbeddedTerminal()
         self.terminal.finished.connect(self.on_terminal_finished)
@@ -171,9 +188,7 @@ class FixtureView(QGroupBox):
         self.lblLock.setText(
             f"Failed last {self._fixtureController.get_lock_fail_qty()} Tests:"
         )
-        self.btnStart.setEnabled(
-            not self.fixture.is_disabled() or self.btnStart.text() == "Stop"
-        )
+        self.btnStart.setEnabled(not self.fixture.is_disabled() or self.isStarted)
         self.lblMode.setText(f"Mode: {self.fixture.get_mode_description()}")
         self.update_lock_indicator()
         self._update_sw_retest_enabled()
@@ -226,47 +241,54 @@ class FixtureView(QGroupBox):
         self.led.setChecked(isLedOn)
 
     def on_btnStart_clicked(self):
-        isStart = self.btnStart.text() == "Start"
-        if isStart:
-            cmd = self._fixtureController.get_fct_host_cmd(
-                self.fixture, self.swTraceability.getChecked()
-            )
-            print(cmd)
-            self.terminal.start([cmd])
-            self.btnStart.setText("Stop")
-        else:
+        if self.isStarted:
             reply = QMessageBox.question(
                 self,
                 "Stop Fixture",
-                f"Are you sure to stop fixture {self.fixture.get_id()}?",
+                f"Are you sure to stop fixture {self.fixture.get_ip()}?",
                 QMessageBox.Yes | QMessageBox.No,
                 QMessageBox.No,
             )
             if reply == QMessageBox.Yes:
                 self.terminal.Stop()
-                self.btnStart.setText("Start")
+                self.set_is_started(False)
+        else:
+            cmd = self._fixtureController.get_fct_host_cmd(
+                self.fixture, self.swTraceability.getChecked()
+            )
+            print(cmd)
+            self.terminal.start([cmd])
+            self.set_is_started(True)
         self._update_sw_retest_enabled()
         self._update_sw_traceability_enabled()
 
+    def set_is_started(self, value: bool):
+        self.isStarted = value
+        text = "Start"
+        if self.isStarted:
+            text = "Stop"
+        self.btnStart.setText(text)
+        self.btnStart.setIcon(
+            QtGui.QIcon(PathHelper().join_root_path(f"/Static/{text.lower()}.png"))
+        )
+
     def on_terminal_finished(self, exitStatus):
-        self.btnStart.setText("Start")
+        self.set_is_started(False)
         self._update_sw_retest_enabled()
         self._update_sw_traceability_enabled()
         self.set_fixture_isTesting(False)
 
     def _update_sw_retest_enabled(self):
-        isStart = self.btnStart.text() == "Start"
         isDisabled = self.fixture.is_disabled()
         if self.fixture.is_skipped():
             isDisabled = not self.fixture.get_are_last_test_pass()
-        self.swRetestMode.setEnabled(isStart and not isDisabled)
+        self.swRetestMode.setEnabled(not self.isStarted and not isDisabled)
 
     def _update_sw_traceability_enabled(self):
-        isStart = self.btnStart.text() == "Start"
         if self.fixture.is_retest_mode() and not self.forceTraceabilityEnabled:
             self.swTraceability.setEnabled(False)
         else:
-            self.swTraceability.setEnabled(isStart)
+            self.swTraceability.setEnabled(not self.isStarted)
 
     def equals(self, fixture: Fixture) -> bool:
         return self.fixture.equals(fixture)
@@ -283,11 +305,11 @@ class FixtureView(QGroupBox):
             self._updateTimer.stop()
 
     def start(self):
-        if self.btnStart.text() == "Start":
+        if not self.isStarted:
             self.on_btnStart_clicked()
 
     def stop(self):
-        if self.btnStart.text() == "Stop":
+        if self.isStarted:
             self.on_btnStart_clicked()
 
     def set_retest_mode_visibility(self, value):

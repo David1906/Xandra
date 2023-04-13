@@ -64,7 +64,7 @@ class TestData:
         tests = self.find_last(
             fixtureIp, configLockQty, ignoreOffline=True, ignoreRetest=True
         )
-        if len(tests) == 0:
+        if len(tests) == 0 or len(tests) < configLockQty:
             return False
         for test in tests:
             if test.status:

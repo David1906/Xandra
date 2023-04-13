@@ -160,6 +160,10 @@ class FixtureView(QGroupBox):
         self.fixture = fixture
         self.update()
 
+    def update_fixture(self, fixture: Fixture):
+        self.fixture.copy_config(fixture)
+        self.update()
+
     def update(self):
         self._update_status()
         self.lblYield.setText(f"Yield: {self.fixture.get_yield()}%")

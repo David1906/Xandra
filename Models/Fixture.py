@@ -1,3 +1,4 @@
+from __future__ import annotations
 from Core.Enums.LockType import LockType
 from Core.Enums.TestMode import TestMode
 from Models.FixtureConfig import FixtureConfig
@@ -130,3 +131,10 @@ class Fixture:
 
     def set_lock_enabled(self, value: bool):
         self._fixtureConfig.enableLock = value
+
+    def copy_config(self, fixture: Fixture):
+        fixture.set_isTesting(self._fixtureConfig.isTesting)
+        fixture.set_lock_enabled(self._fixtureConfig.is_lock_enabled())
+        fixture.set_reset_mode(self._fixtureConfig.isRetestMode)
+        fixture.set_skipped(self._fixtureConfig.isSkipped)
+        self._fixtureConfig = fixture._fixtureConfig

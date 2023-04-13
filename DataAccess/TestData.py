@@ -15,9 +15,9 @@ class TestData:
     def add(self, test: Test, mode: int):
         if test.fixtureIp == None:
             return
-        session = Session()
         testDTO = mapper.to(TestDAO).map(test)
         testDTO.mode = mode
+        session = Session()
         session.add(testDTO)
         session.commit()
         session.close()

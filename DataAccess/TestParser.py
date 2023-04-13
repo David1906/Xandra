@@ -1,14 +1,8 @@
 from DataAccess.TestDescriptionParser import TestDescriptionParser
 from datetime import datetime
 from Models.Test import Test
-from Utils.BaseEventHandler import BaseEventHandler
-from Utils.FileWatchdog import FileWatchdog
-from Utils.PathHelper import PathHelper
-import atexit
-import importlib
 import logging
 import re
-import sys
 
 
 class TestParser:

@@ -1,140 +1,274 @@
 from __future__ import annotations
+from Core.Enums.FixtureMode import FixtureMode
+from Core.Enums.FixtureStatus import FixtureStatus
 from Core.Enums.LockType import LockType
-from Core.Enums.TestMode import TestMode
-from Models.FixtureConfig import FixtureConfig
 from Models.Test import Test
+from PyQt5 import QtCore
 from timeit import default_timer as timer
 import datetime
 import math
 
 
-class Fixture:
-    OVER_ELAPSED = datetime.timedelta(hours=1, minutes=45)
+class Fixture(QtCore.QObject):
+    OVER_ELAPSED_THRESHOLD = datetime.timedelta(hours=1, minutes=45)
+    update = QtCore.pyqtSignal()
+    over_elapsed = QtCore.pyqtSignal()
+    testing_tick = QtCore.pyqtSignal(datetime.timedelta)
 
-    def __init__(self, fixtureConfig: FixtureConfig, test: Test = None) -> None:
-        self._fixtureConfig = fixtureConfig
-        self._test = test or Test(isNull=True)
-        self.hasErrorUploadingToSfc = False
-        self.errorMsg = ""
-        self.startTimer = timer()
+    def __init__(
+        self,
+        id: int,
+        ip: str,
+        yieldErrorThreshold: float,
+        yieldWarningThreshold: float,
+        lockFailQty: int,
+        unlockPassQty: int,
+        mode: FixtureMode = FixtureMode.UNKNOWN,
+        tests: "list[Test]" = [],
+    ) -> None:
+        super().__init__()
 
-    def is_over_elapsed(self):
-        if not self._fixtureConfig.isTesting:
-            return False
-        elapsed = datetime.timedelta(seconds=math.floor(timer() - self.startTimer))
-        return elapsed > Fixture.OVER_ELAPSED
+        self._id = id
+        self._ip = ip
+        self._yieldErrorThreshold = yieldErrorThreshold
+        self._yieldWarningThreshold = yieldWarningThreshold
+        self._lockFailQty = lockFailQty
+        self._unlockPassQty = unlockPassQty
+        self._mode = mode
+        self._tests = tests
+        self.lastTest = Test(isNull=True)
+        self._isTesting = False
+        self._isStarted = False
+        self._isLockEnabled = False
+        self._wasOverElapsed = False
+        self._startTimer = timer()
 
-    def get_status_string(self):
-        if self._test.isNull:
-            elapsedTime = ""
-            if self._fixtureConfig.isTesting:
-                elapsedTime = f"... ({self.get_elapsed_time()})"
-            return f"Status: {self._fixtureConfig.get_status_text()}{elapsedTime}"
-        error = "(Upload SFC Error)" if self.hasErrorUploadingToSfc else ""
-        return f"SN: {self._test.serialNumber}      Result: {self._test.get_result_string()} {error}"
+        self._shouldUpdateRemainingToUnlock = True
+        self._lastRemainingToUnlock = 0
+        self._shouldUpdateLock = True
+        self._lastLock = LockType.UNLOCKED
+        self._shouldUpdateYield = True
+        self._lastYield = 0.0
 
-    def get_elapsed_time(self) -> str:
-        return str(datetime.timedelta(seconds=math.floor(timer() - self.startTimer)))
+        self._updateTimer = QtCore.QTimer()
+        self._updateTimer.timeout.connect(self._on_tick)
 
-    def is_online(self) -> bool:
-        return self.is_upload_to_sfc() or not self._fixtureConfig.isSkipped
+    def _on_tick(self):
+        if not self._wasOverElapsed and self.is_over_elapsed():
+            self._wasOverElapsed = True
+            self.over_elapsed.emit()
+        self.testing_tick.emit(self.get_elapsed_time())
+
+    def is_locked(self) -> str:
+        return self.get_lock() != LockType.UNLOCKED
+
+    def get_lock(self) -> LockType:
+        if self._shouldUpdateLock:
+            self._shouldUpdateLock = False
+            if not self.isLockEnabled or self.mode == FixtureMode.RETEST:
+                self._lastLock = LockType.UNLOCKED
+            elif self.are_last_tests_pass():
+                self._lastLock = LockType.UNLOCKED
+            elif self._has_low_yield() and self._yieldErrorThreshold > 0:
+                self._lastLock = LockType.LOW_YIELD
+            elif self._are_last_tests_fail() and self._lockFailQty > 0:
+                self._lastLock = LockType.LAST_TEST_FAILED
+            else:
+                self._lastLock = LockType.UNLOCKED
+        return self._lastLock
 
     def get_lock_description(self) -> str:
-        return self._fixtureConfig.get_lock_description()
+        lock = self.get_lock()
+        if lock == LockType.LAST_TEST_FAILED:
+            return self.get_lock().description.format(self.lockFailQty)
+        return self.get_lock().description
 
-    def is_upload_to_sfc(self) -> bool:
-        return self._test.status and self.get_mode().uploadToSfc
+    def are_last_tests_pass(self) -> bool:
+        return self.get_remaining_to_unlock() <= 0
 
-    def is_affecting_yield(self) -> bool:
-        if self._test.status:
-            return not self._fixtureConfig.isRetestMode
-        else:
-            return (
-                not self._fixtureConfig.isSkipped
-                and not self._fixtureConfig.isRetestMode
-            )
+    def get_remaining_to_unlock(self) -> bool:
+        if self._shouldUpdateRemainingToUnlock:
+            self._shouldUpdateRemainingToUnlock = False
+            totalPass = 0
+            for test in self.tests[: self.get_min_tests_qty() - 1]:
+                if test.status:
+                    totalPass = totalPass + 1
+            remaining = self._unlockPassQty - totalPass
+            if len(self.tests) < self._unlockPassQty or remaining <= 0:
+                remaining = 0
+            elif self.tests[0].status == False:
+                remaining = self._unlockPassQty
+            self._lastRemainingToUnlock = remaining
+        return self._lastRemainingToUnlock
 
-    def is_retest_mode(self) -> bool:
-        return self._fixtureConfig.isRetestMode
-
-    def is_skipped(self) -> bool:
-        return self._fixtureConfig.isSkipped
+    def _has_low_yield(self) -> bool:
+        return self.get_yield() <= self._yieldErrorThreshold
 
     def get_yield(self) -> float:
-        return self._fixtureConfig.yieldRate
+        if self._shouldUpdateYield:
+            self._shouldUpdateYield = False
+            if len(self.tests) == 0:
+                self._lastYield = 100
+            else:
+                passTests = 0
+                for test in self.tests:
+                    if test.status:
+                        passTests += 1
+                self._lastYield = round((passTests / len(self.tests)) * 100, 2)
+        return self._lastYield
 
-    def get_ip(self) -> str:
-        return self._fixtureConfig.ip
+    def _are_last_tests_fail(self) -> bool:
+        if self._lockFailQty == 0 or len(self.tests) < self._lockFailQty:
+            return False
+        for test in self.tests[: self._lockFailQty]:
+            if test.status:
+                return False
+        return True
 
-    def get_id(self) -> str:
-        return self._fixtureConfig.id
+    def is_over_elapsed(self) -> bool:
+        if not self.isTesting:
+            return False
+        return self.get_elapsed_time() > Fixture.OVER_ELAPSED_THRESHOLD
 
-    def get_are_last_test_pass(self) -> bool:
-        return self._fixtureConfig.areLastTestPass
+    def get_elapsed_time(self) -> datetime.timedelta:
+        return datetime.timedelta(seconds=math.floor(timer() - self._startTimer))
 
-    def get_are_last_test_fail(self) -> bool:
-        return self._fixtureConfig.areLastTestFail
+    def get_status_message(self) -> str:
+        payload = ""
+        status = self.get_status()
+        if status == FixtureStatus.TESTING:
+            payload = f"({str(self.get_elapsed_time())})"
+        elif not self.lastTest.isNull:
+            payload = f"SN: {self.lastTest.serialNumber}    Result: {self.lastTest.get_result_string()}"
+        return f"{status.description}{'' if len(payload) == 0 else ' - '}{payload}"
 
-    def is_disabled(self) -> bool:
-        return self._fixtureConfig.is_disabled()
+    def get_status(self) -> FixtureStatus:
+        if self.isTesting:
+            return FixtureStatus.TESTING
+        if self.is_locked():
+            return FixtureStatus.LOCKED
+        return FixtureStatus.IDLE
 
-    def get_status_color(self) -> bool:
-        return self._fixtureConfig.get_status_color()
+    def is_upload_to_sfc(self, test: Test) -> bool:
+        return self.mode.is_upload_to_sfc(test.status)
 
-    def get_mode(self) -> TestMode:
-        return self._fixtureConfig.get_mode()
+    def get_color(self) -> bool:
+        if self.mode == FixtureMode.OFFLINE:
+            return "#B8B8B8"
+        if self.mode == FixtureMode.RETEST:
+            return "orange"
+        if self.is_locked():
+            return "lightcoral"
+        elif self._is_warning():
+            return "#DED851"
+        return ""
 
-    def get_mode_description(self) -> str:
-        return self._fixtureConfig.get_mode().description
+    def _is_warning(self) -> bool:
+        return self.get_yield() <= self._yieldWarningThreshold
 
-    def set_test(self, test: Test, traceability: bool):
-        self.hasErrorUploadingToSfc = False
-        self.errorMsg = ""
-        self._test = test
-        test.traceability = traceability or self.is_upload_to_sfc()
-
-    def equals(self, fixture) -> bool:
-        return fixture.get_id() == self.get_id()
+    def equals(self, fixture: Fixture) -> bool:
+        return fixture.ip == self.ip
 
     def equalsIp(self, fixtureIp: str) -> bool:
-        return self._fixtureConfig.ip == fixtureIp
+        return self.ip == fixtureIp
 
-    def set_isTesting(self, value: bool):
-        self._fixtureConfig.isTesting = value
+    def copy_configs(self, fixture: Fixture):        
+        self._yieldErrorThreshold = fixture._yieldErrorThreshold
+        self._yieldWarningThreshold = fixture._yieldWarningThreshold
+        self._lockFailQty = fixture._lockFailQty
+        self._unlockPassQty = fixture._unlockPassQty
+        self._emit_full_update()
+
+    def _emit_full_update(self):
+        self._shouldUpdateRemainingToUnlock = True
+        self._shouldUpdateLock = True
+        self._shouldUpdateYield = True
+        self.update.emit()
+
+
+    def can_start(self) -> bool:
+        return not self.is_locked() and not self.isStarted
+
+    def can_change_traceability(self) -> bool:
+        return not self.mode == FixtureMode.RETEST and not self.isStarted
+
+    def can_change_retest(self) -> bool:
+        isLocked = self.is_locked()
+        if self.mode == FixtureMode.OFFLINE:
+            isLocked = not self.are_last_tests_pass()
+        return not isLocked and not self.isStarted
+
+    def get_min_tests_qty(self) -> int:
+        return self._lockFailQty + self._unlockPassQty
+
+    @property
+    def id(self) -> int:
+        return self._id
+
+    @property
+    def ip(self) -> str:
+        return self._ip
+
+    @property
+    def mode(self) -> FixtureMode:
+        return self._mode
+
+    @mode.setter
+    def mode(self, value: FixtureMode):
+        self._mode = value
+        self._emit_full_update()
+
+
+    @property
+    def tests(self) -> "list[Test]":
+        return self._tests
+
+    @tests.setter
+    def tests(self, value: "list[Test]"):
+        if value == None:
+            value = []
+        self._tests = value
+        self._shouldUpdateRemainingToUnlock = True
+        self._shouldUpdateLock = True
+        self._shouldUpdateYield = True
+        self.update.emit()
+
+    @property
+    def isTesting(self) -> bool:
+        return self._isTesting
+
+    @isTesting.setter
+    def isTesting(self, value: bool):
+        self._isTesting = value
         if value:
-            self._test = Test(isNull=True)
-            self.startTimer = timer()
-            self.errorMsg = ""
+            self._startTimer = timer()
+            self._updateTimer.start(1000)
+            self.lastTest = Test(isNull=True)
+        else:
+            self._updateTimer.stop()
+        self.update.emit()
 
-    def get_config(self) -> FixtureConfig:
-        return self._fixtureConfig
+    @property
+    def isLockEnabled(self) -> bool:
+        return self._isLockEnabled
 
-    def reset(self):
-        self._fixtureConfig.reset()
+    @isLockEnabled.setter
+    def isLockEnabled(self, value: bool):
+        self._isLockEnabled = value
+        self._shouldUpdateLock = True
+        self.update.emit()
 
-    def set_reset_mode(self, value: bool):
-        self._fixtureConfig.isRetestMode = value
+    @property
+    def isStarted(self) -> bool:
+        return self._isStarted
 
-    def set_skipped(self, value: bool):
-        self._fixtureConfig.isSkipped = value
+    @isStarted.setter
+    def isStarted(self, value: bool):
+        self._isStarted = value
+        if not value:
+            self._updateTimer.stop()
+        self.update.emit()
 
-    def set_config(self, fixtureConfig: FixtureConfig):
-        self._fixtureConfig = fixtureConfig
-
-    def get_status_description(self):
-        description = ""
-        if self._test != None and self._test.description != None:
-            description = self._test.description + "\n"
-        if self.errorMsg != None:
-            description = description + self.errorMsg
-        return description
-
-    def set_lock_enabled(self, value: bool):
-        self._fixtureConfig.enableLock = value
-
-    def copy_config(self, fixture: Fixture):
-        fixture.set_isTesting(self._fixtureConfig.isTesting)
-        fixture.set_lock_enabled(self._fixtureConfig.is_lock_enabled())
-        fixture.set_reset_mode(self._fixtureConfig.isRetestMode)
-        fixture.set_skipped(self._fixtureConfig.isSkipped)
-        self._fixtureConfig = fixture._fixtureConfig
+    @property
+    def lockFailQty(self) -> bool:
+        return self._lockFailQty

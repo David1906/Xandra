@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from Core.Enums.TestMode import TestMode
+from Core.Enums.FixtureMode import FixtureMode
 from DataAccess.MainConfigData import MainConfigData
 from DataAccess.TestData import TestData
 from Models.Fixture import Test
@@ -139,7 +139,7 @@ class LastLogsWindow(QtWidgets.QWidget):
                     self.table.setCellWidget(
                         row,
                         column,
-                        TestModeView(TestMode(int(item))),
+                        TestModeView(FixtureMode(int(item))),
                     )
                 else:
                     self.table.setItem(

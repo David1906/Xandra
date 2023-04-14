@@ -33,11 +33,11 @@ class FixtureGridController(QtCore.QThread):
         self._baseEventHandler.modified.connect(
             lambda event: self.on_config_change(event)
         )
-        self._configWatchdog = FileWatchdog(self._baseEventHandler)
+        self._configWatchdog = FileWatchdog(self._baseEventHandler, timeout=1)
         self._configWatchdog.start(MainConfigData.MAIN_CONFIG_JSON_PATH)
         atexit.register(lambda: self._configWatchdog.stop())
 
-        self._fixtureData.refresh(resetFixture=True)
+        self._fixtureData.reset_mode()
 
         self._socket = FixtureSocket()
         self._socket.testing_status_changed.connect(self.on_testing_status_change)
@@ -54,7 +54,7 @@ class FixtureGridController(QtCore.QThread):
             self._fixtureData.create_or_update(fixture)
             self.fixture_change.emit(fixture)
 
-    def get_all_fixtures(self) -> "list[FixtureConfig]":
+    def get_all_fixtures(self) -> "list[Fixture]":
         return self._fixtureData.find_all()
 
     def start_watch_logs(self):

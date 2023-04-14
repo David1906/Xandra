@@ -109,6 +109,10 @@ class FctHostControlData:
     def get_all_fixture_configs(self) -> "list[dict]":
         return self.data[FctHostControlData.FIXTURES_ARRAY_KEY]
 
+    def get_all_fixtures_ip(self) -> "list[str]":
+        configs = self.get_all_fixture_configs()
+        return [config[FctHostControlData.PLC_IP_KEY] for config in configs]
+
     def get_script_version(self):
         scriptFullPath = self.get_script_fullpath()
         chunks = scriptFullPath.split("/")

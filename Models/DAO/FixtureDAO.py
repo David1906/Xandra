@@ -1,8 +1,9 @@
-from sqlalchemy import Column, String, Integer, Boolean
+from Core.Enums.FixtureMode import FixtureMode
 from DataAccess.SqlAlchemyBase import Base
+from sqlalchemy import Column, String, Integer, Boolean
 
 
-class FixtureConfigDAO(Base):
+class FixtureDAO(Base):
     __tablename__ = "fixtures"
 
     id = Column(Integer, primary_key=True)
@@ -11,6 +12,7 @@ class FixtureConfigDAO(Base):
     isSkipped = Column(Boolean)
     isRetestMode = Column(Boolean)
     enableLock = Column(Boolean)
+    mode = Column(Integer)
 
     def __init__(
         self,
@@ -20,6 +22,7 @@ class FixtureConfigDAO(Base):
         isSkipped: bool = False,
         isRetestMode: bool = False,
         enableLock: bool = False,
+        mode: int = FixtureMode.UNKNOWN.value,
     ):
         self.id = id
         self.ip = ip
@@ -27,3 +30,4 @@ class FixtureConfigDAO(Base):
         self.isSkipped = isSkipped
         self.isRetestMode = isRetestMode
         self.enableLock = enableLock
+        self.mode = mode

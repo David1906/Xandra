@@ -3,8 +3,8 @@ import time
 
 
 class FileWatchdog:
-    def __init__(self, eventHandler):
-        self._observer = Observer(2)
+    def __init__(self, eventHandler, timeout: int = 2):
+        self._observer = Observer(timeout)
         self._eventHandler = eventHandler
 
     def run(self):

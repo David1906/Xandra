@@ -1,16 +1,16 @@
+from Core.Enums.FixtureMode import FixtureMode
 from DataAccess.FctHostControlData import FctHostControlData
-from DataAccess.FixtureConfigData import FixtureConfigData
 from DataAccess.FixtureData import FixtureData
 from DataAccess.MainConfigData import MainConfigData
 from DataAccess.TestData import TestData
 from Models.Fixture import Fixture
+from Models.Test import Test
 
 
 class FixtureController:
     def __init__(self) -> None:
         self._testData = TestData()
         self._fixtureData = FixtureData()
-        self._fixtureConfigData = FixtureConfigData()
         self._mainConfigData = MainConfigData()
         self._fctHostControlData = FctHostControlData()
 
@@ -22,34 +22,31 @@ class FixtureController:
         )
         fileName = fullpathSplit[-1]
         path = "/".join(fullpathSplit[0:-1])
-        cmd = f"cd {path} && {self._mainConfigData.get_fixture_ip_env_name()}={fixture.get_ip()} ./{fileName} -f {fixture.get_id()}"
+        cmd = f"cd {path} && {self._mainConfigData.get_fixture_ip_env_name()}={fixture.ip} ./{fileName} -f {fixture.id}"
         if hasTraceability == False:
             cmd += " -m"
         return cmd
 
-    def refresh(self, fixture: Fixture):
-        fixture.set_config(self._fixtureConfigData.find(fixture.get_ip()))
-
     def find(self, fixtureIp: str) -> Fixture:
         return self._fixtureData.find(fixtureIp)
 
-    def add_test(self, fixture: Fixture):
-        self._testData.add(fixture._test, fixture.get_mode().value)
-        if fixture.is_upload_to_sfc():
-            isUploadOk, message = self._fixtureData.upload_pass_to_sfc(
-                fixture._test.serialNumber
-            )
-            fixture.hasErrorUploadingToSfc = not isUploadOk
-            fixture.errorMsg = message
+    def find_last_tests(self, fixture: Fixture) -> Fixture:
+        return self._fixtureData.find_last_tests(fixture)
+
+    def add_test(self, fixture: Fixture, test: Test):
+        if fixture.is_upload_to_sfc(test):
+            isUploadOk = self._fixtureData.upload_pass_to_sfc(test.serialNumber)
+            test.description += f" Xandra SFC Upload: {'OK' if isUploadOk else 'error'}"
+        self._testData.add(test, fixture.mode.value)
 
     def update(self, fixture: Fixture):
         self._fixtureData.create_or_update(fixture)
 
-    def get_last_test_pass_qty(self):
-        return self._mainConfigData.get_unlock_pass_qty()
-
-    def get_lock_fail_qty(self):
-        return self._mainConfigData.get_lock_fail_qty()
-
-    def get_remaining_to_unlock(self, fixture: Fixture):
-        return self._testData.get_remaining_to_unlock(fixture.get_ip())
+    def calc_mode(self, hasTraceability: bool, isRetestMode: bool) -> FixtureMode:
+        if not hasTraceability and isRetestMode:
+            return FixtureMode.ONLY_REPORT_PASS
+        if isRetestMode:
+            return FixtureMode.RETEST
+        if not hasTraceability:
+            return FixtureMode.OFFLINE
+        return FixtureMode.ONLINE

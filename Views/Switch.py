@@ -16,19 +16,19 @@ class Switch(QWidget):
     def __init__(self):
         super().__init__()
         self.__checked = False
-        self.__initVal()
-        self.__initUi()
+        self._initVal()
+        self._initUi()
 
-    def __initVal(self):
+    def _initVal(self):
         self.__circle_diameter = 20
         self.__animationEnabledFlag = False
         self.__pointAnimation = ""
         self.__colorAnimation = ""
 
-    def __initUi(self):
+    def _initUi(self):
         self.__circle = QPushButton()
         self.__circle.setCheckable(True)
-        self.__circle.toggled.connect(self.__toggled)
+        self.__circle.toggled.connect(self._toggled)
 
         self.__layForBtnAlign = QHBoxLayout()
         self.__layForBtnAlign.setAlignment(Qt.AlignLeft)
@@ -44,20 +44,20 @@ class Switch(QWidget):
 
         self.setLayout(lay)
 
-        self.__setStyle()
+        self._setStyle()
 
     def setChecked(self, value):
         self.__circle.setChecked(value)
-        self.__toggled(value, emitEvent=False)
+        self._toggled(value, emitEvent=False)
 
     def getChecked(self):
         return self.__checked
 
     def setEnabled(self, value: bool) -> None:
         super().setEnabled(value)
-        self.__setStyle()
+        self._setStyle()
 
-    def __setStyle(self):
+    def _setStyle(self):
         self.__circle.setFixedSize(self.__circle_diameter, self.__circle_diameter)
         color = "#36A355" if self.isEnabled() else "#A2B0A6"
         if not self.__checked:
@@ -79,7 +79,7 @@ class Switch(QWidget):
             self.__colorAnimation.setEndValue(QPoint(self.__circle_diameter, 0))
 
             self.__pointAnimation = QPropertyAnimation(self, b"color")
-            self.__pointAnimation.valueChanged.connect(self.__setColor)
+            self.__pointAnimation.valueChanged.connect(self._setColor)
             self.__pointAnimation.setDuration(100)
             self.__pointAnimation.setStartValue(255)
             self.__pointAnimation.setEndValue(200)
@@ -92,7 +92,7 @@ class Switch(QWidget):
         self.__circle.toggle()
         return super().mousePressEvent(e)
 
-    def __toggled(self, f, emitEvent=True):
+    def _toggled(self, f, emitEvent=True):
         self.__checked = f
         if self.__animationEnabledFlag:
             if f:
@@ -105,21 +105,21 @@ class Switch(QWidget):
             if f:
                 self.__circle.move(self.__circle_diameter, 0)
                 self.__layForBtnAlign.setAlignment(Qt.AlignRight)
-                self.__setColor(200)
+                self._setColor(200)
             else:
                 self.__circle.move(0, 0)
                 self.__layForBtnAlign.setAlignment(Qt.AlignLeft)
-                self.__setColor(255)
+                self._setColor(255)
         if emitEvent:
             self.toggled.emit(f)
 
-    def __setColor(self, f: int):
+    def _setColor(self, f: int):
         self.__circle.setStyleSheet(
             f"QPushButton {{ background-color: rgb({f}, {f}, 255); }}"
         )
-        self.__setStyle()
+        self._setStyle()
 
     def setCircleDiameter(self, diameter: int):
         self.__circle_diameter = diameter
-        self.__setStyle()
+        self._setStyle()
         self.__colorAnimation.setEndValue(QPoint(self.__circle_diameter, 0))

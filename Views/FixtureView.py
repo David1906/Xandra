@@ -1,5 +1,5 @@
 from Controllers.FixtureController import FixtureController
-from Core.Enums.TestMode import TestMode
+from Core.Enums.FixtureMode import FixtureMode
 from Models.Fixture import Fixture
 from Models.Test import Test
 from PyQt5 import QtCore, QtGui
@@ -24,13 +24,19 @@ class FixtureView(QGroupBox):
     def __init__(self, fixture: Fixture):
         super().__init__()
 
-        self.fixture = fixture
-        self.forceTraceabilityEnabled = False
-        self.w = None
-        self.lastOverElapsed = False
+        self._fixture: Fixture = fixture
+        self._lastLogsWindow = None
         self._fixtureController = FixtureController()
-        self.isStarted = False
+        self.forceTraceabilityEnabled = False
+        self.updateConnection = None
+        self.testingTickConnection = None
+        self.overElapsedConnection = None
 
+        self._init_ui()
+
+        self.fixture = fixture
+
+    def _init_ui(self):
         self.setObjectName("fixture")
         gridLayout = QGridLayout()
         gridLayout.setColumnStretch(0, 1)
@@ -74,7 +80,7 @@ class FixtureView(QGroupBox):
         self.lblTraceability = QLabel("Traceability")
         traceabilityLayout.addWidget(self.lblTraceability)
         self.swTraceability = Switch()
-        self.swTraceability.setChecked(not fixture.is_skipped())
+        self.swTraceability.setChecked(self.fixture.mode != FixtureMode.OFFLINE)
         self.swTraceability.toggled.connect(self.on_swTraceability_change)
         traceabilityLayout.addWidget(
             self.swTraceability, alignment=QtCore.Qt.AlignRight
@@ -85,7 +91,6 @@ class FixtureView(QGroupBox):
         self.lblRetestMode = QLabel("Retest Mode")
         retestLayout.addWidget(self.lblRetestMode)
         self.swRetestMode = Switch()
-        self.swRetestMode.setChecked(fixture.is_retest_mode())
         self.swRetestMode.toggled.connect(self.on_swRetestMode_change)
         self.set_retest_mode_visibility(False)
         retestLayout.addWidget(self.swRetestMode, alignment=QtCore.Qt.AlignRight)
@@ -127,7 +132,7 @@ class FixtureView(QGroupBox):
         buttonsLayout.addWidget(self.btnLastFailures, 1, 1, 1, 1)
 
         self.terminal = EmbeddedTerminal()
-        self.terminal.finished.connect(self.on_terminal_finished)
+        self.terminal.finished.connect(self._on_terminal_finished)
         gridLayout.addWidget(self.terminal, 0, 0, 1, 1)
 
         self.lblResult = QLabel("Status: IDLE")
@@ -136,101 +141,82 @@ class FixtureView(QGroupBox):
             self.lblResult, 2, 0, 1, 3, alignment=QtCore.Qt.AlignCenter
         )
 
-        self.set_fixture(fixture)
-
-        self._updateTimer = QtCore.QTimer()
-        self._updateTimer.timeout.connect(self._update_status)
-
     def on_btnLastTests_clicked(self):
-        self.w = LastTestsWindow(
-            self.fixture.get_ip(), showRetest=self.swRetestMode.getChecked()
+        self._lastLogsWindow = LastTestsWindow(
+            self.fixture.ip, showRetest=self.swRetestMode.getChecked()
         )
-        self.w.showMaximized()
+        self._lastLogsWindow.showMaximized()
 
     def on_btnLastFailures_clicked(self):
-        self.w = LastFailuresWindow(
-            self.fixture.get_ip(), showRetest=self.swRetestMode.getChecked()
+        self._lastLogsWindow = LastFailuresWindow(
+            self.fixture.ip, showRetest=self.swRetestMode.getChecked()
         )
-        self.w.showMaximized()
+        self._lastLogsWindow.showMaximized()
 
     def on_swRetestMode_change(self, checked: bool):
-        self.fixture.set_reset_mode(checked)
-        self._update_sw_traceability_enabled()
-        if not self.swTraceability.getChecked():
+        if checked and not self.swTraceability.getChecked():
             self.swTraceability.setChecked(True)
-        self._fixtureController.update(self.fixture)
-        self._fixtureController.refresh(self.fixture)
-        self.update()
+        self.update_fixture_mode()
+        self.fixture.tests = self._fixtureController.find_last_tests(self.fixture)
 
     def on_swTraceability_change(self, checked: bool):
-        self.fixture.set_skipped(not checked)
-        self._fixtureController.update(self.fixture)
-        self.update()
+        self.update_fixture_mode()
 
-    def set_test(self, test: Test):
-        self.fixture.set_test(test, self.swTraceability.getChecked())
-        self._fixtureController.add_test(self.fixture)
-        self._fixtureController.refresh(self.fixture)
-        self.update()
-
-    def set_fixture(self, fixture: Fixture):
-        self.fixture = fixture
-        self.update()
-
-    def update_fixture(self, fixture: Fixture):
-        self.fixture.copy_config(fixture)
-        self.update()
-
-    def update(self):
-        self._update_status()
-        self.lblYield.setText(f"Yield: {self.fixture.get_yield()}%")
-        self.lblIp.setText(f"Ip: {self.fixture.get_ip()}")
-        self.lblLock.setText(
-            f"Failed last {self._fixtureController.get_lock_fail_qty()} Tests:"
+    def update_fixture_mode(self):
+        self.fixture.mode = self._fixtureController.calc_mode(
+            self.swTraceability.getChecked(), self.swRetestMode.getChecked()
         )
-        self.btnStart.setEnabled(not self.fixture.is_disabled() or self.isStarted)
-        self.lblMode.setText(f"Mode: {self.fixture.get_mode_description()}")
-        self.update_lock_indicator()
-        self._update_sw_retest_enabled()
+
+    def add_test(self, test: Test):
+        self._fixtureController.add_test(self.fixture, test)
+        self.fixture.lastTest = test
+        self.fixture.tests = self._fixtureController.find_last_tests(self.fixture)
+
+    def _update(self):
+        self.lblYield.setText(f"Yield: {self.fixture.get_yield()}%")
+        self.lblIp.setText(f"Ip: {self.fixture.ip}")
+        self.lblLock.setText(f"Failed last {self.fixture.lockFailQty} Tests:")
+        self.btnStart.setEnabled(self.fixture.can_start() or self.fixture.isStarted)
+        self.lblMode.setText(f"Mode: {self.fixture.mode.description}")
+        self.swRetestMode.setEnabled(self.fixture.can_change_retest())
+        self._update_status()
+        self._update_lock_indicator()
+        self._update_btn_start()
+        self._update_sw_traceability_enabled()
 
         self.setStyleSheet(
             f"""
             QGroupBox#fixture{{
                 border-radius: 5px;
                 border: 1px solid #cccccc;
-                background-color: {self.fixture.get_status_color()};
+                background-color: {self.fixture.get_color()};
             }}
             """
         )
 
     def _update_status(self):
-        if self.fixture != None:
-            self.lblResult.setText(self.fixture.get_status_string())
-            self.lblResult.setToolTip(self.fixture.get_status_description())
-            if self.fixture.is_over_elapsed() != self.lastOverElapsed:
-                self.lastOverElapsed = not self.lastOverElapsed
-                self.lblResult.setStyleSheet(
-                    f"color: {'red' if self.lastOverElapsed else 'black'};"
-                )
-
-    def update_lock_indicator(self):
-        self.lblLock.setText(self.fixture.get_lock_description())
-        isVisible = self.fixture.is_disabled()
-        self.led.set_color_red()
-        isLedOn = self.fixture.is_disabled()
-        tooltipTxt = (
-            f"Fixture locked due to {self.fixture.get_lock_description().lower()}"
+        self.lblResult.setText(self.fixture.get_status_message())
+        self.lblResult.setToolTip(
+            "" if self.fixture.isTesting else self.lblResult.text()
         )
 
-        if self.fixture.get_mode() == TestMode.OFFLINE:
+    def _on_over_elapsed(self):
+        self.lblResult.setStyleSheet(f"color: red;")
+
+    def _update_lock_indicator(self):
+        self.lblLock.setText(self.fixture.get_lock_description())
+        self.led.set_color_red()
+        isVisible = self.fixture.is_locked()
+        isLedOn = isVisible
+        tooltipTxt = f"Fixture locked due to {self.lblLock.text().lower()}"
+
+        if self.fixture.mode == FixtureMode.OFFLINE:
             isVisible = True
             self.led.set_color_green()
-            isLedOn = self.fixture.get_are_last_test_pass()
+            isLedOn = self.fixture.are_last_tests_pass()
             tooltipTxt = f"Fixture unlocked"
             if not isLedOn:
-                remainingToUnlock = self._fixtureController.get_remaining_to_unlock(
-                    self.fixture
-                )
+                remainingToUnlock = self.fixture.get_remaining_to_unlock()
                 self.lblLock.setText(f"Test {remainingToUnlock} to unlock")
                 tooltipTxt = f"Test another {remainingToUnlock} board{'s' if remainingToUnlock > 1 else ''} which result is pass to unlock the fixture"
 
@@ -241,54 +227,43 @@ class FixtureView(QGroupBox):
         self.led.setChecked(isLedOn)
 
     def on_btnStart_clicked(self):
-        if self.isStarted:
+        if self.fixture.isStarted:
             reply = QMessageBox.question(
                 self,
                 "Stop Fixture",
-                f"Are you sure to stop fixture {self.fixture.get_ip()}?",
+                f"Are you sure to stop fixture {self.fixture.ip}?",
                 QMessageBox.Yes | QMessageBox.No,
                 QMessageBox.No,
             )
             if reply == QMessageBox.Yes:
                 self.terminal.Stop()
-                self.set_is_started(False)
+                self.fixture.isStarted = False
         else:
             cmd = self._fixtureController.get_fct_host_cmd(
                 self.fixture, self.swTraceability.getChecked()
             )
             print(cmd)
             self.terminal.start([cmd])
-            self.set_is_started(True)
-        self._update_sw_retest_enabled()
-        self._update_sw_traceability_enabled()
+            self.fixture.isStarted = True
 
-    def set_is_started(self, value: bool):
-        self.isStarted = value
+    def _update_btn_start(self):
         text = "Start"
-        if self.isStarted:
+        if self.fixture.isStarted:
             text = "Stop"
         self.btnStart.setText(text)
         self.btnStart.setIcon(
             QtGui.QIcon(PathHelper().join_root_path(f"/Static/{text.lower()}.png"))
         )
 
-    def on_terminal_finished(self, exitStatus):
-        self.set_is_started(False)
-        self._update_sw_retest_enabled()
-        self._update_sw_traceability_enabled()
-        self.set_fixture_isTesting(False)
-
-    def _update_sw_retest_enabled(self):
-        isDisabled = self.fixture.is_disabled()
-        if self.fixture.is_skipped():
-            isDisabled = not self.fixture.get_are_last_test_pass()
-        self.swRetestMode.setEnabled(not self.isStarted and not isDisabled)
+    def _on_terminal_finished(self, exitStatus):
+        self.fixture.isStarted = False
+        self.fixture.isTesting = False
 
     def _update_sw_traceability_enabled(self):
-        if self.fixture.is_retest_mode() and not self.forceTraceabilityEnabled:
-            self.swTraceability.setEnabled(False)
-        else:
-            self.swTraceability.setEnabled(not self.isStarted)
+        isEnabled = self.fixture.can_change_traceability()
+        if self.forceTraceabilityEnabled:
+            isEnabled = not self.fixture.isStarted
+        self.swTraceability.setEnabled(isEnabled)
 
     def equals(self, fixture: Fixture) -> bool:
         return self.fixture.equals(fixture)
@@ -297,38 +272,48 @@ class FixtureView(QGroupBox):
         return self.fixture.equalsIp(fixtureIp)
 
     def set_fixture_isTesting(self, value: bool):
-        self.fixture.set_isTesting(value)
-        self.update()
-        if value:
-            self._updateTimer.start(1000)
-        else:
-            self._updateTimer.stop()
+        self.fixture.isTesting = value
 
     def start(self):
-        if not self.isStarted:
+        if not self.fixture.isStarted:
             self.on_btnStart_clicked()
 
     def stop(self):
-        if self.isStarted:
+        if self.fixture.isStarted:
             self.on_btnStart_clicked()
 
     def set_retest_mode_visibility(self, value):
         if value:
             self.lblRetestMode.show()
             self.swRetestMode.show()
+            self.swRetestMode.setChecked(False)
         else:
             self.lblRetestMode.hide()
             self.swRetestMode.hide()
-
-    def disableRetestMode(self):
-        self.swRetestMode.setChecked(False)
-        self.update()
 
     def toggle_force_traceability_enabled(self):
         self.forceTraceabilityEnabled = not self.forceTraceabilityEnabled
         self._update_sw_traceability_enabled()
 
     def set_lock_enabled(self, value: bool):
-        self.fixture.set_lock_enabled(value)
-        self._fixtureController.update(self.fixture)
-        self.update()
+        self.fixture.isLockEnabled = value
+
+    def copy_configs(self, fixture:Fixture):
+        self.fixture.copy_configs(fixture)
+
+    @property
+    def fixture(self) -> Fixture:
+        return self._fixture
+
+    @fixture.setter
+    def fixture(self, fixture: Fixture):
+        if self.updateConnection:
+            self.fixture.update.disconnect(self.updateConnection)
+        if self.testingTickConnection:
+            self.fixture.testing_tick.disconnect(self.testingTickConnection)
+        if self.overElapsedConnection:
+            self.fixture.over_elapsed.disconnect(self.overElapsedConnection)
+        self.updateConnection = fixture.update.connect(self._update)
+        self.testingTickConnection = fixture.testing_tick.connect(self._update_status)
+        self.overElapsedConnection = fixture.over_elapsed.connect(self._on_over_elapsed)
+        self._fixture = fixture

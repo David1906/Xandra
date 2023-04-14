@@ -1,7 +1,11 @@
+from Core.Enums.FixtureMode import FixtureMode
 from DataAccess.FctHostControlData import FctHostControlData
-from DataAccess.FixtureConfigData import FixtureConfigData
 from DataAccess.MainConfigData import MainConfigData
+from DataAccess.SqlAlchemyBase import Session
+from DataAccess.TestData import TestData
+from Models.DAO.FixtureDAO import FixtureDAO
 from Models.Fixture import Fixture
+from sqlalchemy import update
 from typing import Tuple
 import subprocess
 
@@ -9,39 +13,81 @@ import subprocess
 class FixtureData:
     def __init__(self) -> None:
         self._fctHostControlData = FctHostControlData()
-        self._fixtureConfigData = FixtureConfigData()
         self._mainConfigData = MainConfigData()
+        self._testData = TestData()
 
     def save(self, fixtures: "list[Fixture]"):
         for fixture in fixtures:
-            self._fixtureConfigData.create_or_update(fixture.get_config())
+            self.create_or_update(fixture)
 
     def create_or_update(self, fixture: Fixture):
-        self._fixtureConfigData.create_or_update(fixture.get_config())
+        session = Session()
+        fixtureDAO = (
+            session.query(FixtureDAO).where(FixtureDAO.ip == fixture.ip).first()
+        )
+        if fixtureDAO == None:
+            fixtureDAO = FixtureDAO(ip=fixture.ip, mode=fixture.mode.value)
+            session.add(fixtureDAO)
+        else:
+            session.execute(
+                update(FixtureDAO)
+                .where(FixtureDAO.ip == fixture.ip)
+                .values(
+                    mode=fixture.mode.value,
+                )
+            )
+        session.commit()
+        Session.remove()
 
-    def is_skipped(self, fixtureIp: str) -> bool:
-        return self._fixtureConfigData.is_skipped(fixtureIp)
-
-    def is_retest_mode(self, fixtureIp: str) -> bool:
-        return self._fixtureConfigData.is_retest_mode(fixtureIp)
-
-    def refresh(self, resetFixture: bool = False):
-        for fixture in self.find_all():
-            if resetFixture:
-                fixture.reset()
-            self._fixtureConfigData.create_or_update(fixture.get_config())
+    def reset_mode(self):
+        session = Session()
+        for fixture in session.query(FixtureDAO).all():
+            fixture.mode = FixtureMode.ONLINE.value
+        session.commit()
+        Session.remove()
 
     def find_all(self) -> "list[Fixture]":
         fixtures = []
-        for fixture in self._fctHostControlData.get_all_fixture_configs():
-            fixtures.append(self.find(fixture[FctHostControlData.PLC_IP_KEY]))
+        for fixtureConfig in self._fctHostControlData.get_all_fixture_configs():
+            fixtures.append(
+                self.find(
+                    fixtureConfig[FctHostControlData.PLC_IP_KEY],
+                    fixtureConfig[FctHostControlData.PLC_ID_KEY],
+                )
+            )
         return fixtures
 
-    def find(self, fixtureIp: str) -> Fixture:
-        fixtureConfig = self._fixtureConfigData.find(fixtureIp)
-        return Fixture(fixtureConfig)
+    def find(self, fixtureIp: str, id: str) -> Fixture:
+        fixtureDAO = self.find_DAO_or_default(fixtureIp)
+        fixture = Fixture(
+            id=int(id),
+            ip=fixtureIp,
+            yieldErrorThreshold=self._mainConfigData.get_yield_error_threshold(),
+            yieldWarningThreshold=self._mainConfigData.get_yield_warning_threshold(),
+            lockFailQty=self._mainConfigData.get_lock_fail_qty(),
+            unlockPassQty=self._mainConfigData.get_unlock_pass_qty(),
+            mode=FixtureMode(fixtureDAO.mode),
+        )
+        fixture.tests = self.find_last_tests(fixture)
+        return fixture
 
-    def upload_pass_to_sfc(self, serialNumber) -> Tuple[bool, str]:
+    def find_last_tests(self, fixture: Fixture) -> "list[Fixture]":
+        return self._testData.find_last_by_fixture(fixture)
+
+    def find_DAO_or_default(self, fixtureIp: str) -> FixtureDAO:
+        fixtureDAO = self.find_DAO(fixtureIp)
+        if FixtureDAO == None:
+            fixtureDAO = FixtureDAO()
+        return fixtureDAO
+
+    def find_DAO(self, fixtureIp: str) -> FixtureDAO:
+        session = Session()
+        data = session.query(FixtureDAO).where(FixtureDAO.ip == fixtureIp).first()
+        session.close()
+        Session.remove()
+        return data
+
+    def upload_pass_to_sfc(self, serialNumber) -> bool:
         result = subprocess.run(
             f'{self._fctHostControlData.get_upload_sfc_script_fullpath()} -s "{serialNumber}"',
             stdout=subprocess.PIPE,
@@ -49,4 +95,4 @@ class FixtureData:
             cwd=self._fctHostControlData.get_script_fullpath(),
         )
         print(result.stdout.decode())
-        return (result.returncode == 0, result.stdout.decode())
+        return result.returncode == 0

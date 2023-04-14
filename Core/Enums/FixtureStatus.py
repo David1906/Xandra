@@ -1,7 +1,7 @@
 import enum
 
 
-class TestMode(enum.Enum):
+class FixtureStatus(enum.Enum):
     def __new__(cls, *args, **kwds):
         value = len(cls.__members__)
         obj = object.__new__(cls)
@@ -11,6 +11,7 @@ class TestMode(enum.Enum):
     def __init__(self, description: str):
         self.description = description
 
+    UNKNOWN = "Unknown"
     IDLE = "IDLE"
     TESTING = "Testing"
     LOCKED = "Locked"

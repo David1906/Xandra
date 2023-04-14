@@ -49,18 +49,21 @@ class FixtureSocket(QtCore.QThread):
             message_length = int(message_header.decode("utf-8").strip())
             return pickle.loads(client_socket.recv(message_length))
         except Exception as e:
-            print("error: ", str(e))
+            print("socket error:", str(e))
             return None
 
     def process(self, notified_socket, data: dict):
-        if data["message"] == "TEST_START":
-            fixture = self._fixtureData.find(data["fixtureIp"])
-            if fixture != None:
-                fixtureData = {
-                    "fixtureIp": fixture.get_ip(),
-                    "isDisabled": fixture.is_disabled(),
-                }
-                notified_socket.send(pickle.dumps(fixtureData))
-            self.testing_status_changed.emit(data["fixtureIp"], True)
-        elif data["message"] == "TEST_END":
-            self.testing_status_changed.emit(data["fixtureIp"], False)
+        try:
+            if data["message"] == "TEST_START":
+                fixture = self._fixtureData.find(data["fixtureIp"], "0")
+                if fixture != None:
+                    fixtureData = {
+                        "fixtureIp": fixture.ip,
+                        "isDisabled": fixture.is_locked(),
+                    }
+                    notified_socket.send(pickle.dumps(fixtureData))
+                self.testing_status_changed.emit(data["fixtureIp"], True)
+            elif data["message"] == "TEST_END":
+                self.testing_status_changed.emit(data["fixtureIp"], False)
+        except Exception as e:
+            print("socket error:", e)

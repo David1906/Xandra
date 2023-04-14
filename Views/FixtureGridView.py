@@ -23,7 +23,7 @@ class FixtureGridView(QWidget):
         self._fixtureGridController.testing_status_changed.connect(
             self.on_testing_status_changed
         )
-        self._isRetestMode = False
+        self._showRetestMode = False
         self._isLockEnabled = False
         self.setStyleSheet("QLabel {font: 8pt Open Sans}")
 
@@ -50,13 +50,12 @@ class FixtureGridView(QWidget):
         self.set_enable_lock(True)
 
     def show_retest_mode(self):
-        self._isRetestMode = not self._isRetestMode
+        self._showRetestMode = not self._showRetestMode
         for fixtureView in self._fixtureViews:
-            fixtureView.set_retest_mode_visibility(self._isRetestMode)
-            fixtureView.disableRetestMode()
+            fixtureView.set_retest_mode_visibility(self._showRetestMode)
 
     def toggle_force_traceability_enabled(self):
-        if not self._isRetestMode:
+        if not self._showRetestMode:
             return
         authView = AuthView(self)
         authView.interact()
@@ -80,16 +79,10 @@ class FixtureGridView(QWidget):
         self._fixtureGridController.start_watch_logs()
 
     def on_testing_status_changed(self, fixtureIp: str, isTesting: bool):
-        for fixtureView in self._fixtureViews:
-            if fixtureView.equalsIp(fixtureIp):
-                fixtureView.set_fixture_isTesting(isTesting)
-                return
+        self._find_fixture_view(fixtureIp).set_fixture_isTesting(isTesting)
 
     def on_test_add(self, test: Test):
-        for fixtureView in self._fixtureViews:
-            if fixtureView.equalsIp(test.fixtureIp):
-                fixtureView.set_test(test)
-                return
+        self._find_fixture_view(test.fixtureIp).add_test(test)
 
     def start_all_fixtures(self):
         for fixtureView in self._fixtureViews:
@@ -112,6 +105,9 @@ class FixtureGridView(QWidget):
         self.lock_changed.emit(self._isLockEnabled)
 
     def update_fixture(self, fixture: Fixture):
+        self._find_fixture_view(fixture.ip).copy_configs(fixture)
+
+    def _find_fixture_view(self, fixtureIp: str):
         for fixtureView in self._fixtureViews:
-            if fixtureView.equalsIp(fixture.get_ip()):
-                fixtureView.update_fixture(fixture)
+            if fixtureView.equalsIp(fixtureIp):
+                return fixtureView

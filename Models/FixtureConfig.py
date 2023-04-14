@@ -1,5 +1,5 @@
 from Core.Enums.LockType import LockType
-from Core.Enums.TestMode import TestMode
+from Core.Enums.FixtureMode import FixtureMode
 
 
 class FixtureConfig:
@@ -83,14 +83,14 @@ class FixtureConfig:
             return "#DED851"
         return ""
 
-    def get_mode(self) -> TestMode:
+    def get_mode(self) -> FixtureMode:
         if self.isSkipped and self.isRetestMode:
-            return TestMode.ONLY_REPORT_PASS
+            return FixtureMode.ONLY_REPORT_PASS
         if self.isRetestMode:
-            return TestMode.RETEST
+            return FixtureMode.RETEST
         if self.isSkipped:
-            return TestMode.OFFLINE
-        return TestMode.ONLINE
+            return FixtureMode.OFFLINE
+        return FixtureMode.ONLINE
 
     def reset(self):
         self.isTesting = False

@@ -35,7 +35,7 @@
     "yieldCalcQty": 10,
     "yieldCalcQty_description" : "[0-1000] - Cantidad de pruebas con las que se calculará el yield",
 
-    "unlockPassQty": 1,
+    "unlockPassQty": 2,
     "unlockPassQty_description" : "[1-5] - Cantidad de pruebas consecutivas con estatus PASS necesarias para desbloquear la fixtura",
 
     "lockFailQty": 3,

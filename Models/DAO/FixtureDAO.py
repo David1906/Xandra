@@ -8,6 +8,7 @@ class FixtureDAO(Base):
 
     id = Column(Integer, primary_key=True)
     ip = Column(String(64))
+    abortTest = Column(Boolean)
     isDisabled = Column(Boolean)
     isSkipped = Column(Boolean)
     isRetestMode = Column(Boolean)
@@ -18,6 +19,7 @@ class FixtureDAO(Base):
         self,
         id: int = 0,
         ip: str = "",
+        abortTest: bool = False,
         isDisabled: bool = False,
         isSkipped: bool = False,
         isRetestMode: bool = False,
@@ -26,6 +28,7 @@ class FixtureDAO(Base):
     ):
         self.id = id
         self.ip = ip
+        self.abortTest = abortTest
         self.isDisabled = isDisabled
         self.isSkipped = isSkipped
         self.isRetestMode = isRetestMode

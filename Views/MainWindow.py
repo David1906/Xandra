@@ -68,6 +68,7 @@ class MainWindow(QMainWindow):
             QMessageBox.No,
         )
         if reply == QMessageBox.Yes:
+            self.fixtureView.save_status()
             QtWidgets.QApplication.closeAllWindows()
             event.accept()
         else:

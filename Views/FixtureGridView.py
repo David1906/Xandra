@@ -111,3 +111,7 @@ class FixtureGridView(QWidget):
         for fixtureView in self._fixtureViews:
             if fixtureView.equalsIp(fixtureIp):
                 return fixtureView
+
+    def save_status(self):
+        for fixtureView in self._fixtureViews:
+            fixtureView.save_status()

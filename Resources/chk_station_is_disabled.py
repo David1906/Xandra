@@ -13,7 +13,9 @@ class FixtureEnabledChecker:
 
     def __init__(self):
         self._socketClient = SocketClient()
-        self._result_file = f"{FixtureEnabledChecker.BASE_PATH}/chk_station_yield.result"
+        self._result_file = (
+            f"{FixtureEnabledChecker.BASE_PATH}/chk_station_yield.result"
+        )
         os.environ["RESULTFILE"] = self._result_file
         if os.path.exists(self._result_file):
             os.remove(self._result_file)
@@ -42,14 +44,14 @@ class FixtureEnabledChecker:
 
     def outputPass(self):
         self.printHeader(
-            "Fixture Enabled",
+            "Fixture Unlocked",
             FixtureEnabledChecker.GREEN_COLOR,
         )
         self.outputResultFile("PASS")
 
     def outputFail(self):
         self.printHeader(
-            "Fixture Disabled Due To Low Yield",
+            "Fixture Locked",
             FixtureEnabledChecker.RED_COLOR,
         )
         self.outputResultFile("FAIL")
@@ -81,8 +83,6 @@ class FixtureEnabledChecker:
 
 
 if FixtureEnabledChecker().check():
-    input("asfsdfs...")
     exit(0)
 else:
-    input("asfsdfs...")
     exit(1)

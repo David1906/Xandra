@@ -1,5 +1,6 @@
 from Controllers.FixtureController import FixtureController
 from Core.Enums.FixtureMode import FixtureMode
+from Core.Enums.FixtureStatus import FixtureStatus
 from Models.Fixture import Fixture
 from Models.Test import Test
 from PyQt5 import QtCore, QtGui
@@ -18,6 +19,7 @@ from Views.LastFailuresWindow import LastFailuresWindow
 from Views.LastTestsWindow import LastTestsWindow
 from Views.LedIndicator import LedIndicator
 from Views.Switch import Switch
+import datetime
 
 
 class FixtureView(QGroupBox):
@@ -31,6 +33,7 @@ class FixtureView(QGroupBox):
         self.updateConnection = None
         self.testingTickConnection = None
         self.overElapsedConnection = None
+        self.statusChangeConnection = None
 
         self._init_ui()
 
@@ -183,7 +186,6 @@ class FixtureView(QGroupBox):
         self._update_lock_indicator()
         self._update_btn_start()
         self._update_sw_traceability_enabled()
-
         self.setStyleSheet(
             f"""
             QGroupBox#fixture{{
@@ -193,6 +195,7 @@ class FixtureView(QGroupBox):
             }}
             """
         )
+        self._fixtureController.update(self.fixture)
 
     def _update_status(self):
         self.lblResult.setText(self.fixture.get_status_message())
@@ -259,6 +262,17 @@ class FixtureView(QGroupBox):
         self.fixture.isStarted = False
         self.fixture.isTesting = False
 
+    def save_status(self):
+        self.fixture.emit_status_change(force=True)
+
+    def _on_status_change(
+        self,
+        lastStatus: FixtureStatus,
+        timeDelta: datetime.timedelta,
+        newStatus: FixtureStatus,
+    ):
+        print("IP: ", self.fixture.ip, lastStatus, timeDelta)
+
     def _update_sw_traceability_enabled(self):
         isEnabled = self.fixture.can_change_traceability()
         if self.forceTraceabilityEnabled:
@@ -298,7 +312,7 @@ class FixtureView(QGroupBox):
     def set_lock_enabled(self, value: bool):
         self.fixture.isLockEnabled = value
 
-    def copy_configs(self, fixture:Fixture):
+    def copy_configs(self, fixture: Fixture):
         self.fixture.copy_configs(fixture)
 
     @property
@@ -313,7 +327,12 @@ class FixtureView(QGroupBox):
             self.fixture.testing_tick.disconnect(self.testingTickConnection)
         if self.overElapsedConnection:
             self.fixture.over_elapsed.disconnect(self.overElapsedConnection)
+        if self.statusChangeConnection:
+            self.fixture.status_change.disconnect(self.statusChangeConnection)
         self.updateConnection = fixture.update.connect(self._update)
         self.testingTickConnection = fixture.testing_tick.connect(self._update_status)
         self.overElapsedConnection = fixture.over_elapsed.connect(self._on_over_elapsed)
+        self.statusChangeConnection = fixture.status_change.connect(
+            self._on_status_change
+        )
         self._fixture = fixture

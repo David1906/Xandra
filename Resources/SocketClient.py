@@ -16,7 +16,7 @@ class SocketClient:
         message_header = f"{len(message):<{SocketClient.HEADER_LENGTH}}".encode("utf-8")
         self._socket.send(message_header + message)
         fixture = pickle.loads(self._socket.recv(1024))
-        return fixture["isDisabled"]
+        return fixture["shouldAbortTest"]
 
     def notify_test_end(self, fixtureIP: str):
         self._socket.connect((socket.gethostname(), SocketClient.SOCKET_PORT))

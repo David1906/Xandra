@@ -26,7 +26,12 @@ class FixtureData:
             session.query(FixtureDAO).where(FixtureDAO.ip == fixture.ip).first()
         )
         if fixtureDAO == None:
-            fixtureDAO = FixtureDAO(ip=fixture.ip, mode=fixture.mode.value)
+            fixtureDAO = FixtureDAO(
+                ip=fixture.ip,
+                mode=fixture.mode.value,
+                abortTest=fixture.should_abort_test(),
+                enableLock=fixture.isLockEnabled,
+            )
             session.add(fixtureDAO)
         else:
             session.execute(
@@ -34,6 +39,8 @@ class FixtureData:
                 .where(FixtureDAO.ip == fixture.ip)
                 .values(
                     mode=fixture.mode.value,
+                    abortTest=fixture.should_abort_test(),
+                    enableLock=fixture.isLockEnabled,
                 )
             )
         session.commit()
@@ -86,6 +93,15 @@ class FixtureData:
         session.close()
         Session.remove()
         return data
+
+    def should_abort_test(self, fixtureIp: str) -> bool:
+        session = Session()
+        data = session.query(FixtureDAO).where(FixtureDAO.ip == fixtureIp).first()
+        session.close()
+        Session.remove()
+        if data == None:
+            return False
+        return data.abortTest
 
     def upload_pass_to_sfc(self, serialNumber) -> bool:
         result = subprocess.run(

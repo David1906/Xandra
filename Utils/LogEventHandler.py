@@ -3,6 +3,7 @@ from Models.Fixture import Test
 from PyQt5 import QtCore
 from watchdog.events import FileSystemEventHandler
 import logging
+import os
 
 
 class LogEventHandler(FileSystemEventHandler, QtCore.QThread):
@@ -15,7 +16,8 @@ class LogEventHandler(FileSystemEventHandler, QtCore.QThread):
 
     def on_created(self, event):
         try:
-            test = self._testParser.parse(event.src_path)
-            self.test_add.emit(test)
+            if os.path.isfile(event.src_path):
+                test = self._testParser.parse(event.src_path)
+                self.test_add.emit(test)
         except Exception as e:
             logging.error(str(e))

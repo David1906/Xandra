@@ -11,6 +11,7 @@ import math
 
 class Fixture(QtCore.QObject):
     OVER_ELAPSED_THRESHOLD = datetime.timedelta(hours=1, minutes=45)
+    status_change = QtCore.pyqtSignal(FixtureStatus, datetime.timedelta, FixtureStatus)
     update = QtCore.pyqtSignal()
     over_elapsed = QtCore.pyqtSignal()
     testing_tick = QtCore.pyqtSignal(datetime.timedelta)
@@ -49,6 +50,7 @@ class Fixture(QtCore.QObject):
         self._lastLock = LockType.UNLOCKED
         self._shouldUpdateYield = True
         self._lastYield = 0.0
+        self._lastStatus = FixtureStatus.UNKNOWN
 
         self._updateTimer = QtCore.QTimer()
         self._updateTimer.timeout.connect(self._on_tick)
@@ -58,6 +60,11 @@ class Fixture(QtCore.QObject):
             self._wasOverElapsed = True
             self.over_elapsed.emit()
         self.testing_tick.emit(self.get_elapsed_time())
+
+    def should_abort_test(self):
+        if self.mode == FixtureMode.OFFLINE:
+            return False
+        return self.is_locked()
 
     def is_locked(self) -> str:
         return self.get_lock() != LockType.UNLOCKED
@@ -120,10 +127,15 @@ class Fixture(QtCore.QObject):
     def _are_last_tests_fail(self) -> bool:
         if self._lockFailQty == 0 or len(self.tests) < self._lockFailQty:
             return False
-        for test in self.tests[: self._lockFailQty]:
-            if test.status:
-                return False
-        return True
+        total = 0
+        maxTotal = 0
+        for test in self.tests[: self.get_min_tests_qty()]:
+            if not test.status:
+                total = total + 1
+            else:
+                total = 0
+            maxTotal = maxTotal if maxTotal > total else total
+        return maxTotal >= self.lockFailQty
 
     def is_over_elapsed(self) -> bool:
         if not self.isTesting:
@@ -143,10 +155,10 @@ class Fixture(QtCore.QObject):
         return f"{status.description}{'' if len(payload) == 0 else ' - '}{payload}"
 
     def get_status(self) -> FixtureStatus:
-        if self.isTesting:
-            return FixtureStatus.TESTING
         if self.is_locked():
             return FixtureStatus.LOCKED
+        if self.isTesting:
+            return FixtureStatus.TESTING
         return FixtureStatus.IDLE
 
     def is_upload_to_sfc(self, test: Test) -> bool:
@@ -172,7 +184,7 @@ class Fixture(QtCore.QObject):
     def equalsIp(self, fixtureIp: str) -> bool:
         return self.ip == fixtureIp
 
-    def copy_configs(self, fixture: Fixture):        
+    def copy_configs(self, fixture: Fixture):
         self._yieldErrorThreshold = fixture._yieldErrorThreshold
         self._yieldWarningThreshold = fixture._yieldWarningThreshold
         self._lockFailQty = fixture._lockFailQty
@@ -183,11 +195,27 @@ class Fixture(QtCore.QObject):
         self._shouldUpdateRemainingToUnlock = True
         self._shouldUpdateLock = True
         self._shouldUpdateYield = True
+        self.emit_status_change()
         self.update.emit()
 
+    def _property_changed(self, updateCalcs=False):
+        if updateCalcs:
+            self._shouldUpdateRemainingToUnlock = True
+            self._shouldUpdateLock = True
+            self._shouldUpdateYield = True
+        self.update.emit()
+        self.emit_status_change()
+
+    def emit_status_change(self, force: bool = False):
+        status = self.get_status()
+        if status != self._lastStatus or force:
+            self.status_change.emit(self._lastStatus, self.get_elapsed_time(), status)
+            self._startTimer = timer()
+            self._lastStatus = status
 
     def can_start(self) -> bool:
-        return not self.is_locked() and not self.isStarted
+        canStart = not self.is_locked() or self.mode == FixtureMode.OFFLINE
+        return canStart and not self.isStarted
 
     def can_change_traceability(self) -> bool:
         return not self.mode == FixtureMode.RETEST and not self.isStarted
@@ -216,8 +244,7 @@ class Fixture(QtCore.QObject):
     @mode.setter
     def mode(self, value: FixtureMode):
         self._mode = value
-        self._emit_full_update()
-
+        self._property_changed(updateCalcs=True)
 
     @property
     def tests(self) -> "list[Test]":
@@ -228,10 +255,7 @@ class Fixture(QtCore.QObject):
         if value == None:
             value = []
         self._tests = value
-        self._shouldUpdateRemainingToUnlock = True
-        self._shouldUpdateLock = True
-        self._shouldUpdateYield = True
-        self.update.emit()
+        self._property_changed(updateCalcs=True)
 
     @property
     def isTesting(self) -> bool:
@@ -241,12 +265,11 @@ class Fixture(QtCore.QObject):
     def isTesting(self, value: bool):
         self._isTesting = value
         if value:
-            self._startTimer = timer()
             self._updateTimer.start(1000)
             self.lastTest = Test(isNull=True)
         else:
             self._updateTimer.stop()
-        self.update.emit()
+        self._property_changed()
 
     @property
     def isLockEnabled(self) -> bool:
@@ -256,7 +279,7 @@ class Fixture(QtCore.QObject):
     def isLockEnabled(self, value: bool):
         self._isLockEnabled = value
         self._shouldUpdateLock = True
-        self.update.emit()
+        self._property_changed()
 
     @property
     def isStarted(self) -> bool:
@@ -267,7 +290,7 @@ class Fixture(QtCore.QObject):
         self._isStarted = value
         if not value:
             self._updateTimer.stop()
-        self.update.emit()
+        self._property_changed()
 
     @property
     def lockFailQty(self) -> bool:

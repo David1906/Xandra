@@ -55,11 +55,13 @@ class FixtureSocket(QtCore.QThread):
     def process(self, notified_socket, data: dict):
         try:
             if data["message"] == "TEST_START":
-                fixture = self._fixtureData.find(data["fixtureIp"], "0")
-                if fixture != None:
+                fixtureIp = data["fixtureIp"]
+                if fixtureIp != None:
                     fixtureData = {
-                        "fixtureIp": fixture.ip,
-                        "isDisabled": fixture.is_locked(),
+                        "fixtureIp": fixtureIp,
+                        "shouldAbortTest": self._fixtureData.should_abort_test(
+                            fixtureIp
+                        ),
                     }
                     notified_socket.send(pickle.dumps(fixtureData))
                 self.testing_status_changed.emit(data["fixtureIp"], True)

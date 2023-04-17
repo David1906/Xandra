@@ -13,4 +13,4 @@ class LockType(enum.Enum):
 
     UNLOCKED = "Unlocked"
     LAST_TEST_FAILED = "Last {0} tests failed"
-    LOW_YIELD = "Low yield"
+    LOW_YIELD = "Low yield ({0}%)"

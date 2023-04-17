@@ -1,10 +1,13 @@
 from Core.Enums.FixtureMode import FixtureMode
+from Core.Enums.FixtureStatus import FixtureStatus
 from DataAccess.FctHostControlData import FctHostControlData
 from DataAccess.FixtureData import FixtureData
+from DataAccess.FixtureStatusLogData import FixtureStatusLogData
 from DataAccess.MainConfigData import MainConfigData
 from DataAccess.TestData import TestData
 from Models.Fixture import Fixture
 from Models.Test import Test
+import datetime
 
 
 class FixtureController:
@@ -13,6 +16,7 @@ class FixtureController:
         self._fixtureData = FixtureData()
         self._mainConfigData = MainConfigData()
         self._fctHostControlData = FctHostControlData()
+        self._fixtureStatusLogData = FixtureStatusLogData()
 
     def get_fct_host_cmd(self, fixture: Fixture, hasTraceability: bool):
         fullpathSplit = (
@@ -38,6 +42,11 @@ class FixtureController:
             isUploadOk = self._fixtureData.upload_pass_to_sfc(test.serialNumber)
             test.description += f" Xandra SFC Upload: {'OK' if isUploadOk else 'error'}"
         self._testData.add(test, fixture.mode.value)
+
+    def add_status_log(
+        self, fixture: Fixture, status: FixtureStatus, timeDelta: datetime.timedelta
+    ):
+        self._fixtureStatusLogData.add(fixture, status, timeDelta)
 
     def update(self, fixture: Fixture):
         self._fixtureData.create_or_update(fixture)

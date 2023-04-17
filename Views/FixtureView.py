@@ -271,7 +271,7 @@ class FixtureView(QGroupBox):
         timeDelta: datetime.timedelta,
         newStatus: FixtureStatus,
     ):
-        print("IP: ", self.fixture.ip, lastStatus, timeDelta)
+        self._fixtureController.add_status_log(self.fixture, lastStatus, timeDelta)
 
     def _update_sw_traceability_enabled(self):
         isEnabled = self.fixture.can_change_traceability()

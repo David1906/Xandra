@@ -51,6 +51,7 @@ class Fixture(QtCore.QObject):
         self._shouldUpdateYield = True
         self._lastYield = 0.0
         self._lastStatus = FixtureStatus.UNKNOWN
+        self.lastLockDescription = ""
 
         self._updateTimer = QtCore.QTimer()
         self._updateTimer.timeout.connect(self._on_tick)
@@ -87,8 +88,12 @@ class Fixture(QtCore.QObject):
     def get_lock_description(self) -> str:
         lock = self.get_lock()
         if lock == LockType.LAST_TEST_FAILED:
-            return self.get_lock().description.format(self.lockFailQty)
-        return self.get_lock().description
+            self.lastLockDescription = lock.description.format(self.lockFailQty)
+        elif lock == LockType.LOW_YIELD:
+            self.lastLockDescription = lock.description.format(self.get_yield())
+        else:
+            self.lastLockDescription = lock.description
+        return self.lastLockDescription
 
     def are_last_tests_pass(self) -> bool:
         return self.get_remaining_to_unlock() <= 0
@@ -189,22 +194,15 @@ class Fixture(QtCore.QObject):
         self._yieldWarningThreshold = fixture._yieldWarningThreshold
         self._lockFailQty = fixture._lockFailQty
         self._unlockPassQty = fixture._unlockPassQty
-        self._emit_full_update()
-
-    def _emit_full_update(self):
-        self._shouldUpdateRemainingToUnlock = True
-        self._shouldUpdateLock = True
-        self._shouldUpdateYield = True
-        self.emit_status_change()
-        self.update.emit()
+        self._property_changed(updateCalcs=True)
 
     def _property_changed(self, updateCalcs=False):
         if updateCalcs:
             self._shouldUpdateRemainingToUnlock = True
             self._shouldUpdateLock = True
             self._shouldUpdateYield = True
-        self.update.emit()
         self.emit_status_change()
+        self.update.emit()
 
     def emit_status_change(self, force: bool = False):
         status = self.get_status()

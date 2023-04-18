@@ -1,9 +1,16 @@
 from Controllers.FixtureController import FixtureController
 from Core.Enums.FixtureMode import FixtureMode
 from Core.Enums.FixtureStatus import FixtureStatus
+from datetime import datetime, timedelta
 from Models.Fixture import Fixture
 from Models.Test import Test
 from PyQt5 import QtCore, QtGui
+from Utils.PathHelper import PathHelper
+from Views.EmbeddedTerminal import EmbeddedTerminal
+from Views.LastFailuresWindow import LastFailuresWindow
+from Views.LastTestsWindow import LastTestsWindow
+from Views.LedIndicator import LedIndicator
+from Views.Switch import Switch
 from PyQt5.QtWidgets import (
     QGroupBox,
     QLabel,
@@ -13,16 +20,11 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
 )
-from Utils.PathHelper import PathHelper
-from Views.EmbeddedTerminal import EmbeddedTerminal
-from Views.LastFailuresWindow import LastFailuresWindow
-from Views.LastTestsWindow import LastTestsWindow
-from Views.LedIndicator import LedIndicator
-from Views.Switch import Switch
-import datetime
 
 
 class FixtureView(QGroupBox):
+    LABEL_STYLE = "font-size: 12px; font-weight: bold; margin: 5px;"
+
     def __init__(self, fixture: Fixture):
         super().__init__()
 
@@ -139,7 +141,7 @@ class FixtureView(QGroupBox):
         gridLayout.addWidget(self.terminal, 0, 0, 1, 1)
 
         self.lblResult = QLabel("Status: IDLE")
-        self.lblResult.setStyleSheet("font-size: 12px; font-weight: bold; margin: 5px;")
+        self.lblResult.setStyleSheet(FixtureView.LABEL_STYLE)
         gridLayout.addWidget(
             self.lblResult, 2, 0, 1, 3, alignment=QtCore.Qt.AlignCenter
         )
@@ -195,6 +197,7 @@ class FixtureView(QGroupBox):
             }}
             """
         )
+        self.lblResult.setStyleSheet(FixtureView.LABEL_STYLE)
         self._fixtureController.update(self.fixture)
 
     def _update_status(self):
@@ -204,7 +207,7 @@ class FixtureView(QGroupBox):
         )
 
     def _on_over_elapsed(self):
-        self.lblResult.setStyleSheet(f"color: red;")
+        self.lblResult.setStyleSheet(FixtureView.LABEL_STYLE + "color: #c71704;")
 
     def _update_lock_indicator(self):
         self.lblLock.setText(self.fixture.get_lock_description())
@@ -268,10 +271,13 @@ class FixtureView(QGroupBox):
     def _on_status_change(
         self,
         lastStatus: FixtureStatus,
-        timeDelta: datetime.timedelta,
+        startDateTime: datetime,
+        timeDelta: datetime,
         newStatus: FixtureStatus,
     ):
-        self._fixtureController.add_status_log(self.fixture, lastStatus, timeDelta)
+        self._fixtureController.add_status_log(
+            self.fixture, lastStatus, startDateTime, timeDelta
+        )
 
     def _update_sw_traceability_enabled(self):
         isEnabled = self.fixture.can_change_traceability()

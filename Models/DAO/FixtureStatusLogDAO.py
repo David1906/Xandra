@@ -16,13 +16,13 @@ class FixtureStatusLogDAO(Base):
 
     def __init__(
         self,
-        fixtureId: int,
-        fixtureIp: str,
-        status: int,
-        reason: str,
-        seconds: int,
-        timeStampStart: str,
-        timeStampEnd: str,
+        fixtureId: int = 0,
+        fixtureIp: str = "",
+        status: int = 0,
+        reason: str = "",
+        seconds: int = 0,
+        timeStampStart: str = "",
+        timeStampEnd: str = "",
     ) -> None:
         self.fixtureId = fixtureId
         self.fixtureIp = fixtureIp

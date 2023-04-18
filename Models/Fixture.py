@@ -2,19 +2,20 @@ from __future__ import annotations
 from Core.Enums.FixtureMode import FixtureMode
 from Core.Enums.FixtureStatus import FixtureStatus
 from Core.Enums.LockType import LockType
+from datetime import datetime, timedelta
 from Models.Test import Test
 from PyQt5 import QtCore
 from timeit import default_timer as timer
-import datetime
 import math
 
 
 class Fixture(QtCore.QObject):
-    OVER_ELAPSED_THRESHOLD = datetime.timedelta(hours=1, minutes=45)
-    status_change = QtCore.pyqtSignal(FixtureStatus, datetime.timedelta, FixtureStatus)
+    OVER_ELAPSED_THRESHOLD = timedelta(hours=1, minutes=45)
+    SEND_STATUS_CHANGE_THRESHOLD = timedelta(minutes=20)
+    status_change = QtCore.pyqtSignal(FixtureStatus, datetime, timedelta, FixtureStatus)
     update = QtCore.pyqtSignal()
     over_elapsed = QtCore.pyqtSignal()
-    testing_tick = QtCore.pyqtSignal(datetime.timedelta)
+    testing_tick = QtCore.pyqtSignal(timedelta)
 
     def __init__(
         self,
@@ -42,6 +43,7 @@ class Fixture(QtCore.QObject):
         self._isStarted = False
         self._isLockEnabled = False
         self._wasOverElapsed = False
+        self._startDateTime = datetime.now()
         self._startTimer = timer()
 
         self._shouldUpdateRemainingToUnlock = True
@@ -55,12 +57,18 @@ class Fixture(QtCore.QObject):
 
         self._updateTimer = QtCore.QTimer()
         self._updateTimer.timeout.connect(self._on_tick)
+        self._updateTimer.start(1000)
 
     def _on_tick(self):
-        if not self._wasOverElapsed and self.is_over_elapsed():
-            self._wasOverElapsed = True
-            self.over_elapsed.emit()
-        self.testing_tick.emit(self.get_elapsed_time())
+        elapsed = self.get_elapsed_time()
+        if self.isTesting:
+            if not self._wasOverElapsed and self.is_over_elapsed(elapsed):
+                self._wasOverElapsed = True
+                self.over_elapsed.emit()
+            self.testing_tick.emit(elapsed)
+
+        if elapsed >= Fixture.SEND_STATUS_CHANGE_THRESHOLD:
+            self.emit_status_change()
 
     def should_abort_test(self):
         if self.mode == FixtureMode.OFFLINE:
@@ -142,13 +150,15 @@ class Fixture(QtCore.QObject):
             maxTotal = maxTotal if maxTotal > total else total
         return maxTotal >= self.lockFailQty
 
-    def is_over_elapsed(self) -> bool:
+    def is_over_elapsed(self, elapsed: timedelta = None) -> bool:
         if not self.isTesting:
             return False
-        return self.get_elapsed_time() > Fixture.OVER_ELAPSED_THRESHOLD
+        if elapsed == None:
+            elapsed = self.get_elapsed_time()
+        return elapsed > Fixture.OVER_ELAPSED_THRESHOLD
 
-    def get_elapsed_time(self) -> datetime.timedelta:
-        return datetime.timedelta(seconds=math.floor(timer() - self._startTimer))
+    def get_elapsed_time(self) -> timedelta:
+        return timedelta(seconds=math.floor(timer() - self._startTimer))
 
     def get_status_message(self) -> str:
         payload = ""
@@ -207,7 +217,10 @@ class Fixture(QtCore.QObject):
     def emit_status_change(self, force: bool = False):
         status = self.get_status()
         if status != self._lastStatus or force:
-            self.status_change.emit(self._lastStatus, self.get_elapsed_time(), status)
+            self.status_change.emit(
+                self._lastStatus, self._startDateTime, self.get_elapsed_time(), status
+            )
+            self._startDateTime = datetime.now()
             self._startTimer = timer()
             self._lastStatus = status
 
@@ -262,11 +275,10 @@ class Fixture(QtCore.QObject):
     @isTesting.setter
     def isTesting(self, value: bool):
         self._isTesting = value
-        if value:
-            self._updateTimer.start(1000)
+        if self._isTesting:
+            self._wasOverElapsed = False
             self.lastTest = Test(isNull=True)
-        else:
-            self._updateTimer.stop()
+
         self._property_changed()
 
     @property
@@ -286,10 +298,12 @@ class Fixture(QtCore.QObject):
     @isStarted.setter
     def isStarted(self, value: bool):
         self._isStarted = value
-        if not value:
-            self._updateTimer.stop()
         self._property_changed()
 
     @property
     def lockFailQty(self) -> bool:
         return self._lockFailQty
+
+    def __del__(self):
+        object.__del__(self)
+        self._updateTimer.stop()

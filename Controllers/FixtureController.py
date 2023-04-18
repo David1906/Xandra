@@ -5,9 +5,9 @@ from DataAccess.FixtureData import FixtureData
 from DataAccess.FixtureStatusLogData import FixtureStatusLogData
 from DataAccess.MainConfigData import MainConfigData
 from DataAccess.TestData import TestData
+from datetime import datetime, timedelta
 from Models.Fixture import Fixture
 from Models.Test import Test
-import datetime
 
 
 class FixtureController:
@@ -44,9 +44,13 @@ class FixtureController:
         self._testData.add(test, fixture.mode.value)
 
     def add_status_log(
-        self, fixture: Fixture, status: FixtureStatus, timeDelta: datetime.timedelta
+        self,
+        fixture: Fixture,
+        status: FixtureStatus,
+        startDateTime: datetime,
+        timeDelta: timedelta,
     ):
-        self._fixtureStatusLogData.add(fixture, status, timeDelta)
+        self._fixtureStatusLogData.add(fixture, status, startDateTime, timeDelta)
 
     def update(self, fixture: Fixture):
         self._fixtureData.create_or_update(fixture)

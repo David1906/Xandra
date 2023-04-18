@@ -679,7 +679,7 @@ MariaDB [(none)]&gt;
 <ul>
 <li>
 <p>Para instalar las dependencias del sistema ejecute el siguiente comando:</p>
-<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>yum<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>tmux<span class="w"> </span>xterm
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>yum<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>tmux<span class="w"> </span>xterm<span class="w"> </span>python3
 </code></pre></div>
 </li>
 </ul>
@@ -794,6 +794,11 @@ alias xandra-docs=&#39;gio open $XANDRA_BASE_PATH/docs/index.html&#39;
 </code></pre></div>
 </li>
 <li>
+<p>Instalar <code>virtualenv</code> para poder aislar la instalación de dependencias:
+    <div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/pyenv/pyenv-virtualenv.git<span class="w"> </span>~/.pyenv/plugins/pyenv-virtualenv
+</code></pre></div></p>
+</li>
+<li>
 <p>Abrir en el editor de texto gráfico al archivo <code>~/.bashrc</code>:</p>
 <div class="highlight"><pre><span></span><code>gedit<span class="w"> </span>~/.bashrc
 </code></pre></div>
@@ -843,16 +848,6 @@ alias xandra-docs=&#39;gio open $XANDRA_BASE_PATH/docs/index.html&#39;
     <div class="highlight"><pre><span></span><code>pyenv<span class="w"> </span>install<span class="w"> </span><span class="m">3</span>.8.2
 </code></pre></div></p>
 </li>
-<li>
-<p>Instalar <code>virtualenv</code> para poder aislar la instalación de dependencias:
-    <div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/pyenv/pyenv-virtualenv.git<span class="w"> </span><span class="k">$(</span>pyenv<span class="w"> </span>root<span class="k">)</span>/plugins/pyenv-virtualenv
-</code></pre></div></p>
-</li>
-<li>
-<p>Recargar configuración de la terminal:
-    <div class="highlight"><pre><span></span><code><span class="nb">exec</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$SHELL</span><span class="s2">&quot;</span>
-</code></pre></div></p>
-</li>
 </ul>
 <h2 id="instalar-dependencias-python">Instalar dependencias python</h2>
 <p>Pip es un sistema de gestión de paquetes utilizado para instalar y administrar paquetes de software escritos en Python. Xandra hace uso de dichos paquetes para enriquecer su funcionalidad proveyéndolo de características tales como una interfaz gráfica.</p>
@@ -873,6 +868,11 @@ alias xandra-docs=&#39;gio open $XANDRA_BASE_PATH/docs/index.html&#39;
 <li>
 <p>Instalar alembic (encargado de las migraciones en base de datos):
     <div class="highlight"><pre><span></span><code>python3 -m pip install alembic --user
+</code></pre></div></p>
+</li>
+<li>
+<p>Instalar pymysql (conector mysql para python):
+    <div class="highlight"><pre><span></span><code>python3 -m pip install pymysql
 </code></pre></div></p>
 </li>
 <li>

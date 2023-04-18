@@ -155,7 +155,7 @@ Para instalar dichas dependencias es necesario contar con una conexión estable 
 * Para instalar las dependencias del sistema ejecute el siguiente comando:
 
     ``` shell
-    sudo yum install -y tmux xterm
+    sudo yum install -y tmux xterm python3
     ```
 
 ## Agregar comandos alias al sistema
@@ -277,6 +277,11 @@ Para instalar pyenv ejecute los siguientes comandos:
     git clone https://github.com/pyenv/pyenv.git ~/.pyenv
     ```
 
+* Instalar `virtualenv` para poder aislar la instalación de dependencias:
+    ``` shell
+    git clone https://github.com/pyenv/pyenv-virtualenv.git ~/.pyenv/plugins/pyenv-virtualenv
+    ```
+
 * Abrir en el editor de texto gráfico al archivo `~/.bashrc`:
    
     ``` shell
@@ -326,16 +331,6 @@ Para instalar pyenv ejecute los siguientes comandos:
     pyenv install 3.8.2
     ```
 
-* Instalar `virtualenv` para poder aislar la instalación de dependencias:
-    ``` shell
-    git clone https://github.com/pyenv/pyenv-virtualenv.git $(pyenv root)/plugins/pyenv-virtualenv
-    ```
-
-* Recargar configuración de la terminal:
-    ``` shell
-    exec "$SHELL"
-    ```
-
 ## Instalar dependencias python
 
 Pip es un sistema de gestión de paquetes utilizado para instalar y administrar paquetes de software escritos en Python. Xandra hace uso de dichos paquetes para enriquecer su funcionalidad proveyéndolo de características tales como una interfaz gráfica.
@@ -355,6 +350,11 @@ Pip es un sistema de gestión de paquetes utilizado para instalar y administrar 
 * Instalar alembic (encargado de las migraciones en base de datos):
     ```
     python3 -m pip install alembic --user
+    ```
+
+* Instalar pymysql (conector mysql para python):
+    ```
+    python3 -m pip install pymysql
     ```
 
 * Crear entorno virtual

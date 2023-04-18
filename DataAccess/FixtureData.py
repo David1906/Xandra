@@ -83,7 +83,7 @@ class FixtureData:
 
     def find_DAO_or_default(self, fixtureIp: str) -> FixtureDAO:
         fixtureDAO = self.find_DAO(fixtureIp)
-        if FixtureDAO == None:
+        if fixtureDAO == None:
             fixtureDAO = FixtureDAO()
         return fixtureDAO
 

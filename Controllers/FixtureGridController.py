@@ -1,3 +1,4 @@
+from Core.Enums.FixtureMode import FixtureMode
 from DataAccess.FixtureData import FixtureData
 from DataAccess.MainConfigData import MainConfigData
 from DataAccess.TestData import TestData
@@ -55,7 +56,12 @@ class FixtureGridController(QtCore.QThread):
             self.fixture_change.emit(fixture)
 
     def get_all_fixtures(self) -> "list[Fixture]":
-        return self._fixtureData.find_all()
+        fixtures = self._fixtureData.find_all()
+        for fixture in fixtures:
+            if fixture.mode == FixtureMode.UNKNOWN:
+                fixture.mode = FixtureMode.ONLINE
+                self._fixtureData.create_or_update(fixture)
+        return fixtures
 
     def start_watch_logs(self):
         self._fileWatchdog.start(self._mainConfigData.get_logs_path())

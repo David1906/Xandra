@@ -303,7 +303,3 @@ class Fixture(QtCore.QObject):
     @property
     def lockFailQty(self) -> bool:
         return self._lockFailQty
-
-    def __del__(self):
-        object.__del__(self)
-        self._updateTimer.stop()

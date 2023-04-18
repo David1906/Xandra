@@ -29,7 +29,7 @@ class FixtureData:
             fixtureDAO = FixtureDAO(
                 ip=fixture.ip,
                 mode=fixture.mode.value,
-                abortTest=fixture.should_abort_test(),
+                abortTest=False,
                 enableLock=fixture.isLockEnabled,
             )
             session.add(fixtureDAO)

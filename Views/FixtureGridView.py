@@ -79,10 +79,14 @@ class FixtureGridView(QWidget):
         self._fixtureGridController.start_watch_logs()
 
     def on_testing_status_changed(self, fixtureIp: str, isTesting: bool):
-        self._find_fixture_view(fixtureIp).set_fixture_isTesting(isTesting)
+        fixtureView = self._find_fixture_view(fixtureIp)
+        if fixtureView != None:
+            fixtureView.set_fixture_isTesting(isTesting)
 
     def on_test_add(self, test: Test):
-        self._find_fixture_view(test.fixtureIp).add_test(test)
+        fixtureView = self._find_fixture_view(test.fixtureIp)
+        if fixtureView != None:
+            fixtureView.add_test(test)
 
     def start_all_fixtures(self):
         for fixtureView in self._fixtureViews:
@@ -105,7 +109,9 @@ class FixtureGridView(QWidget):
         self.lock_changed.emit(self._isLockEnabled)
 
     def update_fixture(self, fixture: Fixture):
-        self._find_fixture_view(fixture.ip).copy_configs(fixture)
+        fixtureView = self._find_fixture_view(fixture.ip)
+        if fixtureView != None:
+            fixtureView.copy_configs(fixture)
 
     def _find_fixture_view(self, fixtureIp: str):
         for fixtureView in self._fixtureViews:

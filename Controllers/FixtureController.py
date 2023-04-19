@@ -26,7 +26,7 @@ class FixtureController:
         )
         fileName = fullpathSplit[-1]
         path = "/".join(fullpathSplit[0:-1])
-        cmd = f"cd {path} && {self._mainConfigData.get_fixture_ip_env_name()}={fixture.ip} ./{fileName} -f {fixture.id}"
+        cmd = f"cd {path} && source ~/.bashrc && pyenv activate fctHostControl && python --version && which python && {self._mainConfigData.get_fixture_ip_env_name()}={fixture.ip} ./{fileName} -f {fixture.id}"
         if hasTraceability == False:
             cmd += " -m"
         return cmd

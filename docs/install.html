@@ -317,6 +317,27 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#instalar-dependencias-globales" class="md-nav__link">
+    Instalar dependencias globales
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#instalar-dependencias-de-xandra" class="md-nav__link">
+    Instalar dependencias de Xandra
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#instalar-dependencias-de-fcthostcontrol" class="md-nav__link">
+    Instalar dependencias de FCTHostControl
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#crear-acceso-directo" class="md-nav__link">
     Crear acceso directo
   </a>
@@ -498,6 +519,27 @@
         <li class="md-nav__item">
   <a href="#instalar-dependencias-python" class="md-nav__link">
     Instalar dependencias python
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#instalar-dependencias-globales" class="md-nav__link">
+    Instalar dependencias globales
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#instalar-dependencias-de-xandra" class="md-nav__link">
+    Instalar dependencias de Xandra
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#instalar-dependencias-de-fcthostcontrol" class="md-nav__link">
+    Instalar dependencias de FCTHostControl
   </a>
   
 </li>
@@ -848,18 +890,29 @@ alias xandra-docs=&#39;gio open $XANDRA_BASE_PATH/docs/index.html&#39;
     <div class="highlight"><pre><span></span><code>pyenv<span class="w"> </span>install<span class="w"> </span><span class="m">3</span>.8.2
 </code></pre></div></p>
 </li>
+<li>
+<p>Crear entorno virtual
+    <div class="highlight"><pre><span></span><code>pyenv virtualenv 3.8.2 xandra
+</code></pre></div></p>
+</li>
+<li>
+<p>Instalar versión <strong>2.7</strong> en entorno virtual:
+    <div class="highlight"><pre><span></span><code>pyenv<span class="w"> </span>install<span class="w"> </span><span class="m">2</span>.7
+</code></pre></div></p>
+</li>
+<li>
+<p>Crear entorno virtual
+    <div class="highlight"><pre><span></span><code>pyenv virtualenv 2.7 fctHostControl
+</code></pre></div></p>
+</li>
 </ul>
 <h2 id="instalar-dependencias-python">Instalar dependencias python</h2>
 <p>Pip es un sistema de gestión de paquetes utilizado para instalar y administrar paquetes de software escritos en Python. Xandra hace uso de dichos paquetes para enriquecer su funcionalidad proveyéndolo de características tales como una interfaz gráfica.</p>
 <ul>
-<li>
-<p>Para instalar las dependencias de python ejecute los siguientes comandos:</p>
-</li>
-<li>
-<p>Ingresar a la carpeta de Xandra:
-    <div class="highlight"><pre><span></span><code>xandra-path
-</code></pre></div></p>
-</li>
+<li>Para instalar las dependencias de python ejecute los siguientes comandos:</li>
+</ul>
+<h2 id="instalar-dependencias-globales">Instalar dependencias globales</h2>
+<ul>
 <li>
 <p>Actualizar gestor de paquetes <code>pip</code>:
     <div class="highlight"><pre><span></span><code>python3 -m pip install --upgrade pip
@@ -875,14 +928,12 @@ alias xandra-docs=&#39;gio open $XANDRA_BASE_PATH/docs/index.html&#39;
     <div class="highlight"><pre><span></span><code>python3 -m pip install pymysql
 </code></pre></div></p>
 </li>
-<li>
-<p>Crear entorno virtual
-    <div class="highlight"><pre><span></span><code>pyenv virtualenv 3.8.2 xandra
-</code></pre></div></p>
-</li>
+</ul>
+<h2 id="instalar-dependencias-de-xandra">Instalar dependencias de Xandra</h2>
+<ul>
 <li>
 <p>Activar entorno virtual
-    <div class="highlight"><pre><span></span><code>pyenv activate xandra
+    <div class="highlight"><pre><span></span><code>xandra-pyenv-activate
 </code></pre></div></p>
 </li>
 <li>
@@ -893,6 +944,24 @@ alias xandra-docs=&#39;gio open $XANDRA_BASE_PATH/docs/index.html&#39;
 <li>
 <p>Instalar dependencias de Xandra:
     <div class="highlight"><pre><span></span><code>python3 -m pip install -r requirements.txt
+</code></pre></div></p>
+</li>
+</ul>
+<h2 id="instalar-dependencias-de-fcthostcontrol">Instalar dependencias de FCTHostControl</h2>
+<ul>
+<li>
+<p>Activar entorno virtual
+    <div class="highlight"><pre><span></span><code>pyenv activate fctHostControl
+</code></pre></div></p>
+</li>
+<li>
+<p>Actualizar gestor de paquetes <code>pip</code> en virtualenv:
+    <div class="highlight"><pre><span></span><code>pip install --upgrade pip
+</code></pre></div></p>
+</li>
+<li>
+<p>Instalar dependencias de Xandra:
+    <div class="highlight"><pre><span></span><code>pip install pyserial
 </code></pre></div></p>
 </li>
 </ul>

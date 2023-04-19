@@ -331,16 +331,29 @@ Para instalar pyenv ejecute los siguientes comandos:
     pyenv install 3.8.2
     ```
 
+* Crear entorno virtual
+    ```
+    pyenv virtualenv 3.8.2 xandra
+    ```
+
+* Instalar versión **2.7** en entorno virtual:
+    ``` shell
+    pyenv install 2.7
+    ```
+
+* Crear entorno virtual
+    ```
+    pyenv virtualenv 2.7 fctHostControl
+    ```
+
 ## Instalar dependencias python
 
 Pip es un sistema de gestión de paquetes utilizado para instalar y administrar paquetes de software escritos en Python. Xandra hace uso de dichos paquetes para enriquecer su funcionalidad proveyéndolo de características tales como una interfaz gráfica.
 
 * Para instalar las dependencias de python ejecute los siguientes comandos:
 
-* Ingresar a la carpeta de Xandra:
-    ```
-    xandra-path
-    ```
+
+## Instalar dependencias globales
 
 * Actualizar gestor de paquetes `pip`:
     ```
@@ -357,14 +370,11 @@ Pip es un sistema de gestión de paquetes utilizado para instalar y administrar 
     python3 -m pip install pymysql
     ```
 
-* Crear entorno virtual
-    ```
-    pyenv virtualenv 3.8.2 xandra
-    ```
+## Instalar dependencias de Xandra
 
 * Activar entorno virtual
     ```
-    pyenv activate xandra
+    xandra-pyenv-activate
     ```
 
 * Actualizar gestor de paquetes `pip` en virtualenv:
@@ -375,6 +385,23 @@ Pip es un sistema de gestión de paquetes utilizado para instalar y administrar 
 * Instalar dependencias de Xandra:
     ```
     python3 -m pip install -r requirements.txt
+    ```
+
+## Instalar dependencias de FCTHostControl
+
+* Activar entorno virtual
+    ```
+    pyenv activate fctHostControl
+    ```
+
+* Actualizar gestor de paquetes `pip` en virtualenv:
+    ```
+    pip install --upgrade pip
+    ```
+
+* Instalar dependencias de Xandra:
+    ```
+    pip install pyserial
     ```
 
 ## Crear acceso directo

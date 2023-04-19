@@ -69,6 +69,7 @@ class Fixture(QtCore.QObject):
 
         if elapsed >= Fixture.SEND_STATUS_CHANGE_THRESHOLD:
             self.emit_status_change()
+            self.emit_status_change(force=True)
 
     def should_abort_test(self):
         if self.mode == FixtureMode.OFFLINE:

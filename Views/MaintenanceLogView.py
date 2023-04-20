@@ -1,10 +1,10 @@
 from abc import abstractmethod
 from Core.Enums.FixtureMode import FixtureMode
 from Core.Enums.FixtureStatus import FixtureStatus
-from DataAccess.FixtureStatusLogData import FixtureStatusLogData
-from DataAccess.MainConfigData import MainConfigData
-from DataAccess.MaintenanceData import MaintenanceData
-from DataAccess.TestData import TestData
+from DataAccess.FixtureStatusLogDAO import FixtureStatusLogDAO
+from DataAccess.MainConfigDAO import MainConfigDAO
+from DataAccess.MaintenanceDAO import MaintenanceDAO
+from DataAccess.TestDAO import TestDAO
 from datetime import datetime, timedelta
 from Models.Fixture import Test
 from PyQt5 import QtCore, QtWidgets
@@ -31,10 +31,10 @@ class MaintenanceLogView(QtWidgets.QWidget):
         super().__init__()
 
         self.fixtureIp = fixtureIp
-        self._testData = TestData()
-        self._mainConfigData = MainConfigData()
-        self._fixtureStatusLogData = FixtureStatusLogData()
-        self._maintenanceData = MaintenanceData()
+        self._testDAO = TestDAO()
+        self._mainConfigDAO = MainConfigDAO()
+        self._fixtureStatusLogDAO = FixtureStatusLogDAO()
+        self._maintenanceDAO = MaintenanceDAO()
         self.series = None
         self.utilizationSeries = None
 
@@ -104,7 +104,7 @@ class MaintenanceLogView(QtWidgets.QWidget):
 
     def refresh(self, qty: int = 10):
         qty = int(self.cmbSize.currentText())
-        data = self._maintenanceData.find(
+        data = self._maintenanceDAO.find(
             self.fixtureIp,
             self.datetimeStart.dateTime().toPyDateTime(),
             self.datetimeEnd.dateTime().toPyDateTime(),
@@ -149,7 +149,7 @@ class MaintenanceLogView(QtWidgets.QWidget):
             self.utilizationChart.removeSeries(self.utilizationSeries)
 
         self.utilizationSeries = QPieSeries()
-        logs = self._fixtureStatusLogData.find(
+        logs = self._fixtureStatusLogDAO.find(
             self.fixtureIp,
             self.datetimeStart.dateTime().toPyDateTime(),
             self.datetimeEnd.dateTime().toPyDateTime(),

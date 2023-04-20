@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import (
     QGridLayout,
     QLabel,
 )
-from DataAccess.FctHostControlData import FctHostControlData
+from DataAccess.FctHostControlDAO import FctHostControlDAO
 from Utils.PathHelper import PathHelper
 from Views.FixtureGridView import FixtureGridView
 
@@ -20,10 +20,10 @@ class MainWindow(QMainWindow):
     def __init__(self, title: str = "Xandra - FBT"):
         super().__init__()
 
-        self._fctHostControlData = FctHostControlData()
+        self._fctHostControlDAO = FctHostControlDAO()
 
-        self._fctHostControlData.write_check_station_config()
-        self._fctHostControlData.write_test_end_call_config()
+        self._fctHostControlDAO.write_check_station_config()
+        self._fctHostControlDAO.write_test_end_call_config()
 
         self.setWindowTitle(title)
         self.setWindowIcon(QtGui.QIcon(MainWindow.ICON_FULLPATH))
@@ -48,7 +48,7 @@ class MainWindow(QMainWindow):
         self.footer.addWidget(self.lblStatus, alignment=QtCore.Qt.AlignCenter)
 
         self.lblScriptVersion = QLabel(
-            f"Script Version: {self._fctHostControlData.get_script_version()}"
+            f"Script Version: {self._fctHostControlDAO.get_script_version()}"
         )
         self.footer.addWidget(self.lblScriptVersion, alignment=QtCore.Qt.AlignRight)
         gridLayout.addLayout(self.footer, 100, 0, alignment=QtCore.Qt.AlignBottom)

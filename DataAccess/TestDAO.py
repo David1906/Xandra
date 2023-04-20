@@ -2,21 +2,21 @@ from Models.Fixture import Fixture
 from automapper import mapper
 from Core.Enums.FixtureMode import FixtureMode
 from DataAccess.GoogleSheet import GoogleSheet
-from DataAccess.MainConfigData import MainConfigData
+from DataAccess.MainConfigDAO import MainConfigDAO
 from DataAccess.SqlAlchemyBase import Session
-from Models.DAO.TestDAO import TestDAO
+from Models.DTO.TestDTO import TestDTO
 from Models.Fixture import Test
 
 
-class TestData:
+class TestDAO:
     def __init__(self) -> None:
         self._googleSheet = GoogleSheet()
-        self._mainConfigData = MainConfigData()
+        self._mainConfigDAO = MainConfigDAO()
 
     def add(self, test: Test, mode: int):
         if test.fixtureIp == None:
             return
-        testDTO = mapper.to(TestDAO).map(test)
+        testDTO = mapper.to(TestDTO).map(test)
         testDTO.mode = mode
         session = Session()
         session.add(testDTO)
@@ -28,7 +28,7 @@ class TestData:
 
     def find_last_by_fixture(self, fixture: Fixture):
         minQty = fixture.get_min_tests_qty()
-        yieldQty = self._mainConfigData.get_yield_calc_qty()
+        yieldQty = self._mainConfigDAO.get_yield_calc_qty()
         return self.find_last(
             fixture.ip,
             qty=yieldQty if yieldQty > minQty else minQty,
@@ -44,19 +44,19 @@ class TestData:
     ) -> "list[Test]":
         session = Session()
         query = (
-            session.query(TestDAO)
-            .filter(TestDAO.fixtureIp == fixtureIp)
-            .order_by(TestDAO.endTime.desc(), TestDAO.id.desc())
+            session.query(TestDTO)
+            .filter(TestDTO.fixtureIp == fixtureIp)
+            .order_by(TestDTO.endTime.desc(), TestDTO.id.desc())
         )
 
         if onlyFailures:
-            query = query.filter(TestDAO.status == False)
+            query = query.filter(TestDTO.status == False)
 
         if ignoreRetest:
-            query = query.filter(TestDAO.mode != FixtureMode.RETEST.value)
+            query = query.filter(TestDTO.mode != FixtureMode.RETEST.value)
 
         query = query.limit(
-            self._mainConfigData.get_yield_calc_qty() if qty == 0 else qty
+            self._mainConfigDAO.get_yield_calc_qty() if qty == 0 else qty
         )
         tests: "list[Test]" = []
         for testDTO in query:

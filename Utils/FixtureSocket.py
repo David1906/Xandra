@@ -1,4 +1,4 @@
-from DataAccess.FixtureData import FixtureData
+from DataAccess.FixtureDAO import FixtureDAO
 from PyQt5 import QtCore
 import pickle
 import select
@@ -13,7 +13,7 @@ class FixtureSocket(QtCore.QThread):
     def __init__(self) -> None:
         QtCore.QThread.__init__(self)
 
-        self._fixtureData = FixtureData()
+        self._fixtureDAO = FixtureDAO()
 
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -57,13 +57,13 @@ class FixtureSocket(QtCore.QThread):
             if data["message"] == "TEST_START":
                 fixtureIp = data["fixtureIp"]
                 if fixtureIp != None:
-                    fixtureData = {
+                    fixtureDAO = {
                         "fixtureIp": fixtureIp,
-                        "shouldAbortTest": self._fixtureData.should_abort_test(
+                        "shouldAbortTest": self._fixtureDAO.should_abort_test(
                             fixtureIp
                         ),
                     }
-                    notified_socket.send(pickle.dumps(fixtureData))
+                    notified_socket.send(pickle.dumps(fixtureDAO))
                 self.testing_status_changed.emit(data["fixtureIp"], True)
             elif data["message"] == "TEST_END":
                 self.testing_status_changed.emit(data["fixtureIp"], False)

@@ -13,7 +13,7 @@ class LastFailuresWindow(LastLogsWindow):
         )
 
     def getTests(self, qty: int):
-        return self._testData.find_last_failures(
+        return self._testDAO.find_last_failures(
             self.fixtureIp, qty, ignoreRetest=not self.is_show_retest()
         )
 

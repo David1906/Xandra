@@ -1,11 +1,11 @@
 from Core.Enums.FixtureMode import FixtureMode
 from Core.Enums.FixtureStatus import FixtureStatus
-from DataAccess.FctHostControlData import FctHostControlData
-from DataAccess.FixtureData import FixtureData
-from DataAccess.FixtureStatusLogData import FixtureStatusLogData
-from DataAccess.MainConfigData import MainConfigData
-from DataAccess.MaintenanceData import MaintenanceData
-from DataAccess.TestData import TestData
+from DataAccess.FctHostControlDAO import FctHostControlDAO
+from DataAccess.FixtureDAO import FixtureDAO
+from DataAccess.FixtureStatusLogDAO import FixtureStatusLogDAO
+from DataAccess.MainConfigDAO import MainConfigDAO
+from DataAccess.MaintenanceDAO import MaintenanceDAO
+from DataAccess.TestDAO import TestDAO
 from datetime import datetime, timedelta
 from Models.Fixture import Fixture
 from Models.Maintenance import Maintenance
@@ -14,37 +14,37 @@ from Models.Test import Test
 
 class FixtureController:
     def __init__(self) -> None:
-        self._testData = TestData()
-        self._fixtureData = FixtureData()
-        self._mainConfigData = MainConfigData()
-        self._fctHostControlData = FctHostControlData()
-        self._maintenanceData = MaintenanceData()
-        self._fixtureStatusLogData = FixtureStatusLogData()
+        self._testDAO = TestDAO()
+        self._fixtureDAO = FixtureDAO()
+        self._mainConfigDAO = MainConfigDAO()
+        self._fctHostControlDAO = FctHostControlDAO()
+        self._maintenanceDAO = MaintenanceDAO()
+        self._fixtureStatusLogDAO = FixtureStatusLogDAO()
 
     def get_fct_host_cmd(self, fixture: Fixture, hasTraceability: bool):
         fullpathSplit = (
-            self._fctHostControlData.get_fct_host_control_executable_fullpath().split(
+            self._fctHostControlDAO.get_fct_host_control_executable_fullpath().split(
                 "/"
             )
         )
         fileName = fullpathSplit[-1]
         path = "/".join(fullpathSplit[0:-1])
-        cmd = f"cd {path} && source ~/.bashrc && pyenv activate fctHostControl && python --version && which python && {self._mainConfigData.get_fixture_ip_env_name()}={fixture.ip} ./{fileName} -f {fixture.id}"
+        cmd = f"cd {path} && source ~/.bashrc && pyenv activate fctHostControl && python --version && which python && {self._mainConfigDAO.get_fixture_ip_env_name()}={fixture.ip} ./{fileName} -f {fixture.id}"
         if hasTraceability == False:
             cmd += " -m"
         return cmd
 
     def find(self, fixtureIp: str) -> Fixture:
-        return self._fixtureData.find(fixtureIp)
+        return self._fixtureDAO.find(fixtureIp)
 
     def find_last_tests(self, fixture: Fixture) -> Fixture:
-        return self._fixtureData.find_last_tests(fixture)
+        return self._fixtureDAO.find_last_tests(fixture)
 
     def add_test(self, fixture: Fixture, test: Test):
         if fixture.is_upload_to_sfc(test):
-            isUploadOk = self._fixtureData.upload_pass_to_sfc(test.serialNumber)
+            isUploadOk = self._fixtureDAO.upload_pass_to_sfc(test.serialNumber)
             test.description += f" Xandra SFC Upload: {'OK' if isUploadOk else 'error'}"
-        self._testData.add(test, fixture.mode.value)
+        self._testDAO.add(test, fixture.mode.value)
 
     def add_status_log(
         self,
@@ -53,22 +53,22 @@ class FixtureController:
         startDateTime: datetime,
         timeDelta: timedelta,
     ):
-        self._fixtureStatusLogData.add(fixture, status, startDateTime, timeDelta)
+        self._fixtureStatusLogDAO.add(fixture, status, startDateTime, timeDelta)
 
     def add_maintenance(
         self,
         maintenance: Maintenance,
     ):
-        self._maintenanceData.add(maintenance)
+        self._maintenanceDAO.add(maintenance)
 
     def update_maintenance(
         self,
         maintenance: Maintenance,
     ):
-        self._maintenanceData.update(maintenance)
+        self._maintenanceDAO.update(maintenance)
 
     def update(self, fixture: Fixture):
-        self._fixtureData.create_or_update(fixture)
+        self._fixtureDAO.create_or_update(fixture)
 
     def calc_mode(self, hasTraceability: bool, isRetestMode: bool) -> FixtureMode:
         if not hasTraceability and isRetestMode:
@@ -80,7 +80,7 @@ class FixtureController:
         return FixtureMode.ONLINE
 
     def get_maintenance_parts(self):
-        return self._mainConfigData.get_maintenance_parts()
+        return self._mainConfigDAO.get_maintenance_parts()
 
     def get_maintenance_actions(self):
-        return self._mainConfigData.get_maintenance_actions()
+        return self._mainConfigDAO.get_maintenance_actions()

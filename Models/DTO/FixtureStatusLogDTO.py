@@ -2,7 +2,7 @@ from DataAccess.SqlAlchemyBase import Base
 from sqlalchemy import Column, String, Integer, TIMESTAMP
 
 
-class FixtureStatusLogDAO(Base):
+class FixtureStatusLogDTO(Base):
     __tablename__ = "fixture_status_logs"
 
     id = Column(Integer, primary_key=True)

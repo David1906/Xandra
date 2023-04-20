@@ -3,7 +3,7 @@ from sqlalchemy import Column, String, Integer, DateTime, Boolean
 from DataAccess.SqlAlchemyBase import Base
 
 
-class MaintenanceDAO(Base):
+class MaintenanceDTO(Base):
     __tablename__ = "maintenance"
 
     id = Column(Integer, primary_key=True)

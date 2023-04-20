@@ -1,9 +1,9 @@
 from abc import abstractmethod
 from Core.Enums.FixtureMode import FixtureMode
 from Core.Enums.FixtureStatus import FixtureStatus
-from DataAccess.FixtureStatusLogData import FixtureStatusLogData
-from DataAccess.MainConfigData import MainConfigData
-from DataAccess.TestData import TestData
+from DataAccess.FixtureStatusLogDAO import FixtureStatusLogDAO
+from DataAccess.MainConfigDAO import MainConfigDAO
+from DataAccess.TestDAO import TestDAO
 from datetime import datetime, timedelta
 from Models.Fixture import Test
 from PyQt5 import QtCore, QtWidgets
@@ -33,9 +33,9 @@ class LastLogsWindow(QtWidgets.QWidget):
         super().__init__()
 
         self.fixtureIp = fixtureIp
-        self._testData = TestData()
-        self._mainConfigData = MainConfigData()
-        self._fixtureStatusLogData = FixtureStatusLogData()
+        self._testDAO = TestDAO()
+        self._mainConfigDAO = MainConfigDAO()
+        self._fixtureStatusLogDAO = FixtureStatusLogDAO()
         self.biggestSliceColor = biggestSliceColor
         self.series = None
         self.utilizationSeries = None
@@ -73,7 +73,7 @@ class LastLogsWindow(QtWidgets.QWidget):
         footer.addWidget(self.btnStart)
 
         self.cmbSize = QtWidgets.QComboBox()
-        yieldCalcQty = self._mainConfigData.get_yield_calc_qty()
+        yieldCalcQty = self._mainConfigDAO.get_yield_calc_qty()
         idxSelected = False
         for sizeIdx in range(len(LastLogsWindow.PAGE_SIZES)):
             size = LastLogsWindow.PAGE_SIZES[sizeIdx]

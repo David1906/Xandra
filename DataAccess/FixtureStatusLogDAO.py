@@ -1,13 +1,13 @@
 from Core.Enums.FixtureStatus import FixtureStatus
 from DataAccess.SqlAlchemyBase import Session
 from datetime import datetime, timedelta
-from Models.DAO.FixtureStatusLogDAO import FixtureStatusLogDAO
+from Models.DTO.FixtureStatusLogDTO import FixtureStatusLogDTO
 from Models.Fixture import Fixture
 import random
 import sqlalchemy as db
 
 
-class FixtureStatusLogData:
+class FixtureStatusLogDAO:
     SQL_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
     def add(
@@ -21,7 +21,7 @@ class FixtureStatusLogData:
         reason = ""
         if status == FixtureStatus.LOCKED:
             reason = fixture.lastLockDescription
-        logDAO = FixtureStatusLogDAO(
+        logDTO = FixtureStatusLogDTO(
             fixtureId=fixture.id,
             fixtureIp=fixture.ip,
             status=status.value,
@@ -31,7 +31,7 @@ class FixtureStatusLogData:
             timeStampEnd=endDateTime.isoformat(),
         )
         session = Session()
-        session.add(logDAO)
+        session.add(logDTO)
         session.commit()
         session.close()
         Session.remove()
@@ -42,7 +42,7 @@ class FixtureStatusLogData:
 
     def find(
         self, fixtureIp: str, start: datetime, end: datetime
-    ) -> "list[FixtureStatusLogDAO]":
+    ) -> "list[FixtureStatusLogDTO]":
         session = Session()
         records = session.execute(
             db.text(
@@ -53,7 +53,7 @@ class FixtureStatusLogData:
                 FROM 
                     fixture_status_logs
                 WHERE
-                    timeStampEnd BETWEEN '{start.strftime(FixtureStatusLogData.SQL_DATE_FORMAT)}' AND '{end.strftime(FixtureStatusLogData.SQL_DATE_FORMAT)}'
+                    timeStampEnd BETWEEN '{start.strftime(FixtureStatusLogDAO.SQL_DATE_FORMAT)}' AND '{end.strftime(FixtureStatusLogDAO.SQL_DATE_FORMAT)}'
                     AND fixtureIp = '{fixtureIp}'
                 GROUP BY status;"""
             )
@@ -64,12 +64,12 @@ class FixtureStatusLogData:
             for record in records:
                 seconds = int(record[1])
                 totalSeconds += seconds
-                logs.append(FixtureStatusLogDAO(status=record[0], seconds=seconds))
+                logs.append(FixtureStatusLogDTO(status=record[0], seconds=seconds))
         diffDates = end - start
         unknownSeconds = diffDates.total_seconds() - totalSeconds
         if unknownSeconds > 0:
             logs.append(
-                FixtureStatusLogDAO(
+                FixtureStatusLogDTO(
                     status=FixtureStatus.UNKNOWN.value, seconds=unknownSeconds
                 )
             )

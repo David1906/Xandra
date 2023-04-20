@@ -3,7 +3,7 @@ from sqlalchemy import Column, String, Integer, DateTime, Boolean
 from DataAccess.SqlAlchemyBase import Base
 
 
-class TestDAO(Base):
+class TestDTO(Base):
     __tablename__ = "tests"
 
     id = Column(Integer, primary_key=True)

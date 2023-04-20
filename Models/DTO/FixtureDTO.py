@@ -3,7 +3,7 @@ from DataAccess.SqlAlchemyBase import Base
 from sqlalchemy import Column, String, Integer, Boolean
 
 
-class FixtureDAO(Base):
+class FixtureDTO(Base):
     __tablename__ = "fixtures"
 
     id = Column(Integer, primary_key=True)

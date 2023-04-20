@@ -23,6 +23,7 @@ class TestDAO(Base):
 
     def __init__(
         self,
+        id: int = None,
         serialNumber: str = None,
         project: str = None,
         startTime: datetime = None,
@@ -37,6 +38,7 @@ class TestDAO(Base):
         description: str = None,
         mode: int = None,
     ) -> None:
+        self.id = id
         self.serialNumber = serialNumber
         self.project = project
         self.startTime = startTime

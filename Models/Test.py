@@ -5,6 +5,7 @@ import re
 class Test:
     def __init__(
         self,
+        id: int = None,
         serialNumber: str = None,
         project: str = None,
         startTime: datetime = None,
@@ -19,6 +20,7 @@ class Test:
         description: str = None,
         mode: int = 0,
     ) -> None:
+        self.id = id
         self.serialNumber = serialNumber
         self.project = project
         self.operator = operator

@@ -3,6 +3,9 @@ from Core.Enums.FixtureMode import FixtureMode
 from Core.Enums.FixtureStatus import FixtureStatus
 from Core.Enums.LockType import LockType
 from datetime import datetime, timedelta
+from Models.Maintenance import Maintenance
+from Models.NullMaintenance import NullMaintenance
+from Models.NullTest import NullTest
 from Models.Test import Test
 from PyQt5 import QtCore
 from timeit import default_timer as timer
@@ -14,6 +17,7 @@ class Fixture(QtCore.QObject):
     SEND_STATUS_CHANGE_THRESHOLD = timedelta(minutes=20)
     status_change = QtCore.pyqtSignal(FixtureStatus, datetime, timedelta, FixtureStatus)
     update = QtCore.pyqtSignal()
+    update_maintenance = QtCore.pyqtSignal(Maintenance)
     over_elapsed = QtCore.pyqtSignal()
     testing_tick = QtCore.pyqtSignal(timedelta)
 
@@ -38,13 +42,14 @@ class Fixture(QtCore.QObject):
         self._unlockPassQty = unlockPassQty
         self._mode = mode
         self._tests = tests
-        self.lastTest = Test(isNull=True)
+        self._lastTest = NullTest()
         self._isTesting = False
         self._isStarted = False
         self._isLockEnabled = False
         self._wasOverElapsed = False
         self._startDateTime = datetime.now()
         self._startTimer = timer()
+        self._maintenance = NullMaintenance()
 
         self._shouldUpdateRemainingToUnlock = True
         self._lastRemainingToUnlock = 0
@@ -68,11 +73,10 @@ class Fixture(QtCore.QObject):
             self.testing_tick.emit(elapsed)
 
         if elapsed >= Fixture.SEND_STATUS_CHANGE_THRESHOLD:
-            self.emit_status_change()
             self.emit_status_change(force=True)
 
     def should_abort_test(self):
-        if self.mode == FixtureMode.OFFLINE:
+        if self.mode == FixtureMode.OFFLINE and not self.needs_maintenance():
             return False
         return self.is_locked()
 
@@ -181,12 +185,12 @@ class Fixture(QtCore.QObject):
         return self.mode.is_upload_to_sfc(test.status)
 
     def get_color(self) -> bool:
+        if self.should_abort_test():
+            return "lightcoral"
         if self.mode == FixtureMode.OFFLINE:
             return "#B8B8B8"
         if self.mode == FixtureMode.RETEST:
             return "orange"
-        if self.is_locked():
-            return "lightcoral"
         elif self._is_warning():
             return "#DED851"
         return ""
@@ -226,7 +230,9 @@ class Fixture(QtCore.QObject):
             self._lastStatus = status
 
     def can_start(self) -> bool:
-        canStart = not self.is_locked() or self.mode == FixtureMode.OFFLINE
+        canStart = not self.is_locked() or (
+            self.mode == FixtureMode.OFFLINE and not self.needs_maintenance()
+        )
         return canStart and not self.isStarted
 
     def can_change_traceability(self) -> bool:
@@ -240,6 +246,13 @@ class Fixture(QtCore.QObject):
 
     def get_min_tests_qty(self) -> int:
         return self._lockFailQty + self._unlockPassQty
+
+    def needs_maintenance(self):
+        return (
+            self.is_locked()
+            and self.mode == FixtureMode.OFFLINE
+            and self.maintenance.isNull
+        )
 
     @property
     def id(self) -> int:
@@ -278,8 +291,9 @@ class Fixture(QtCore.QObject):
         self._isTesting = value
         if self._isTesting:
             self._wasOverElapsed = False
-            self.lastTest = Test(isNull=True)
-
+            self.lastTest = NullTest()
+        else:
+            self._maintenance = NullMaintenance()
         self._property_changed()
 
     @property
@@ -299,8 +313,33 @@ class Fixture(QtCore.QObject):
     @isStarted.setter
     def isStarted(self, value: bool):
         self._isStarted = value
+        if not self.isStarted:
+            self._maintenance = NullMaintenance()
         self._property_changed()
 
     @property
     def lockFailQty(self) -> bool:
         return self._lockFailQty
+
+    @property
+    def maintenance(self) -> Maintenance:
+        return self._maintenance
+
+    @maintenance.setter
+    def maintenance(self, value: Maintenance):
+        self._maintenance = value
+        self._property_changed()
+
+    @property
+    def lastTest(self) -> Test:
+        return self._lastTest
+
+    @lastTest.setter
+    def lastTest(self, value: Test):
+        self._lastTest = value
+        if not self.maintenance.isNull:
+            self.maintenance.testId = value.id
+            self.maintenance.stepLabel = value.stepLabel
+            self.maintenance.resultStatus = value.status
+            self.update_maintenance.emit(self.maintenance)
+        self._property_changed()

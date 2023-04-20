@@ -106,3 +106,9 @@ class MainConfigData:
 
     def get_google_keyfilePath(self):
         return self._get_value("googleSheets")["keyfilePath"]
+
+    def get_maintenance_parts(self):
+        return self._get_value("maintenanceParts")
+
+    def get_maintenance_actions(self):
+        return self._get_value("maintenanceActions")

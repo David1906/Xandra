@@ -3,6 +3,7 @@ from Core.Enums.FixtureMode import FixtureMode
 from Core.Enums.FixtureStatus import FixtureStatus
 from datetime import datetime, timedelta
 from Models.Fixture import Fixture
+from Models.Maintenance import Maintenance
 from Models.Test import Test
 from PyQt5 import QtCore, QtGui
 from Utils.PathHelper import PathHelper
@@ -10,6 +11,8 @@ from Views.EmbeddedTerminal import EmbeddedTerminal
 from Views.LastFailuresWindow import LastFailuresWindow
 from Views.LastTestsWindow import LastTestsWindow
 from Views.LedIndicator import LedIndicator
+from Views.MaintenanceLogView import MaintenanceLogView
+from Views.MaintenanceView import MaintenanceView
 from Views.Switch import Switch
 from PyQt5.QtWidgets import (
     QGroupBox,
@@ -36,6 +39,7 @@ class FixtureView(QGroupBox):
         self.testingTickConnection = None
         self.overElapsedConnection = None
         self.statusChangeConnection = None
+        self.updateMaintenanceConnection = None
 
         self._init_ui()
 
@@ -111,7 +115,7 @@ class FixtureView(QGroupBox):
         self.btnStart.setStyleSheet("font-weight: 500;")
         self.btnStart.setFixedHeight(50)
         self.btnStart.clicked.connect(self.on_btnStart_clicked)
-        buttonsLayout.addWidget(self.btnStart, 0, 0, 1, 2)
+        buttonsLayout.addWidget(self.btnStart, 0, 0, 1, 3)
 
         sideGridLayout.addLayout(buttonsLayout, 2, 0)
         self.btnLastTests = QPushButton()
@@ -136,9 +140,30 @@ class FixtureView(QGroupBox):
         self.btnLastFailures.clicked.connect(self.on_btnLastFailures_clicked)
         buttonsLayout.addWidget(self.btnLastFailures, 1, 1, 1, 1)
 
+        self.btnMaintenanceLog = QPushButton()
+        self.btnMaintenanceLog.setToolTip("Maintenance")
+        self.btnMaintenanceLog.setIcon(
+            QtGui.QIcon(PathHelper().join_root_path("/Static/maintenance.png"))
+        )
+        self.btnMaintenanceLog.setStyleSheet(
+            "font-size: 12px; font-weight: 300; padding: 3px;"
+        )
+        self.btnMaintenanceLog.clicked.connect(self.on_btnMaintenanceLog_clicked)
+        buttonsLayout.addWidget(self.btnMaintenanceLog, 1, 2, 1, 1)
+
         self.terminal = EmbeddedTerminal()
         self.terminal.finished.connect(self._on_terminal_finished)
         gridLayout.addWidget(self.terminal, 0, 0, 1, 1)
+
+        self.maintenance = MaintenanceView(
+            self,
+            self.fixture.id,
+            self.fixture.ip,
+            items=self._fixtureController.get_maintenance_parts(),
+            actions=self._fixtureController.get_maintenance_actions(),
+        )
+        self.maintenance.selected.connect(self._on_maintenance_selected)
+        gridLayout.addWidget(self.maintenance, 0, 0, 1, 1)
 
         self.lblResult = QLabel("Status: IDLE")
         self.lblResult.setStyleSheet(FixtureView.LABEL_STYLE)
@@ -158,6 +183,10 @@ class FixtureView(QGroupBox):
         )
         self._lastLogsWindow.showMaximized()
 
+    def on_btnMaintenanceLog_clicked(self):
+        self._lastLogsWindow = MaintenanceLogView(self.fixture.ip)
+        self._lastLogsWindow.showMaximized()
+
     def on_swRetestMode_change(self, checked: bool):
         if checked and not self.swTraceability.getChecked():
             self.swTraceability.setChecked(True)
@@ -171,6 +200,10 @@ class FixtureView(QGroupBox):
         self.fixture.mode = self._fixtureController.calc_mode(
             self.swTraceability.getChecked(), self.swRetestMode.getChecked()
         )
+
+    def _on_maintenance_selected(self, maintenance: Maintenance):
+        self._fixtureController.add_maintenance(maintenance)
+        self.fixture.maintenance = maintenance
 
     def add_test(self, test: Test):
         self._fixtureController.add_test(self.fixture, test)
@@ -188,6 +221,7 @@ class FixtureView(QGroupBox):
         self._update_lock_indicator()
         self._update_btn_start()
         self._update_sw_traceability_enabled()
+        self.maintenance.setVisible(self.fixture.needs_maintenance())
         self.setStyleSheet(
             f"""
             QGroupBox#fixture{{
@@ -279,6 +313,12 @@ class FixtureView(QGroupBox):
             self.fixture, lastStatus, startDateTime, timeDelta
         )
 
+    def _on_update_maintenance(
+        self,
+        maintenance: Maintenance,
+    ):
+        self._fixtureController.update_maintenance(maintenance)
+
     def _update_sw_traceability_enabled(self):
         isEnabled = self.fixture.can_change_traceability()
         if self.forceTraceabilityEnabled:
@@ -320,6 +360,7 @@ class FixtureView(QGroupBox):
 
     def copy_configs(self, fixture: Fixture):
         self.fixture.copy_configs(fixture)
+        self.maintenance.items = self._fixtureController.get_maintenance_parts()
 
     @property
     def fixture(self) -> Fixture:
@@ -335,10 +376,17 @@ class FixtureView(QGroupBox):
             self.fixture.over_elapsed.disconnect(self.overElapsedConnection)
         if self.statusChangeConnection:
             self.fixture.status_change.disconnect(self.statusChangeConnection)
+        if self.updateMaintenanceConnection:
+            self.fixture.update_maintenance.disconnect(self.updateMaintenanceConnection)
         self.updateConnection = fixture.update.connect(self._update)
         self.testingTickConnection = fixture.testing_tick.connect(self._update_status)
         self.overElapsedConnection = fixture.over_elapsed.connect(self._on_over_elapsed)
+        self.updateMaintenanceConnection = fixture.update_maintenance.connect(
+            self._on_update_maintenance
+        )
         self.statusChangeConnection = fixture.status_change.connect(
             self._on_status_change
         )
         self._fixture = fixture
+        self.maintenance.fixtureId = fixture.id
+        self.maintenance.fixtureIp = fixture.ip

@@ -21,6 +21,7 @@ class TestData:
         session = Session()
         session.add(testDTO)
         session.commit()
+        test.id = testDTO.id
         session.close()
         Session.remove()
         self._googleSheet.add(test)

@@ -4,9 +4,11 @@ from DataAccess.FctHostControlData import FctHostControlData
 from DataAccess.FixtureData import FixtureData
 from DataAccess.FixtureStatusLogData import FixtureStatusLogData
 from DataAccess.MainConfigData import MainConfigData
+from DataAccess.MaintenanceData import MaintenanceData
 from DataAccess.TestData import TestData
 from datetime import datetime, timedelta
 from Models.Fixture import Fixture
+from Models.Maintenance import Maintenance
 from Models.Test import Test
 
 
@@ -16,6 +18,7 @@ class FixtureController:
         self._fixtureData = FixtureData()
         self._mainConfigData = MainConfigData()
         self._fctHostControlData = FctHostControlData()
+        self._maintenanceData = MaintenanceData()
         self._fixtureStatusLogData = FixtureStatusLogData()
 
     def get_fct_host_cmd(self, fixture: Fixture, hasTraceability: bool):
@@ -52,6 +55,18 @@ class FixtureController:
     ):
         self._fixtureStatusLogData.add(fixture, status, startDateTime, timeDelta)
 
+    def add_maintenance(
+        self,
+        maintenance: Maintenance,
+    ):
+        self._maintenanceData.add(maintenance)
+
+    def update_maintenance(
+        self,
+        maintenance: Maintenance,
+    ):
+        self._maintenanceData.update(maintenance)
+
     def update(self, fixture: Fixture):
         self._fixtureData.create_or_update(fixture)
 
@@ -63,3 +78,9 @@ class FixtureController:
         if not hasTraceability:
             return FixtureMode.OFFLINE
         return FixtureMode.ONLINE
+
+    def get_maintenance_parts(self):
+        return self._mainConfigData.get_maintenance_parts()
+
+    def get_maintenance_actions(self):
+        return self._mainConfigData.get_maintenance_actions()

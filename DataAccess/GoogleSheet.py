@@ -93,7 +93,7 @@ class GoogleSheet(QRunnable):
                     maintenance.part,
                     maintenance.action,
                     maintenance.description,
-                    f"{maintenance.fixtureIp.split('.')[-1]}_{maintenance.id}",
+                    f"{maintenance.fixtureIp.split('.')[-1]}_{maintenance.testId}",
                     maintenance.stepLabel,
                     "PASS" if maintenance.resultStatus else "FAILED",
                     maintenance.dateTime.strftime("%d/%m/%Y %H:%M:%S"),

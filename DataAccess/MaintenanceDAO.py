@@ -18,7 +18,7 @@ class MaintenanceDAO:
         )
         if maintenanceDTO == None:
             return
-        maintenanceDTO.maintenanceId = maintenance.maintenanceId
+        maintenanceDTO.testId = maintenance.testId
         maintenanceDTO.resultStatus = maintenance.resultStatus
         maintenanceDTO.stepLabel = maintenance.stepLabel
         session.commit()
@@ -58,6 +58,7 @@ class MaintenanceDAO:
         query = (
             session.query(MaintenanceDTO)
             .filter(MaintenanceDTO.isSync == False)
+            .filter( MaintenanceDTO.testId > 0)
             .order_by(MaintenanceDTO.id.asc())
         )
         maintenances: "list[Maintenance]" = []

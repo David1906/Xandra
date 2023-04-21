@@ -292,8 +292,6 @@ class Fixture(QtCore.QObject):
         if self._isTesting:
             self._wasOverElapsed = False
             self.lastTest = NullTest()
-        else:
-            self._maintenance = NullMaintenance()
         self._property_changed()
 
     @property
@@ -313,8 +311,6 @@ class Fixture(QtCore.QObject):
     @isStarted.setter
     def isStarted(self, value: bool):
         self._isStarted = value
-        if not self.isStarted:
-            self._maintenance = NullMaintenance()
         self._property_changed()
 
     @property
@@ -342,4 +338,5 @@ class Fixture(QtCore.QObject):
             self.maintenance.stepLabel = value.stepLabel
             self.maintenance.resultStatus = value.status
             self.update_maintenance.emit(self.maintenance)
+            self.maintenance = NullMaintenance()
         self._property_changed()

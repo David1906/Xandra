@@ -20,6 +20,7 @@ class TestDTO(Base):
     uploadToSFC = Column(Boolean)
     description = Column(String(2048))
     mode = Column(Integer)
+    isSync = Column(Boolean)
 
     def __init__(
         self,
@@ -37,6 +38,7 @@ class TestDTO(Base):
         uploadToSFC: bool = False,
         description: str = None,
         mode: int = None,
+        isSync: bool = False,
     ) -> None:
         self.id = id
         self.serialNumber = serialNumber
@@ -52,3 +54,4 @@ class TestDTO(Base):
         self.uploadToSFC = uploadToSFC
         self.description = description
         self.mode = mode
+        self.isSync = isSync

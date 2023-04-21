@@ -91,3 +91,28 @@ class FixtureStatusLogDAO:
             timeDelta = timedelta(seconds=random.randint(1, 5400))
             self.add(fixture, status, accumDate, timeDelta)
             accumDate += timeDelta
+
+    def find_not_sync(self) -> "list[FixtureStatusLogDTO]":
+        session = Session()
+        query = (
+            session.query(FixtureStatusLogDTO)
+            .filter(FixtureStatusLogDTO.isSync == False)
+            .order_by(FixtureStatusLogDTO.id.asc())
+        )
+        logs: "list[FixtureStatusLogDTO]" = []
+        for fixtureStatusLogDTO in query:
+            logs.append(fixtureStatusLogDTO)
+        session.close()
+        Session.remove()
+        return logs
+
+    def update_is_sync(self, fixtureStatusLogDTO: FixtureStatusLogDTO, isSync: bool):
+        session = Session()
+        (
+            session.query(FixtureStatusLogDTO)
+            .filter(FixtureStatusLogDTO.id == fixtureStatusLogDTO.id)
+            .update({"isSync": isSync})
+        )
+        session.commit()
+        session.close()
+        Session.remove()

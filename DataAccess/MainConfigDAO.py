@@ -104,8 +104,19 @@ class MainConfigDAO:
     def get_google_sheetName(self):
         return self._get_value("googleSheets")["sheetName"]
 
-    def get_google_keyfilePath(self):
-        return self._get_value("googleSheets")["keyfilePath"]
+    def get_google_maintenanceSheetName(self):
+        return self._get_value("googleSheets")["maintenanceSheetName"]
+
+    def get_google_statusLogSheetName(self):
+        return self._get_value("googleSheets")["statusLogSheetName"]
+
+    def get_google_syncInterval(self):
+        return self._get_value("googleSheets")["syncInterval"]
+
+    def get_google_keyfilePath(self, no: int = 0):
+        return self._get_value("googleSheets")[
+            f"keyfilePath{'' if no <=0 else str(no)}"
+        ]
 
     def get_maintenance_parts(self):
         return self._get_value("maintenanceParts")

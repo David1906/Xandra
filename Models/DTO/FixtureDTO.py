@@ -14,6 +14,7 @@ class FixtureDTO(Base):
     isRetestMode = Column(Boolean)
     enableLock = Column(Boolean)
     mode = Column(Integer)
+    isSync = Column(Boolean)
 
     def __init__(
         self,
@@ -25,6 +26,7 @@ class FixtureDTO(Base):
         isRetestMode: bool = False,
         enableLock: bool = False,
         mode: int = FixtureMode.UNKNOWN.value,
+        isSync: bool = False,
     ):
         self.id = id
         self.ip = ip
@@ -34,3 +36,4 @@ class FixtureDTO(Base):
         self.isRetestMode = isRetestMode
         self.enableLock = enableLock
         self.mode = mode
+        self.isSync = isSync

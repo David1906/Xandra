@@ -17,6 +17,7 @@ class MaintenanceDTO(Base):
     testId = Column(Integer)
     resultStatus = Column(Boolean)
     stepLabel = Column(String(512))
+    isSync = Column(Boolean)
 
     def __init__(
         self,
@@ -31,6 +32,7 @@ class MaintenanceDTO(Base):
         testId: int = None,
         resultStatus: bool = None,
         stepLabel: str = "",
+        isSync: bool = False,
     ) -> None:
         self.id = id
         self.fixtureId = fixtureId
@@ -43,3 +45,4 @@ class MaintenanceDTO(Base):
         self.testId = testId
         self.resultStatus = resultStatus
         self.stepLabel = stepLabel
+        self.isSync = isSync

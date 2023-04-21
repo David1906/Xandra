@@ -1,7 +1,6 @@
 from Models.Fixture import Fixture
 from automapper import mapper
 from Core.Enums.FixtureMode import FixtureMode
-from DataAccess.GoogleSheet import GoogleSheet
 from DataAccess.MainConfigDAO import MainConfigDAO
 from DataAccess.SqlAlchemyBase import Session
 from Models.DTO.TestDTO import TestDTO
@@ -10,7 +9,6 @@ from Models.Fixture import Test
 
 class TestDAO:
     def __init__(self) -> None:
-        self._googleSheet = GoogleSheet()
         self._mainConfigDAO = MainConfigDAO()
 
     def add(self, test: Test, mode: int):
@@ -24,7 +22,6 @@ class TestDAO:
         test.id = testDTO.id
         session.close()
         Session.remove()
-        self._googleSheet.add(test)
 
     def find_last_by_fixture(self, fixture: Fixture):
         minQty = fixture.get_min_tests_qty()
@@ -74,3 +71,28 @@ class TestDAO:
         return self.find_last(
             fixtureIp, qty=qty, onlyFailures=True, ignoreRetest=ignoreRetest
         )
+
+    def find_not_sync(self) -> "list[Test]":
+        session = Session()
+        query = (
+            session.query(TestDTO)
+            .filter(TestDTO.isSync == False)
+            .order_by(TestDTO.id.asc())
+        )
+        tests: "list[Test]" = []
+        for testDTO in query:
+            tests.append(mapper.to(Test).map(testDTO))
+        session.close()
+        Session.remove()
+        return tests
+
+    def update_is_sync(self, test: Test, isSync: bool):
+        session = Session()
+        (
+            session.query(TestDTO)
+            .filter(TestDTO.id == test.id)
+            .update({"isSync": isSync})
+        )
+        session.commit()
+        session.close()
+        Session.remove()

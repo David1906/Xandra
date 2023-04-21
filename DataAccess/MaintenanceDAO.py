@@ -18,7 +18,7 @@ class MaintenanceDAO:
         )
         if maintenanceDTO == None:
             return
-        maintenanceDTO.testId = maintenance.testId
+        maintenanceDTO.maintenanceId = maintenance.maintenanceId
         maintenanceDTO.resultStatus = maintenance.resultStatus
         maintenanceDTO.stepLabel = maintenance.stepLabel
         session.commit()
@@ -52,3 +52,28 @@ class MaintenanceDAO:
         session.close()
         Session.remove()
         return logs
+
+    def find_not_sync(self) -> "list[Maintenance]":
+        session = Session()
+        query = (
+            session.query(MaintenanceDTO)
+            .filter(MaintenanceDTO.isSync == False)
+            .order_by(MaintenanceDTO.id.asc())
+        )
+        maintenances: "list[Maintenance]" = []
+        for maintenanceDTO in query:
+            maintenances.append(mapper.to(Maintenance).map(maintenanceDTO))
+        session.close()
+        Session.remove()
+        return maintenances
+
+    def update_is_sync(self, maintenance: Maintenance, isSync: bool):
+        session = Session()
+        (
+            session.query(MaintenanceDTO)
+            .filter(MaintenanceDTO.id == maintenance.id)
+            .update({"isSync": isSync})
+        )
+        session.commit()
+        session.close()
+        Session.remove()

@@ -1,5 +1,5 @@
 from DataAccess.SqlAlchemyBase import Base
-from sqlalchemy import Column, String, Integer, TIMESTAMP
+from sqlalchemy import Column, String, Integer, TIMESTAMP, Boolean
 
 
 class FixtureStatusLogDTO(Base):
@@ -13,6 +13,7 @@ class FixtureStatusLogDTO(Base):
     seconds = Column(Integer)
     timeStampStart = Column(TIMESTAMP)
     timeStampEnd = Column(TIMESTAMP)
+    isSync = Column(Boolean)
 
     def __init__(
         self,
@@ -23,6 +24,7 @@ class FixtureStatusLogDTO(Base):
         seconds: int = 0,
         timeStampStart: str = "",
         timeStampEnd: str = "",
+        isSync: bool = False,
     ) -> None:
         self.fixtureId = fixtureId
         self.fixtureIp = fixtureIp
@@ -31,3 +33,4 @@ class FixtureStatusLogDTO(Base):
         self.seconds = seconds
         self.timeStampStart = timeStampStart
         self.timeStampEnd = timeStampEnd
+        self.isSync = isSync

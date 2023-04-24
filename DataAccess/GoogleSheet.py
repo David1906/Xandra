@@ -4,7 +4,7 @@ from DataAccess.MainConfigDAO import MainConfigDAO
 from DataAccess.MaintenanceDAO import MaintenanceDAO
 from DataAccess.TestDAO import TestDAO
 from oauth2client.service_account import ServiceAccountCredentials
-from PyQt5.QtCore import QObject, pyqtSignal, QRunnable
+from PyQt5.QtCore import QObject, pyqtSignal, QRunnable, QTimer
 from typing import Callable
 from typing import TypeVar
 import gspread
@@ -20,6 +20,7 @@ class Emitter(QObject):
 
 
 class GoogleSheet(QRunnable):
+    EXECUTION_TIMEOUT = 60000
     MAX_KEY_NO = 4
     SCOPE = [
         "https://spreadsheets.google.com/feeds",
@@ -40,13 +41,19 @@ class GoogleSheet(QRunnable):
         self._currentStep = 0
         self._totalSteps = len(self._syncs)
         self.emitter = Emitter()
+        self._timeoutTimer = QTimer()
+        self._timeoutTimer.timeout.connect(self._stop_sync)
+        self._timeoutTimer.start(GoogleSheet.EXECUTION_TIMEOUT)
+        self._interrupt = False
 
     def _get_client(self):
         self.credentials = ServiceAccountCredentials.from_json_keyfile_name(
             self._mainConfigDAO.get_google_keyfilePath(),
             GoogleSheet.SCOPE,
         )
-        return gspread.authorize(self.credentials)
+        client = gspread.authorize(self.credentials)
+        client.set_timeout(30)
+        return client
 
     def run(self):
         try:
@@ -56,6 +63,10 @@ class GoogleSheet(QRunnable):
                 sync()
         except:
             pass
+        self.emitter.done.emit()
+
+    def _stop_sync(self):
+        self._interrupt = True
         self.emitter.done.emit()
 
     def sync_tasks(self):
@@ -78,7 +89,6 @@ class GoogleSheet(QRunnable):
                 ]
             ),
             callback=self._testDAO.update_is_sync,
-            batchSize=1
         )
 
     def sync_maintenance(self):
@@ -134,7 +144,7 @@ class GoogleSheet(QRunnable):
             sheet = self._get_client().open(sheetName).sheet1
             syncedItems = 0
             batchItems = items[syncedItems:batchSize]
-            while len(batchItems) > 0:
+            while len(batchItems) > 0 and not self._interrupt:
                 self.emitter.status_update.emit(
                     f"({self._currentStep}/{self._totalSteps}) Syncing {sheetName} {syncedItems}/{len(items)}..."
                 )

@@ -42,10 +42,10 @@
     "lockFailQty_description" : "[0-10; 0 = deshabilitado] - Cantidad de pruebas consecutivas con estatus FAILED necesarias para bloquear la fixtura",
 
     "googleSheets": {
-        "isActivated" : true,
+        "isActivated" : false,
         "syncInterval" : 5000,
         "sheetName": "Dev FBT Bahubali",
-        "maintenanceSheetName": "Dev FBT Maintenance",
+        "maintenanceSheetName": "FBT Maintenance",
         "statusLogSheetName": "Dev FBT Status Log",
         "keyfilePath": "./Static/yield-bahubali-0bb8df93147a.json",
         "keyfilePath1": "./Static/yield-bahubali-98f66abf2c9e.json",

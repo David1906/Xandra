@@ -96,7 +96,7 @@ class MaintenanceView(QWidget):
                 fixtureIp=self.fixtureIp,
                 part=self.cboxPart.currentText(),
                 employee=self.txtName.text().strip().upper(),
-                description=self.txtDescription.toPlainText(),
+                description=self.txtDescription.toPlainText().capitalize(),
                 action=self.cboxAction.currentText(),
             )
         )

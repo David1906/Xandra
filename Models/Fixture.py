@@ -168,7 +168,7 @@ class Fixture(QtCore.QObject):
     def get_status_message(self) -> str:
         payload = ""
         status = self.get_status()
-        if status == FixtureStatus.TESTING:
+        if self.isTesting:
             payload = f"({str(self.get_elapsed_time())})"
         elif not self.lastTest.isNull:
             payload = f"SN: {self.lastTest.serialNumber}    Result: {self.lastTest.get_result_string()}"
@@ -292,6 +292,8 @@ class Fixture(QtCore.QObject):
         if self._isTesting:
             self._wasOverElapsed = False
             self.lastTest = NullTest()
+        if self._isTesting and self.is_locked():
+            self.emit_status_change(force=True)
         self._property_changed()
 
     @property
@@ -333,7 +335,7 @@ class Fixture(QtCore.QObject):
     @lastTest.setter
     def lastTest(self, value: Test):
         self._lastTest = value
-        if not self.maintenance.isNull:
+        if not self._lastTest.isNull and not self.maintenance.isNull:
             self.maintenance.testId = value.id
             self.maintenance.stepLabel = value.stepLabel
             self.maintenance.resultStatus = value.status

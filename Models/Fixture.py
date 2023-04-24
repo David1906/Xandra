@@ -49,6 +49,7 @@ class Fixture(QtCore.QObject):
         self._wasOverElapsed = False
         self._startDateTime = datetime.now()
         self._startTimer = timer()
+        self._testTimer = timer()
         self._maintenance = NullMaintenance()
 
         self._shouldUpdateRemainingToUnlock = True
@@ -169,10 +170,13 @@ class Fixture(QtCore.QObject):
         payload = ""
         status = self.get_status()
         if self.isTesting:
-            payload = f"({str(self.get_elapsed_time())})"
+            payload = f"({str(self.get_test_time())})"
         elif not self.lastTest.isNull:
             payload = f"SN: {self.lastTest.serialNumber}    Result: {self.lastTest.get_result_string()}"
         return f"{status.description}{'' if len(payload) == 0 else ' - '}{payload}"
+
+    def get_test_time(self) -> timedelta:
+        return timedelta(seconds=math.floor(timer() - self._testTimer))
 
     def get_status(self) -> FixtureStatus:
         if self.is_locked():
@@ -292,8 +296,7 @@ class Fixture(QtCore.QObject):
         if self._isTesting:
             self._wasOverElapsed = False
             self.lastTest = NullTest()
-        if self._isTesting and self.is_locked():
-            self.emit_status_change(force=True)
+            self._testTimer = timer()
         self._property_changed()
 
     @property

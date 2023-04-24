@@ -1,9 +1,10 @@
 from automapper import mapper
 from DataAccess.SqlAlchemyBase import Session
+from datetime import datetime, timedelta
 from Models.DTO.MaintenanceDTO import MaintenanceDTO
 from Models.Fixture import Fixture
 from Models.Maintenance import Maintenance
-from datetime import datetime, timedelta
+from sqlalchemy import update
 
 
 class MaintenanceDAO:
@@ -88,6 +89,24 @@ class MaintenanceDAO:
                 .filter(MaintenanceDTO.id == maintenance.id)
                 .update({"isSync": isSync})
             )
+            session.commit()
+        except:
+            session.rollback()
+            raise
+        finally:
+            session.close()
+            Session.remove()
+
+    def bulk_update_is_sync(
+        self, maintenanceDTOs: "list[MaintenanceDTO]", isSync: bool
+    ):
+        session = Session()
+        try:
+            items = []
+            for maintenanceDTO in maintenanceDTOs:
+                items.append({"id": maintenanceDTO.id, "isSync": isSync})
+
+            session.execute(update(MaintenanceDTO), items)
             session.commit()
         except:
             session.rollback()

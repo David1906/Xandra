@@ -88,7 +88,7 @@ class GoogleSheet(QRunnable):
                     test.description,
                 ]
             ),
-            callback=self._testDAO.update_is_sync,
+            callback=self._testDAO.bulk_update_is_sync,
         )
 
     def sync_maintenance(self):
@@ -109,7 +109,7 @@ class GoogleSheet(QRunnable):
                     maintenance.dateTime.strftime("%d/%m/%Y %H:%M:%S"),
                 ]
             ),
-            callback=self._maintenanceDAO.update_is_sync,
+            callback=self._maintenanceDAO.bulk_update_is_sync,
         )
 
     def sync_status_log(self):
@@ -127,7 +127,7 @@ class GoogleSheet(QRunnable):
                     fixtureStatusLogDTO.timeStampEnd.strftime("%d/%m/%Y %H:%M:%S"),
                 ]
             ),
-            callback=self._fixtureStatusLogDAO.update_is_sync,
+            callback=self._fixtureStatusLogDAO.bulk_update_is_sync,
             batchSize=200,
         )
 
@@ -136,7 +136,7 @@ class GoogleSheet(QRunnable):
         sheetName: str,
         items: "list[T]",
         transformer: Callable[[T], "list[str]"],
-        callback: Callable[[T], None],
+        callback: Callable[["list[T]"], None],
         batchSize: int = 100,
         keyNo: int = 0,
     ):
@@ -157,9 +157,8 @@ class GoogleSheet(QRunnable):
                     value_input_option="USER_ENTERED",
                 )
 
-                for item in batchItems:
-                    callback(item, True)
-                    syncedItems += 1
+                callback(batchItems, True)
+                syncedItems += len(batchItems)
                 batchItems = items[syncedItems : syncedItems + batchSize]
                 time.sleep(1)
         except Exception as e:

@@ -1,10 +1,11 @@
-from Models.Fixture import Fixture
 from automapper import mapper
 from Core.Enums.FixtureMode import FixtureMode
 from DataAccess.MainConfigDAO import MainConfigDAO
 from DataAccess.SqlAlchemyBase import Session
 from Models.DTO.TestDTO import TestDTO
+from Models.Fixture import Fixture
 from Models.Fixture import Test
+from sqlalchemy import update
 
 
 class TestDAO:
@@ -99,6 +100,24 @@ class TestDAO:
                 .filter(TestDTO.id == test.id)
                 .update({"isSync": isSync})
             )
+            session.commit()
+        except:
+            session.rollback()
+            raise
+        finally:
+            session.close()
+            Session.remove()
+
+    def bulk_update_is_sync(
+        self, testDTOs: "list[TestDTO]", isSync: bool
+    ):
+        session = Session()
+        try:
+            items = []
+            for testDTO in testDTOs:
+                items.append({"id": testDTO.id, "isSync": isSync})
+
+            session.execute(update(TestDTO), items)
             session.commit()
         except:
             session.rollback()

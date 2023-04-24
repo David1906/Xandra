@@ -3,6 +3,7 @@ from DataAccess.SqlAlchemyBase import Session
 from datetime import datetime, timedelta
 from Models.DTO.FixtureStatusLogDTO import FixtureStatusLogDTO
 from Models.Fixture import Fixture
+from sqlalchemy import update
 import random
 import sqlalchemy as db
 
@@ -121,6 +122,24 @@ class FixtureStatusLogDAO:
                 .filter(FixtureStatusLogDTO.id == fixtureStatusLogDTO.id)
                 .update({"isSync": isSync})
             )
+            session.commit()
+        except:
+            session.rollback()
+            raise
+        finally:
+            session.close()
+            Session.remove()
+
+    def bulk_update_is_sync(
+        self, fixtureStatusLogDTOs: "list[FixtureStatusLogDTO]", isSync: bool
+    ):
+        session = Session()
+        try:
+            items = []
+            for fixtureStatusLogDTO in fixtureStatusLogDTOs:
+                items.append({"id": fixtureStatusLogDTO.id, "isSync": isSync})
+
+            session.execute(update(FixtureStatusLogDTO), items)
             session.commit()
         except:
             session.rollback()

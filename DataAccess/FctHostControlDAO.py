@@ -1,10 +1,10 @@
-import os
 from DataAccess.MainConfigDAO import MainConfigDAO
 from os import fdopen, remove
 from shutil import move, copymode
 from tempfile import mkstemp
 from Utils.PathHelper import PathHelper
 import json
+import os
 import re
 
 
@@ -70,7 +70,7 @@ class FctHostControlDAO:
                     f'"{PathHelper().get_root_path()}/Resources/chk_station_test_finished.py"',
                 ),
                 ("Delay", f"5000"),
-                ("Timeout", f'0'),
+                ("Timeout", f"0"),
             ],
         )
 

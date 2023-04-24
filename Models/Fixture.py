@@ -341,4 +341,6 @@ class Fixture(QtCore.QObject):
             self.maintenance.resultStatus = value.status
             self.update_maintenance.emit(self.maintenance)
             self.maintenance = NullMaintenance()
+        if not self._lastTest.isNull:
+            self.isTesting = False
         self._property_changed()

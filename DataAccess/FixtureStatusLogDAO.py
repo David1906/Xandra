@@ -17,6 +17,8 @@ class FixtureStatusLogDAO:
         startDateTime: datetime,
         timeDelta: timedelta,
     ):
+        if timeDelta.total_seconds() <= 0:
+            return
         endDateTime = startDateTime + timeDelta
         reason = ""
         if status == FixtureStatus.LOCKED:
@@ -31,10 +33,15 @@ class FixtureStatusLogDAO:
             timeStampEnd=endDateTime.isoformat(),
         )
         session = Session()
-        session.add(logDTO)
-        session.commit()
-        session.close()
-        Session.remove()
+        try:
+            session.add(logDTO)
+            session.commit()
+        except:
+            session.rollback()
+            raise
+        finally:
+            session.close()
+            Session.remove()
 
     def find_last_24H(self, fixtureIp: str):
         now = datetime.now()
@@ -108,11 +115,16 @@ class FixtureStatusLogDAO:
 
     def update_is_sync(self, fixtureStatusLogDTO: FixtureStatusLogDTO, isSync: bool):
         session = Session()
-        (
-            session.query(FixtureStatusLogDTO)
-            .filter(FixtureStatusLogDTO.id == fixtureStatusLogDTO.id)
-            .update({"isSync": isSync})
-        )
-        session.commit()
-        session.close()
-        Session.remove()
+        try:
+            (
+                session.query(FixtureStatusLogDTO)
+                .filter(FixtureStatusLogDTO.id == fixtureStatusLogDTO.id)
+                .update({"isSync": isSync})
+            )
+            session.commit()
+        except:
+            session.rollback()
+            raise
+        finally:
+            session.close()
+            Session.remove()

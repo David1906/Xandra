@@ -11,26 +11,38 @@ class MaintenanceDAO:
 
     def update(self, maintenance: Maintenance):
         session = Session()
-        maintenanceDTO = (
-            session.query(MaintenanceDTO)
-            .where(MaintenanceDTO.id == maintenance.id)
-            .first()
-        )
-        if maintenanceDTO == None:
-            return
-        maintenanceDTO.testId = maintenance.testId
-        maintenanceDTO.resultStatus = maintenance.resultStatus
-        maintenanceDTO.stepLabel = maintenance.stepLabel
-        session.commit()
-        Session.remove()
+        try:
+            maintenanceDTO = (
+                session.query(MaintenanceDTO)
+                .where(MaintenanceDTO.id == maintenance.id)
+                .first()
+            )
+            if maintenanceDTO == None:
+                return
+            maintenanceDTO.testId = maintenance.testId
+            maintenanceDTO.resultStatus = maintenance.resultStatus
+            maintenanceDTO.stepLabel = maintenance.stepLabel
+            session.commit()
+        except:
+            session.rollback()
+            raise
+        finally:
+            session.close()
+            Session.remove()
 
     def add(self, maintenance: Maintenance):
         session = Session()
-        maintenanceDTO = mapper.to(MaintenanceDTO).map(maintenance)
-        session.add(maintenanceDTO)
-        session.commit()
-        maintenance.id = maintenanceDTO.id
-        Session.remove()
+        try:
+            maintenanceDTO = mapper.to(MaintenanceDTO).map(maintenance)
+            session.add(maintenanceDTO)
+            session.commit()
+            maintenance.id = maintenanceDTO.id
+        except:
+            session.rollback()
+            raise
+        finally:
+            session.close()
+            Session.remove()
 
     def find(self, fixtureIp: str, start: datetime, end: datetime, qty: int):
         session = Session()
@@ -58,7 +70,7 @@ class MaintenanceDAO:
         query = (
             session.query(MaintenanceDTO)
             .filter(MaintenanceDTO.isSync == False)
-            .filter( MaintenanceDTO.testId > 0)
+            .filter(MaintenanceDTO.testId > 0)
             .order_by(MaintenanceDTO.id.asc())
         )
         maintenances: "list[Maintenance]" = []
@@ -70,11 +82,16 @@ class MaintenanceDAO:
 
     def update_is_sync(self, maintenance: Maintenance, isSync: bool):
         session = Session()
-        (
-            session.query(MaintenanceDTO)
-            .filter(MaintenanceDTO.id == maintenance.id)
-            .update({"isSync": isSync})
-        )
-        session.commit()
-        session.close()
-        Session.remove()
+        try:
+            (
+                session.query(MaintenanceDTO)
+                .filter(MaintenanceDTO.id == maintenance.id)
+                .update({"isSync": isSync})
+            )
+            session.commit()
+        except:
+            session.rollback()
+            raise
+        finally:
+            session.close()
+            Session.remove()

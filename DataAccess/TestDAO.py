@@ -14,14 +14,19 @@ class TestDAO:
     def add(self, test: Test, mode: int):
         if test.fixtureIp == None:
             return
-        testDTO = mapper.to(TestDTO).map(test)
-        testDTO.mode = mode
         session = Session()
-        session.add(testDTO)
-        session.commit()
-        test.id = testDTO.id
-        session.close()
-        Session.remove()
+        try:
+            testDTO = mapper.to(TestDTO).map(test)
+            testDTO.mode = mode
+            session.add(testDTO)
+            session.commit()
+            test.id = testDTO.id
+        except:
+            session.rollback()
+            raise
+        finally:
+            session.close()
+            Session.remove()
 
     def find_last_by_fixture(self, fixture: Fixture):
         minQty = fixture.get_min_tests_qty()
@@ -88,11 +93,16 @@ class TestDAO:
 
     def update_is_sync(self, test: Test, isSync: bool):
         session = Session()
-        (
-            session.query(TestDTO)
-            .filter(TestDTO.id == test.id)
-            .update({"isSync": isSync})
-        )
-        session.commit()
-        session.close()
-        Session.remove()
+        try:
+            (
+                session.query(TestDTO)
+                .filter(TestDTO.id == test.id)
+                .update({"isSync": isSync})
+            )
+            session.commit()
+        except:
+            session.rollback()
+            raise
+        finally:
+            session.close()
+            Session.remove()

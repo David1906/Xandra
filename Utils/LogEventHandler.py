@@ -4,9 +4,11 @@ from PyQt5 import QtCore
 from watchdog.events import FileSystemEventHandler
 import logging
 import os
+import pathlib
 
 
 class LogEventHandler(FileSystemEventHandler, QtCore.QThread):
+    ALLOWED_EXTENSIONS = [".log"]
     test_add = QtCore.pyqtSignal(Test)
 
     def __init__(self) -> None:
@@ -16,7 +18,10 @@ class LogEventHandler(FileSystemEventHandler, QtCore.QThread):
 
     def on_created(self, event):
         try:
-            if os.path.isfile(event.src_path):
+            if (
+                os.path.isfile(event.src_path)
+                and pathlib.Path(event.src_path).suffix in LogEventHandler.ALLOWED_EXTENSIONS
+            ):
                 test = self._testParser.parse(event.src_path)
                 self.test_add.emit(test)
         except Exception as e:

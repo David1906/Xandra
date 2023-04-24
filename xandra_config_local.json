@@ -47,10 +47,10 @@
         "sheetName": "Dev FBT Bahubali",
         "maintenanceSheetName": "FBT Maintenance",
         "statusLogSheetName": "Dev FBT Status Log",
-        "keyfilePath": "./Static/yield-bahubali-0bb8df93147a.json",
-        "keyfilePath1": "./Static/yield-bahubali-98f66abf2c9e.json",
-        "keyfilePath2": "./Static/yield-bahubali-315253f8b451.json",
-        "keyfilePath3": "./Static/yield-bahubali-f20f62671db6.json"
+        "keyfilePath": "./Static/xandra-1-bcb8f23a436d.json",
+        "keyfilePath1": "./Static/yield-bahubali-0bb8df93147a.json",
+        "keyfilePath2": "./Static/yield-bahubali-98f66abf2c9e.json",
+        "keyfilePath3": "./Static/yield-bahubali-315253f8b451.json"
     },
     "googleSheets_description":"Configuración para subir resultados de las pruebas realizadas a google sheets",
 

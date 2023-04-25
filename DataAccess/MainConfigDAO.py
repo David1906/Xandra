@@ -123,3 +123,6 @@ class MainConfigDAO:
 
     def get_maintenance_actions(self):
         return self._get_value("maintenanceActions")
+
+    def get_language(self):
+        return self._get_value("language")

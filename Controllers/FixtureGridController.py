@@ -12,8 +12,11 @@ from Utils.FixtureSocket import FixtureSocket
 from Utils.LogEventHandler import LogEventHandler
 import atexit
 
+from Utils.Translator import Translator
+
 
 class FixtureGridController(QtCore.QThread):
+    config_change = QtCore.pyqtSignal(object)
     fixture_change = QtCore.pyqtSignal(Fixture)
     test_add = QtCore.pyqtSignal(Test)
     testing_status_changed = QtCore.pyqtSignal(str, bool)
@@ -51,6 +54,8 @@ class FixtureGridController(QtCore.QThread):
         self.testing_status_changed.emit(fixtureIp, isTesting)
 
     def on_config_change(self, event):
+        Translator().set_language_from_config()
+        self.config_change.emit(event)
         for fixture in self.get_all_fixtures():
             self._fixtureDAO.create_or_update(fixture)
             self.fixture_change.emit(fixture)

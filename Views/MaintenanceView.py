@@ -13,13 +13,16 @@ from PyQt5.QtWidgets import (
 from PyQt5 import QtCore
 from PyQt5.QtGui import QKeySequence, QRegExpValidator
 from Models.Fixture import Fixture
-
 from Models.Maintenance import Maintenance
+from Utils.Translator import Translator
+
+_ = Translator().gettext
 
 
 class MaintenanceView(QWidget):
+    MIN_EMP_LEN = 6
     MAX_DESCRIPTION_LEN = 255
-    TXT_FIELD_REQUIRED = "{0} is required"
+    TXT_FIELD_REQUIRED = _("{0} is required")
     selected = QtCore.pyqtSignal(Maintenance)
 
     def __init__(
@@ -38,6 +41,7 @@ class MaintenanceView(QWidget):
         self._items = items
 
         self._init_ui()
+        self._update_texts()
 
         self.msgSc = QShortcut(QKeySequence("Alt+Enter"), self.txtDescription)
         self.msgSc.activated.connect(self._save)
@@ -48,32 +52,33 @@ class MaintenanceView(QWidget):
         layout = QGridLayout()
         self.setLayout(layout)
 
-        self.lblInstruction = QLabel(
-            "* Enter the replaced part to unlock the fixture *"
-        )
+        self.lblInstruction = QLabel()
         layout.addWidget(self.lblInstruction, 0, 0, 1, 2, QtCore.Qt.AlignCenter)
 
-        self.lblPart = QLabel("Part Replaced *:")
+        self.lblPart = QLabel()
         layout.addWidget(self.lblPart, 1, 0)
         self.cboxPart = QComboBox()
         self.cboxPart.addItems(self.items)
         self.cboxPart.setEditable(True)
         layout.addWidget(self.cboxPart, 2, 0, 1, 2)
 
-        self.lblAction = QLabel("Action *:")
+        self.lblAction = QLabel()
         layout.addWidget(self.lblAction, 3, 0)
         self.cboxAction = QComboBox()
         self.cboxAction.addItems(self.actions)
         layout.addWidget(self.cboxAction, 4, 0)
 
-        self.lblName = QLabel("Employee Number *:")
+        self.lblName = QLabel()
         layout.addWidget(self.lblName, 3, 1)
         self.txtName = QLineEdit()
-        validator = QRegExpValidator(QtCore.QRegExp("[0-9]{6,9}"))
+        validator = QRegExpValidator(
+            QtCore.QRegExp(f"[0-9]{{{MaintenanceView.MIN_EMP_LEN},9}}")
+        )
         self.txtName.setValidator(validator)
         layout.addWidget(self.txtName, 4, 1)
 
-        layout.addWidget(QLabel("Description"), 5, 0)
+        self.lblDescription = QLabel()
+        layout.addWidget(self.lblDescription, 5, 0)
         self.txtDescription = QTextEdit()
         self.txtDescription.setMaximumHeight(50)
         self.txtDescription.textChanged.connect(self.on_txt_description_changed)
@@ -81,14 +86,24 @@ class MaintenanceView(QWidget):
         self.lblDescriptionLen = QLabel(f"0/{MaintenanceView.MAX_DESCRIPTION_LEN}")
         layout.addWidget(self.lblDescriptionLen, 7, 1, QtCore.Qt.AlignRight)
 
-        self.btnOk = QPushButton("&Save")
+        self.btnOk = QPushButton()
         self.btnOk.clicked.connect(self._save)
         layout.addWidget(self.btnOk, 8, 0, 1, 2, QtCore.Qt.AlignCenter)
+
+    def _update_texts(self):
+        self.lblInstruction.setText(
+            _("* Enter the replaced part to unlock the fixture *")
+        )
+        self.lblPart.setText(_("Part *:"))
+        self.lblAction.setText(_("Action *:"))
+        self.lblName.setText(_("Employee Number *:"))
+        self.lblDescription.setText(_("Description:"))
+        self.btnOk.setText(_("&Save"))
 
     def _save(self):
         validation = self._validate()
         if validation != "":
-            QMessageBox.warning(self, "Error", validation)
+            QMessageBox.warning(self, _("Error"), validation)
             return
         self.selected.emit(
             Maintenance(
@@ -118,7 +133,9 @@ class MaintenanceView(QWidget):
         elif self.txtName.text().strip() == "":
             labelTxt = self.lblName.text()
         elif not self.txtName.hasAcceptableInput():
-            error = "{} is invalid it should be at least 6 digits long"
+            error = _("{0} is invalid it should be at least {1} digits long").replace(
+                "{1}", str(MaintenanceView.MIN_EMP_LEN)
+            )
             labelTxt = self.lblName.text()
         else:
             error = ""

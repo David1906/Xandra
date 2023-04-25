@@ -45,3 +45,13 @@ mkdocs serve
 ``` shell
 mkdocs build -d ../../../docs  
 ```
+
+* Hacer build de traduccion (.mo): 
+``` shell
+msgfmt -o es/LC_MESSAGES/base.mo es/LC_MESSAGES/base
+```
+
+* Generar plantilla de traduccion (.pot): 
+``` shell
+xgettext -d fixture_view -o MainWindow.pot ../../Views/MainWindow.py 
+```

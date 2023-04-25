@@ -1,0 +1,327 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# David Ascencio <david.ascencio@fi-na.com>, 2023.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: xandra_base_1_0_0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-04-25 10:46-0600\n"
+"PO-Revision-Date: 2023-04-25 09:44-0600\n"
+"Last-Translator: David Ascencio <david.ascencio@fi-na.com>\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: utf-8\n"
+
+# ENUM LockType
+msgid "Unlocked"
+msgstr "Desbloqueado"
+
+msgid "Last {0} tests failed"
+msgstr "Últimas {0} pruebas fallaron"
+
+msgid "Low yield ({0}%)"
+msgstr "El Yield está bajo ({0}%)"
+
+# ENUM FixtureStatus
+msgid "Unknown"
+msgstr "Desconocido"
+
+msgid "IDLE"
+msgstr "IDLE"
+
+msgid "Testing"
+msgstr "Probando"
+
+msgid "Locked"
+msgstr "Bloqueado"
+
+msgid "Off"
+msgstr "Apagado"
+
+# Log table
+
+msgid "serialNumber"
+msgstr "número de serie"
+
+msgid "project"
+msgstr "proyecto"
+
+msgid "operator"
+msgstr "operador"
+
+msgid "startTime"
+msgstr "inicio"
+
+msgid "endTime"
+msgstr "fin"
+
+msgid "codeVersion"
+msgstr "script"
+
+msgid "fixtureIp"
+msgstr "Ip de fixtura"
+
+msgid "status"
+msgstr "resultado"
+
+msgid "stepLabel"
+msgstr "falla"
+
+msgid "mode"
+msgstr "modo"
+
+msgid "fullPath"
+msgstr "Logfile"
+
+# Maintenance Table
+msgid "employee"
+msgstr "número de empleado"
+
+msgid "dateTime"
+msgstr "fecha y hora"
+
+msgid "part"
+msgstr "parte"
+
+msgid "action"
+msgstr "acción"
+
+msgid "description"
+msgstr "descripción"
+
+msgid "resultStatus"
+msgstr "resultado"
+
+# Views and Models
+
+msgid "SN: {0}    Result: {1}"
+msgstr "SN: {0}    Resultado: {1}"
+
+msgid "Mode:"
+msgstr "Modo:"
+
+msgid "IP:"
+msgstr "IP:"
+
+msgid "Traceability"
+msgstr "Trazabilidad"
+
+msgid "Retest Mode"
+msgstr "Modo Retest"
+
+msgid "Start"
+msgstr "Iniciar"
+
+msgid "Last Tests"
+msgstr "Últimas Pruebas"
+
+msgid "Last Failures"
+msgstr "Últimas Fallas"
+
+msgid "Maintenance"
+msgstr "Mantenimiento"
+
+msgid "Status: IDLE"
+msgstr "Estado: IDLE"
+
+#, python-brace-format
+msgid "Yield: {0}%"
+msgstr "Yield: {0}%"
+
+#, python-brace-format
+msgid "Ip: {0}"
+msgstr "Ip: {0}"
+
+#, python-brace-format
+msgid "Failed last test:"
+msgid_plural "Failed last {0} tests:"
+msgstr[0] "Falló la última prueba:"
+msgstr[1] "Fallaron las últimas {0} pruebas:"
+
+#, python-brace-format
+msgid "Mode: {0}"
+msgstr "Modo: {0}"
+
+#, python-brace-format
+msgid "Fixture locked due to {0}"
+msgstr "Fixtura bloqueada debido a que {0}"
+
+msgid "Fixture unlocked"
+msgstr "Fixtura desbloqueada"
+
+#, python-brace-format
+msgid "Test {0} to unlock"
+msgstr "Pruebe {0} para desbloquear"
+
+msgid "Stop Fixture"
+msgstr "Detener Fixtura"
+
+#, python-brace-format
+msgid "Are you sure to stop fixture {0}?"
+msgstr "¿Realmente desea detener la fixtura {0}?"
+
+#, python-brace-format
+msgid "Test another board"
+msgid_plural "Test another {0} boards"
+msgstr[0] "Pruebe otra tarjeta"
+msgstr[1] "Pruebe otras {0} tarjetas"
+
+msgid " which result is pass to unlock the fixture"
+msgstr " cuyo resultado sea PASS para desbloquear la fixtura"
+
+msgid "Stop"
+msgstr "Detener"
+
+#: ../../Views/AuthView.py:16
+msgid "Auth"
+msgstr "Autenticar"
+
+#: ../../Views/AuthView.py:16
+msgid "Enter password:"
+msgstr "Ingrese la contraseña:"
+
+#: ../../Views/AuthView.py:25
+msgid "Wrong password"
+msgstr "Contraseña incorrecta"
+
+#: ../../Views/AuthView.py:25
+msgid "Auth Error"
+msgstr "Error de autenticación "
+
+#: ../../Views/ExitSingleInstanceWindow.py:15
+msgid ""
+"Xandra is already open, please close the main window to allow a new start\n\nIf you need a force close, enter the command xandra-kill in a terminal."
+msgstr "Xandra ya se encuentra abierto, por favor cierre la ventana principal para permitir un nuevo inicio.\n\nSi desea forzar el cierre de Xandra escriba xandra-kill en una terminal."
+
+#: ../../Views/ExitSingleInstanceWindow.py:26
+msgid "Xandra Error"
+msgstr "Error en Xandra"
+
+#: ../../Views/ExitSingleInstanceWindow.py:28
+msgid "Please verify the config file"
+msgstr "Porfavor verifique el archivo de configuración"
+
+#: ../../Views/LastLogsWindow.py:52
+msgid "Yield"
+msgstr "Yield"
+
+#: ../../Views/LastLogsWindow.py:65
+msgid "No Data Found"
+msgstr "Sin Datos"
+
+#: ../../Views/LastLogsWindow.py:73
+msgid "Refresh"
+msgstr "Refrescar"
+
+#: ../../Views/LastLogsWindow.py:93
+msgid "Show Retest"
+msgstr "Mostrar Retest"
+
+#: ../../Views/LastFailuresWindow.py:12
+#, python-brace-format
+msgid "Last Failures - Fixture {0}"
+msgstr "Últimas Fallas - Fixtura {0}"
+
+#: ../../Views/LastTestsWindow.py:13
+#, python-brace-format
+msgid "Last Tests - Fixture {0}"
+msgstr "Últimas Pruebas - Fixtura {0}"
+
+#: ../../Views/LogButton.py:10
+#, python-brace-format
+msgid "Open"
+msgstr "Abrir"
+
+#: ../../Views/MaintenanceLogView.py:40
+#, python-brace-format
+msgid "Maintenance - Fixture {0}"
+msgstr "Mantenimiento - Fixtura {0}"
+
+#: ../../Views/MaintenanceLogView.py:47
+msgid "Start:"
+msgstr "Inicio:"
+
+#: ../../Views/MaintenanceLogView.py:55
+msgid "End:"
+msgstr "Fin:"
+
+#: ../../Views/MaintenanceLogView.py:64
+msgid "Fixture Status Time"
+msgstr "Estatus"
+
+#: ../../Views/MaintenanceView.py:25
+#, python-brace-format
+msgid "{0} is required"
+msgstr "El campo '{0}' es requerido"
+
+#: ../../Views/MaintenanceView.py:55
+msgid "* Enter the replaced part to unlock the fixture *"
+msgstr "* Ingrese el mantenimiento realizado para desbloquear la fixtura *"
+
+#: ../../Views/MaintenanceView.py:59
+msgid "Part *:"
+msgstr "Parte *:"
+
+#: ../../Views/MaintenanceView.py:66
+msgid "Action *:"
+msgstr "Acción *:"
+
+#: ../../Views/MaintenanceView.py:72
+msgid "Employee Number *:"
+msgstr "Número de empleado *:"
+
+#: ../../Views/MaintenanceView.py:81
+msgid "Description:"
+msgstr "Descripción:"
+
+#: ../../Views/MaintenanceView.py:89
+msgid "&Save"
+msgstr "&Guardar"
+
+#: ../../Views/MaintenanceView.py:96
+msgid "Error"
+msgstr "Error"
+
+#: ../../Views/MaintenanceView.py:126
+#, python-brace-format
+msgid "{0} is invalid it should be at least {1} digits long"
+msgstr "{0} es inválido, debe contener al menos {1} digitos"
+
+#: ../../Views/MainWindow.py:58
+#, python-brace-format
+msgid "Xandra Version: {0}"
+msgstr "Versión Xandra: {0}"
+
+#: ../../Views/MainWindow.py:60
+msgid "Developed by David Ascencio\nFoxconn"
+msgstr "Desarrollado por David Ascencio\nFoxconn"
+
+#: ../../Views/MainWindow.py:67
+#, python-brace-format
+msgid "Script Version: {0}"
+msgstr "Versión Script: {0}"
+
+#: ../../Views/MainWindow.py:97
+#, python-brace-format
+msgid "Last sync: {0}"
+msgstr "Última sincronización: {0}"
+
+#: ../../Views/MainWindow.py:110
+msgid "Lock Disabled"
+msgstr "Bloqueo Deshabilitado"
+
+#: ../../Views/MainWindow.py:118
+msgid "Exit Xandra"
+msgstr "Salir de Xandra"
+
+#: ../../Views/MainWindow.py:119
+msgid "Are you sure to exit Xandra?\n\nIt will stop all fixtures"
+msgstr "¿Realmente desea salir de Xandra?\n\nEsta acción detendrá todas las fixturas"
+
+#: ../../DataAccess/GoogleSheet.py:119
+msgid "Syncing"
+msgstr "Sincronizando"

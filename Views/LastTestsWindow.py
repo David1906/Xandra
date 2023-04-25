@@ -1,12 +1,17 @@
 from Models.Fixture import Test
 from PyQt5.QtCore import Qt
 from Views.LastLogsWindow import LastLogsWindow
+from Utils.Translator import Translator
+
+_ = Translator().gettext
 
 
 class LastTestsWindow(LastLogsWindow):
     def __init__(self, fixtureIp: str, showRetest: bool = False):
         super().__init__(
-            fixtureIp, title=f"Last Tests - Fixture {fixtureIp}", showRetest=showRetest
+            fixtureIp,
+            title=_("Last Tests - Fixture {0}").format(fixtureIp),
+            showRetest=showRetest,
         )
 
     def getTests(self, qty: int):
@@ -19,7 +24,7 @@ class LastTestsWindow(LastLogsWindow):
         for test in tests:
             key = "PASS" if test.status else "FAILED"
             if key == "":
-                key = "unknown"
+                key = _("unknown")
             if key in results:
                 results[key] = results[key] + 1
             else:

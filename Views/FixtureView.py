@@ -1,7 +1,7 @@
 from Controllers.FixtureController import FixtureController
 from Core.Enums.FixtureMode import FixtureMode
 from Core.Enums.FixtureStatus import FixtureStatus
-from datetime import datetime, timedelta
+from datetime import datetime
 from Models.Fixture import Fixture
 from Models.Maintenance import Maintenance
 from Models.Test import Test
@@ -23,6 +23,10 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
 )
+from Utils.Translator import Translator
+
+_ = Translator().gettext
+ngettext = Translator().ngettext
 
 
 class FixtureView(QGroupBox):
@@ -64,13 +68,13 @@ class FixtureView(QGroupBox):
         infoLayout = QVBoxLayout()
         sideGridLayout.addLayout(infoLayout, 0, 0)
 
-        self.lblYield = QLabel("Yield:")
+        self.lblYield = QLabel(_("Yield:"))
         infoLayout.addWidget(self.lblYield, alignment=QtCore.Qt.AlignCenter)
 
-        self.lblMode = QLabel("Mode:")
+        self.lblMode = QLabel(_("Mode:"))
         infoLayout.addWidget(self.lblMode, alignment=QtCore.Qt.AlignCenter)
 
-        self.lblIp = QLabel("IP:")
+        self.lblIp = QLabel(_("IP:"))
         infoLayout.addWidget(self.lblIp, alignment=QtCore.Qt.AlignCenter)
 
         selectorsLayout = QVBoxLayout()
@@ -86,7 +90,7 @@ class FixtureView(QGroupBox):
         selectorsLayout.addLayout(indicatorLayout)
 
         traceabilityLayout = QHBoxLayout()
-        self.lblTraceability = QLabel("Traceability")
+        self.lblTraceability = QLabel(_("Traceability"))
         traceabilityLayout.addWidget(self.lblTraceability)
         self.swTraceability = Switch()
         self.swTraceability.setChecked(self.fixture.mode != FixtureMode.OFFLINE)
@@ -97,7 +101,7 @@ class FixtureView(QGroupBox):
         selectorsLayout.addLayout(traceabilityLayout)
 
         retestLayout = QHBoxLayout()
-        self.lblRetestMode = QLabel("Retest Mode")
+        self.lblRetestMode = QLabel(_("Retest Mode"))
         retestLayout.addWidget(self.lblRetestMode)
         self.swRetestMode = Switch()
         self.swRetestMode.toggled.connect(self.on_swRetestMode_change)
@@ -108,7 +112,7 @@ class FixtureView(QGroupBox):
         selectorsLayout.addStretch()
 
         buttonsLayout = QGridLayout()
-        self.btnStart = QPushButton("Start")
+        self.btnStart = QPushButton(_("Start"))
         self.btnStart.setIcon(
             QtGui.QIcon(PathHelper().join_root_path("/Static/start.png"))
         )
@@ -119,7 +123,6 @@ class FixtureView(QGroupBox):
 
         sideGridLayout.addLayout(buttonsLayout, 2, 0)
         self.btnLastTests = QPushButton()
-        self.btnLastTests.setToolTip("Last Tests")
         self.btnLastTests.setStyleSheet(
             "font-size: 12px; font-weight: 300; padding: 3px;"
         )
@@ -130,7 +133,6 @@ class FixtureView(QGroupBox):
         buttonsLayout.addWidget(self.btnLastTests, 1, 0, 1, 1)
 
         self.btnLastFailures = QPushButton()
-        self.btnLastFailures.setToolTip("Last Failures")
         self.btnLastFailures.setIcon(
             QtGui.QIcon(PathHelper().join_root_path("/Static/error.png"))
         )
@@ -141,7 +143,6 @@ class FixtureView(QGroupBox):
         buttonsLayout.addWidget(self.btnLastFailures, 1, 1, 1, 1)
 
         self.btnMaintenanceLog = QPushButton()
-        self.btnMaintenanceLog.setToolTip("Maintenance")
         self.btnMaintenanceLog.setIcon(
             QtGui.QIcon(PathHelper().join_root_path("/Static/maintenance.png"))
         )
@@ -155,17 +156,17 @@ class FixtureView(QGroupBox):
         self.terminal.finished.connect(self._on_terminal_finished)
         gridLayout.addWidget(self.terminal, 0, 0, 1, 1)
 
-        self.maintenance = MaintenanceView(
+        self.maintenanceView = MaintenanceView(
             self,
             self.fixture.id,
             self.fixture.ip,
             items=self._fixtureController.get_maintenance_parts(),
             actions=self._fixtureController.get_maintenance_actions(),
         )
-        self.maintenance.selected.connect(self._on_maintenance_selected)
-        gridLayout.addWidget(self.maintenance, 0, 0, 1, 1)
+        self.maintenanceView.selected.connect(self._on_maintenance_selected)
+        gridLayout.addWidget(self.maintenanceView, 0, 0, 1, 1)
 
-        self.lblResult = QLabel("Status: IDLE")
+        self.lblResult = QLabel(_("Status: IDLE"))
         self.lblResult.setStyleSheet(FixtureView.LABEL_STYLE)
         gridLayout.addWidget(
             self.lblResult, 2, 0, 1, 3, alignment=QtCore.Qt.AlignCenter
@@ -211,17 +212,14 @@ class FixtureView(QGroupBox):
         self.fixture.tests = self._fixtureController.find_last_tests(self.fixture)
 
     def _update(self):
-        self.lblYield.setText(f"Yield: {self.fixture.get_yield()}%")
-        self.lblIp.setText(f"Ip: {self.fixture.ip}")
-        self.lblLock.setText(f"Failed last {self.fixture.lockFailQty} Tests:")
         self.btnStart.setEnabled(self.fixture.can_start() or self.fixture.isStarted)
-        self.lblMode.setText(f"Mode: {self.fixture.mode.description}")
         self.swRetestMode.setEnabled(self.fixture.can_change_retest())
+        self._update_texts()
         self._update_status()
         self._update_lock_indicator()
         self._update_btn_start()
         self._update_sw_traceability_enabled()
-        self.maintenance.setVisible(self.fixture.needs_maintenance())
+        self.maintenanceView.setVisible(self.fixture.needs_maintenance())
         self.setStyleSheet(
             f"""
             QGroupBox#fixture{{
@@ -233,6 +231,22 @@ class FixtureView(QGroupBox):
         )
         self.lblResult.setStyleSheet(FixtureView.LABEL_STYLE)
         self._fixtureController.update(self.fixture)
+
+    def _update_texts(self):
+        self.lblYield.setText(_("Yield: {0}%").format(self.fixture.get_yield()))
+        self.lblIp.setText(_("Ip: {0}").format(self.fixture.ip))
+        self.lblLock.setText(
+            ngettext(
+                "Failed last test:", "Failed last {0} tests:", self.fixture.lockFailQty
+            ).format(self.fixture.lockFailQty)
+        )
+        self.lblMode.setText(_("Mode: {0}").format(self.fixture.mode.description))
+        self.lblTraceability.setText(_("Traceability"))
+        self.lblRetestMode.setText(_("Retest Mode"))
+        self.btnLastTests.setToolTip(_("Last Tests"))
+        self.btnLastFailures.setToolTip(_("Last Failures"))
+        self.btnMaintenanceLog.setToolTip(_("Maintenance"))
+        self.maintenanceView._update_texts()
 
     def _update_status(self):
         self.lblResult.setText(self.fixture.get_status_message())
@@ -248,17 +262,20 @@ class FixtureView(QGroupBox):
         self.led.set_color_red()
         isVisible = self.fixture.is_locked()
         isLedOn = isVisible
-        tooltipTxt = f"Fixture locked due to {self.lblLock.text().lower()}"
+        tooltipTxt = _("Fixture locked due to {0}").format(self.lblLock.text().lower())
 
         if self.fixture.mode == FixtureMode.OFFLINE:
             isVisible = True
             self.led.set_color_green()
             isLedOn = self.fixture.are_last_tests_pass()
-            tooltipTxt = f"Fixture unlocked"
+            tooltipTxt = _("Fixture unlocked")
             if not isLedOn:
                 remainingToUnlock = self.fixture.get_remaining_to_unlock()
-                self.lblLock.setText(f"Test {remainingToUnlock} to unlock")
-                tooltipTxt = f"Test another {remainingToUnlock} board{'s' if remainingToUnlock > 1 else ''} which result is pass to unlock the fixture"
+                self.lblLock.setText(_("Test {0} to unlock").format(remainingToUnlock))
+                tooltipTxt = ngettext(
+                    "Test another board", "Test another {0} boards", remainingToUnlock
+                ).format(remainingToUnlock)
+                tooltipTxt += _(" which result is pass to unlock the fixture")
 
         self.lblLock.setHidden(not isVisible)
         self.lblLock.setToolTip(tooltipTxt)
@@ -270,8 +287,8 @@ class FixtureView(QGroupBox):
         if self.fixture.isStarted:
             reply = QMessageBox.question(
                 self,
-                "Stop Fixture",
-                f"Are you sure to stop fixture {self.fixture.ip}?",
+                _("Stop Fixture"),
+                _("Are you sure to stop fixture {0}?").format(self.fixture.ip),
                 QMessageBox.Yes | QMessageBox.No,
                 QMessageBox.No,
             )
@@ -287,12 +304,16 @@ class FixtureView(QGroupBox):
             self.fixture.isStarted = True
 
     def _update_btn_start(self):
-        text = "Start"
+        text = _("Start")
         if self.fixture.isStarted:
-            text = "Stop"
+            text = _("Stop")
         self.btnStart.setText(text)
         self.btnStart.setIcon(
-            QtGui.QIcon(PathHelper().join_root_path(f"/Static/{text.lower()}.png"))
+            QtGui.QIcon(
+                PathHelper().join_root_path(
+                    f"/Static/{'stop' if self.fixture.isStarted else 'start'}.png"
+                )
+            )
         )
 
     def _on_terminal_finished(self, exitStatus):
@@ -346,10 +367,10 @@ class FixtureView(QGroupBox):
         if value:
             self.lblRetestMode.show()
             self.swRetestMode.show()
-            self.swRetestMode.setChecked(False)
         else:
             self.lblRetestMode.hide()
             self.swRetestMode.hide()
+        self.swRetestMode.setChecked(False)
 
     def toggle_force_traceability_enabled(self):
         self.forceTraceabilityEnabled = not self.forceTraceabilityEnabled
@@ -360,7 +381,7 @@ class FixtureView(QGroupBox):
 
     def copy_configs(self, fixture: Fixture):
         self.fixture.copy_configs(fixture)
-        self.maintenance.items = self._fixtureController.get_maintenance_parts()
+        self.maintenanceView.items = self._fixtureController.get_maintenance_parts()
 
     @property
     def fixture(self) -> Fixture:
@@ -388,5 +409,5 @@ class FixtureView(QGroupBox):
             self._on_status_change
         )
         self._fixture = fixture
-        self.maintenance.fixtureId = fixture.id
-        self.maintenance.fixtureIp = fixture.ip
+        self.maintenanceView.fixtureId = fixture.id
+        self.maintenanceView.fixtureIp = fixture.ip

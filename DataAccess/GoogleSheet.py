@@ -10,6 +10,9 @@ from typing import TypeVar
 import gspread
 import logging
 import time
+from Utils.Translator import Translator
+
+_ = Translator().gettext
 
 T = TypeVar("T")
 
@@ -145,8 +148,9 @@ class GoogleSheet(QRunnable):
             syncedItems = 0
             batchItems = items[syncedItems:batchSize]
             while len(batchItems) > 0 and not self._interrupt:
+                txtSync = _("Syncing")
                 self.emitter.status_update.emit(
-                    f"({self._currentStep}/{self._totalSteps}) Syncing {sheetName} {syncedItems}/{len(items)}..."
+                    f"({self._currentStep}/{self._totalSteps}) {txtSync} {sheetName} {syncedItems}/{len(items)}..."
                 )
 
                 rows = []

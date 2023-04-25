@@ -12,6 +12,7 @@ class FixtureGridView(QWidget):
     BOX_SPACING = 30
     ROW_NUMBER = 3
     lock_changed = QtCore.pyqtSignal(bool)
+    config_change = QtCore.pyqtSignal(object)
 
     def __init__(self):
         super().__init__()
@@ -20,6 +21,9 @@ class FixtureGridView(QWidget):
         self._fixtureGridController = FixtureGridController()
         self._fixtureGridController.fixture_change.connect(self.update_fixture)
         self._fixtureGridController.test_add.connect(self.on_test_add)
+        self._fixtureGridController.config_change.connect(
+            lambda event: self.config_change.emit(event)
+        )
         self._fixtureGridController.testing_status_changed.connect(
             self.on_testing_status_changed
         )

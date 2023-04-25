@@ -1,4 +1,7 @@
 {
+    "language": "es",
+    "language_description":"[en=inglés, es=español] Seleccionar el idioma de la interfaz",
+
     "fixtureIpEnvironmentName": "XANDRA_FIXTURE_IP",
     "fixtureIpEnvironmentName_description":"Variable del entorno en la cuál se inyectará la ip de la fixtura",
 
@@ -42,7 +45,7 @@
 
     "googleSheets": {
         "isActivated" : true,
-        "syncInterval" : 18000,
+        "syncInterval" : 180000,
         "sheetName": "FBT Bahubali",
         "maintenanceSheetName": "FBT Maintenance",
         "statusLogSheetName": "FBT Status Log",

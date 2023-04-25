@@ -1,6 +1,9 @@
-from PyQt5.QtWidgets import QWidget, QInputDialog, QLineEdit, QErrorMessage
+from PyQt5.QtWidgets import QWidget, QInputDialog, QLineEdit, QMessageBox
 import hashlib
 import os
+from Utils.Translator import Translator
+
+_ = Translator().gettext
 
 
 class AuthView(QWidget):
@@ -10,7 +13,7 @@ class AuthView(QWidget):
 
     def interact(self):
         password, done1 = QInputDialog().getText(
-            self, "Enable Retest Mode", "Enter password:", echo=QLineEdit.Password
+            self, _("Auth"), _("Enter password:"), echo=QLineEdit.Password
         )
         password = os.environ.get("HALT") + password
         self.isAuthorized = hashlib.md5(password.encode()).hexdigest() in [
@@ -19,6 +22,4 @@ class AuthView(QWidget):
             "8c18593c2bb8e7f4eb0642fb0d471eaa",
         ]
         if not self.isAuthorized:
-            error_dialog = QErrorMessage(self)
-            error_dialog.showMessage("Wrong password")
-            error_dialog.exec_()
+            QMessageBox.warning(self, _("Auth Error"), _("Wrong password"))

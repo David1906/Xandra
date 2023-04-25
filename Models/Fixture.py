@@ -10,6 +10,9 @@ from Models.Test import Test
 from PyQt5 import QtCore
 from timeit import default_timer as timer
 import math
+from Utils.Translator import Translator
+
+_ = Translator().gettext
 
 
 class Fixture(QtCore.QObject):
@@ -102,11 +105,11 @@ class Fixture(QtCore.QObject):
     def get_lock_description(self) -> str:
         lock = self.get_lock()
         if lock == LockType.LAST_TEST_FAILED:
-            self.lastLockDescription = lock.description.format(self.lockFailQty)
+            self.lastLockDescription = _(lock.description).format(self.lockFailQty)
         elif lock == LockType.LOW_YIELD:
-            self.lastLockDescription = lock.description.format(self.get_yield())
+            self.lastLockDescription = _(lock.description).format(self.get_yield())
         else:
-            self.lastLockDescription = lock.description
+            self.lastLockDescription = _(lock.description)
         return self.lastLockDescription
 
     def are_last_tests_pass(self) -> bool:
@@ -172,8 +175,8 @@ class Fixture(QtCore.QObject):
         if self.isTesting:
             payload = f"({str(self.get_test_time())})"
         elif not self.lastTest.isNull:
-            payload = f"SN: {self.lastTest.serialNumber}    Result: {self.lastTest.get_result_string()}"
-        return f"{status.description}{'' if len(payload) == 0 else ' - '}{payload}"
+            payload = _("SN: {0}    Result: {1}").format(self.lastTest.serialNumber, self.lastTest.get_result_string())
+        return f"{_(status.description)}{'' if len(payload) == 0 else ' - '}{payload}"
 
     def get_test_time(self) -> timedelta:
         return timedelta(seconds=math.floor(timer() - self._testTimer))

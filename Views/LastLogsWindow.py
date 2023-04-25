@@ -12,6 +12,9 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPen, QColor, QBrush
 from Views.LogButton import LogButton
 from Views.TestModeView import TestModeView
+from Utils.Translator import Translator
+
+_ = Translator().gettext
 
 
 class LastLogsWindow(QtWidgets.QWidget):
@@ -47,7 +50,7 @@ class LastLogsWindow(QtWidgets.QWidget):
         self.setLayout(self.gridLayout)
 
         self.chart = QChart()
-        self.chart.setTitle("Yield")
+        self.chart.setTitle(_("Yield"))
         self.chart.setAnimationOptions(QChart.SeriesAnimations)
         self.chart.setTheme(QChart.ChartThemeDark)
         chartView = QChartView(self.chart)
@@ -60,7 +63,7 @@ class LastLogsWindow(QtWidgets.QWidget):
         self.table.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.gridLayout.addWidget(self.table, 2, 0, alignment=QtCore.Qt.AlignCenter)
 
-        self.label = QtWidgets.QLabel("No Data Found")
+        self.label = QtWidgets.QLabel(_("No Data Found"))
         self.label.setStyleSheet(
             "font-size: 36px; font-weight: bold; text-align: center; margin: 20px"
         )
@@ -68,7 +71,7 @@ class LastLogsWindow(QtWidgets.QWidget):
 
         footer = QtWidgets.QHBoxLayout()
 
-        self.btnStart = QtWidgets.QPushButton("Refresh")
+        self.btnStart = QtWidgets.QPushButton(_("Refresh"))
         self.btnStart.clicked.connect(self.on_btn_refresh_click)
         footer.addWidget(self.btnStart)
 
@@ -88,7 +91,7 @@ class LastLogsWindow(QtWidgets.QWidget):
         self.cmbSize.activated[str].connect(self.on_cmb_size_change)
         footer.addWidget(self.cmbSize)
 
-        self.chkShowRetest = QtWidgets.QCheckBox("Show Retest")
+        self.chkShowRetest = QtWidgets.QCheckBox(_("Show Retest"))
         self.chkShowRetest.setChecked(showRetest)
         self.chkShowRetest.stateChanged.connect(self.on_chk_show_retest)
         footer.addWidget(self.chkShowRetest)
@@ -154,9 +157,7 @@ class LastLogsWindow(QtWidgets.QWidget):
                     self.table.setItem(
                         row, column, QtWidgets.QTableWidgetItem(str(item))
                     )
-        fullPathIdx = keys.index("fullPath")
-        keys[fullPathIdx] = "Logfile"
-        self.table.setHorizontalHeaderLabels(keys)
+        self.table.setHorizontalHeaderLabels([_(key).capitalize() for key in keys])
 
     def _extractKeys(self, tests: "list[Test]") -> "list[str]":
         keys = list(tests[0].__dict__.keys())

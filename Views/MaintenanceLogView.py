@@ -1,18 +1,17 @@
-from abc import abstractmethod
-from Core.Enums.FixtureMode import FixtureMode
 from Core.Enums.FixtureStatus import FixtureStatus
 from DataAccess.FixtureStatusLogDAO import FixtureStatusLogDAO
 from DataAccess.MainConfigDAO import MainConfigDAO
 from DataAccess.MaintenanceDAO import MaintenanceDAO
 from DataAccess.TestDAO import TestDAO
-from datetime import datetime, timedelta
+from datetime import timedelta
 from Models.Fixture import Test
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtChart import QChart, QChartView, QPieSeries
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPen, QColor, QBrush
-from Views.LogButton import LogButton
-from Views.TestModeView import TestModeView
+from Utils.Translator import Translator
+
+_ = Translator().gettext
 
 
 class MaintenanceLogView(QtWidgets.QWidget):
@@ -22,6 +21,7 @@ class MaintenanceLogView(QtWidgets.QWidget):
         QColor(86, 157, 170),
         QColor(135, 203, 185),
         QColor(185, 237, 221),
+        QColor(185, 237, 192),
     ]
 
     def __init__(
@@ -38,14 +38,14 @@ class MaintenanceLogView(QtWidgets.QWidget):
         self.series = None
         self.utilizationSeries = None
 
-        self.setWindowTitle(f"Maintenance - {fixtureIp}")
+        self.setWindowTitle(_("Maintenance - Fixture {0}").format(fixtureIp))
 
         self.gridLayout = QtWidgets.QGridLayout()
         self.setLayout(self.gridLayout)
 
         dateTiemeLayout = QtWidgets.QHBoxLayout()
         dateTiemeLayout.setContentsMargins(0, 10, 0, 30)
-        dateTiemeLayout.addWidget(QtWidgets.QLabel("Start:"))
+        dateTiemeLayout.addWidget(QtWidgets.QLabel(_("Start:")))
         self.datetimeStart = QtWidgets.QDateTimeEdit(self, calendarPopup=True)
         yesterday = QtCore.QDateTime.currentDateTime().addDays(-1)
         yesterday = yesterday.addSecs(-yesterday.time().second().real)
@@ -53,7 +53,7 @@ class MaintenanceLogView(QtWidgets.QWidget):
         self.datetimeStart.dateTimeChanged.connect(self.refresh)
         dateTiemeLayout.addWidget(self.datetimeStart)
 
-        dateTiemeLayout.addWidget(QtWidgets.QLabel("End:"))
+        dateTiemeLayout.addWidget(QtWidgets.QLabel(_("End:")))
         self.datetimeEnd = QtWidgets.QDateTimeEdit(self, calendarPopup=True)
         self.datetimeEnd.setDateTime(yesterday.addDays(1))
         self.datetimeEnd.dateTimeChanged.connect(self.refresh)
@@ -62,7 +62,7 @@ class MaintenanceLogView(QtWidgets.QWidget):
 
         self.utilizationChart = QChart()
         self.utilizationChart.setMargins(QtCore.QMargins(0, 0, 0, 0))
-        self.utilizationChart.setTitle("Fixture Status Time")
+        self.utilizationChart.setTitle(_("Fixture Status Time"))
         self.utilizationChart.setAnimationOptions(QChart.SeriesAnimations)
         self.utilizationChart.setTheme(QChart.ChartThemeDark)
         chartView = QChartView(self.utilizationChart)
@@ -73,7 +73,7 @@ class MaintenanceLogView(QtWidgets.QWidget):
         header.setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
         self.gridLayout.addWidget(self.table, 1, 1)
 
-        self.label = QtWidgets.QLabel("No Data Found")
+        self.label = QtWidgets.QLabel(_("No Data Found"))
         self.label.setStyleSheet(
             "font-size: 36px; font-weight: bold; text-align: center; margin: 20px"
         )
@@ -81,7 +81,7 @@ class MaintenanceLogView(QtWidgets.QWidget):
 
         footer = QtWidgets.QHBoxLayout()
 
-        self.btnStart = QtWidgets.QPushButton("Refresh")
+        self.btnStart = QtWidgets.QPushButton(_("Refresh"))
         self.btnStart.clicked.connect(self.on_btn_refresh_click)
         footer.addWidget(self.btnStart)
 
@@ -135,7 +135,7 @@ class MaintenanceLogView(QtWidgets.QWidget):
                     self.table.setItem(
                         row, column, QtWidgets.QTableWidgetItem(str(item))
                     )
-        self.table.setHorizontalHeaderLabels(keys)
+        self.table.setHorizontalHeaderLabels([_(key).capitalize() for key in keys])
 
     def _extractKeys(self, tests: "list[Test]") -> "list[str]":
         keys = list(tests[0].__dict__.keys())
@@ -165,7 +165,7 @@ class MaintenanceLogView(QtWidgets.QWidget):
                 greater = log.seconds
                 biggestSliceIdx = len(self.utilizationSeries)
             self.utilizationSeries.append(
-                FixtureStatus(log.status).description, log.seconds
+                _(FixtureStatus(log.status).description), log.seconds
             )
 
         my_slice = self.utilizationSeries.slices()[biggestSliceIdx]

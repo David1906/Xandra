@@ -1,4 +1,5 @@
 import random
+import subprocess
 from DataAccess.FctHostControlDAO import FctHostControlDAO
 from DataAccess.GoogleSheet import GoogleSheet
 from DataAccess.MainConfigDAO import MainConfigDAO
@@ -8,12 +9,14 @@ from Utils.PathHelper import PathHelper
 from Views.FixtureGridView import FixtureGridView
 import os
 from PyQt5.QtWidgets import (
-    QWidget,
-    QMainWindow,
-    QMessageBox,
-    QHBoxLayout,
+    QAction,
     QGridLayout,
+    QHBoxLayout,
     QLabel,
+    QMainWindow,
+    QMenu,
+    QMessageBox,
+    QWidget,
 )
 from Utils.Translator import Translator
 
@@ -34,6 +37,8 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle(title)
         self._init_ui()
+        self._create_actions()
+        self._create_menus()
         self._update_texts()
 
         self._fctHostControlDAO.write_check_station_config()
@@ -49,10 +54,10 @@ class MainWindow(QMainWindow):
         gridLayout = QGridLayout()
         gridLayout.setContentsMargins(0, 0, 0, 0)
 
-        self.fixtureView = FixtureGridView()
-        self.fixtureView.lock_changed.connect(self._on_lock_changed)
-        self.fixtureView.config_change.connect(lambda event: self._update_texts())
-        gridLayout.addWidget(self.fixtureView, 0, 0, 99, 0)
+        self.fixtureGridView = FixtureGridView()
+        self.fixtureGridView.lock_changed.connect(self._on_lock_changed)
+        self.fixtureGridView.config_change.connect(lambda event: self._update_texts())
+        gridLayout.addWidget(self.fixtureGridView, 0, 0, 99, 0)
 
         self.footer = QHBoxLayout()
         self.footer.setContentsMargins(15, 0, 15, 15)
@@ -71,9 +76,14 @@ class MainWindow(QMainWindow):
         widget.setContentsMargins(0, 0, 0, 0)
         widget.setLayout(gridLayout)
         self.setCentralWidget(widget)
-        self.fixtureView.interact()
+        self.fixtureGridView.interact()
 
     def _update_texts(self):
+        self._update_ui_texts()
+        self._update_menus_texts()
+        self._update_actions_texts()
+
+    def _update_ui_texts(self):
         self.lblXandraVersion.setText(
             _("Xandra Version: {0}").format(os.environ.get("XANDRA_VERSION"))
         )
@@ -83,6 +93,70 @@ class MainWindow(QMainWindow):
             )
         )
         self.lblXandraVersion.setToolTip(_("Developed by David Ascencio\nFoxconn"))
+
+    def _create_actions(self):
+        self.exitAction = QAction(_("&Exit"), self)
+        self.exitAction.triggered.connect(self.close)
+
+        self.startAllAction = QAction(_("Start &All Fixtures"), self)
+        self.startAllAction.setShortcut("Ctrl+Shift+A")
+        self.startAllAction.triggered.connect(self.fixtureGridView.start_all_fixtures)
+
+        self.stopAllAction = QAction(_("&Stop All Fixtures"), self)
+        self.stopAllAction.setShortcut("Ctrl+Shift+S")
+        self.stopAllAction.triggered.connect(self.fixtureGridView.stop_all_fixtures)
+
+        self.showRetestAction = QAction(_("Toggle &Retest Mode"), self)
+        self.showRetestAction.setShortcut("Ctrl+Shift+R")
+        self.showRetestAction.triggered.connect(self.fixtureGridView.show_retest_mode)
+
+        self.toggleEnabledTracebilityAction = QAction(
+            _("Toggle &Traceablity Enabled"), self
+        )
+        self.toggleEnabledTracebilityAction.setShortcut("Ctrl+Shift+T")
+        self.toggleEnabledTracebilityAction.triggered.connect(
+            self.fixtureGridView.toggle_force_traceability_enabled
+        )
+
+        self.toggleLockAction = QAction(_("Toggle &Lock Enabled"), self)
+        self.toggleLockAction.setShortcut("Ctrl+Shift+L")
+        self.toggleLockAction.triggered.connect(
+            self.fixtureGridView.toggle_lock_enabled_all_fixtures
+        )
+
+        self.openDocsAction = QAction(_("Open &Docs"), self)
+        self.openDocsAction.setShortcut("Ctrl+Shift+D")
+        self.openDocsAction.triggered.connect(self._launch_help)
+
+    def _update_actions_texts(self):
+        self.exitAction.setText(_("&Exit"))
+        self.startAllAction.setText(_("Start &All Fixtures"))
+        self.stopAllAction.setText(_("&Stop All Fixtures"))
+        self.showRetestAction.setText(_("Toggle &Retest Mode"))
+        self.toggleEnabledTracebilityAction.setText(_("Toggle &Traceablity Enabled"))
+        self.toggleLockAction.setText(_("Toggle &Lock Enabled"))
+        self.openDocsAction.setText(_("Open &Docs"))
+
+    def _create_menus(self):
+        menuBar = self.menuBar()
+
+        self.fileMenu = menuBar.addMenu(_("&File"))
+        self.fileMenu.addAction(self.exitAction)
+
+        self.editMenu = menuBar.addMenu(_("&Run"))
+        self.editMenu.addAction(self.startAllAction)
+        self.editMenu.addAction(self.stopAllAction)
+        self.editMenu.addAction(self.showRetestAction)
+        self.editMenu.addAction(self.toggleEnabledTracebilityAction)
+        self.editMenu.addAction(self.toggleLockAction)
+
+        self.helpMenu = menuBar.addMenu(_("&Help"))
+        self.helpMenu.addAction(self.openDocsAction)
+
+    def _update_menus_texts(self):
+        self.fileMenu.setTitle(_("&File"))
+        self.editMenu.setTitle(_("&Run"))
+        self.helpMenu.setTitle(_("&Help"))
 
     def _update_sync_timer(self):
         if self._mainConfigDAO.get_google_isActivated():
@@ -122,7 +196,11 @@ class MainWindow(QMainWindow):
             allStatus.append(_("Lock Disabled"))
         if status != None:
             allStatus.append(status)
-        self.lblStatus.setText(" - ".join(allStatus))
+        txt = " - ".join(allStatus)
+        self.lblStatus.setText(txt if len(txt) > 0 else " ")
+
+    def _launch_help(self):
+        subprocess.call(["bash", "-ic", "xandra-docs &"])
 
     def closeEvent(self, event):
         reply = QMessageBox.question(
@@ -133,7 +211,7 @@ class MainWindow(QMainWindow):
             QMessageBox.No,
         )
         if reply == QMessageBox.Yes:
-            self.fixtureView.save_status()
+            self.fixtureGridView.save_status()
             QtWidgets.QApplication.closeAllWindows()
             event.accept()
         else:

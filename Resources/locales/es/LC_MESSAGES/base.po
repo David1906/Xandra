@@ -314,6 +314,46 @@ msgstr "Última sincronización: {0}"
 msgid "Lock Disabled"
 msgstr "Bloqueo Deshabilitado"
 
+#: ../../Views/MainWindow.py:97
+msgid "&Exit"
+msgstr "&Salir"
+
+#: ../../Views/MainWindow.py:100
+msgid "Start &All Fixtures"
+msgstr "Inici&ar Todas Las Fixturas"
+
+#: ../../Views/MainWindow.py:105
+msgid "&Stop All Fixtures"
+msgstr "Detener Toda&s Las Fixturas"
+
+#: ../../Views/MainWindow.py:110
+msgid "Toggle &Retest Mode"
+msgstr "Conmutar Modo &Retest"
+
+#: ../../Views/MainWindow.py:110
+msgid "Toggle &Lock Enabled"
+msgstr "Conmutar B&loqueo Habilitado"
+
+#: ../../Views/MainWindow.py:113
+msgid "Toggle &Traceablity Enabled"
+msgstr "Conmutar &Trazabilidad Habilitada"
+
+#: ../../Views/MainWindow.py:109
+msgid "&File"
+msgstr "&Archivo"
+
+#: ../../Views/MainWindow.py:110
+msgid "&Run"
+msgstr "&Ejecución"
+
+#: ../../Views/MainWindow.py:111
+msgid "&Help"
+msgstr "&Ayuda"
+
+#: ../../Views/MainWindow.py:129
+msgid "Open &Docs"
+msgstr "Abrir Ayu&da"
+
 #: ../../Views/MainWindow.py:118
 msgid "Exit Xandra"
 msgstr "Salir de Xandra"

@@ -22,7 +22,6 @@ _ = Translator().gettext
 class MaintenanceView(QWidget):
     MIN_EMP_LEN = 6
     MAX_DESCRIPTION_LEN = 255
-    TXT_FIELD_REQUIRED = _("{0} is required")
     selected = QtCore.pyqtSignal(Maintenance)
 
     def __init__(
@@ -118,7 +117,7 @@ class MaintenanceView(QWidget):
         self.reset()
 
     def _validate(self) -> str:
-        error = MaintenanceView.TXT_FIELD_REQUIRED
+        error = _("{0} is required")
         labelTxt = ""
         if (
             not self.cboxPart.currentText() in self.items

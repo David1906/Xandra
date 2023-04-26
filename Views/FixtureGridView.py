@@ -35,22 +35,6 @@ class FixtureGridView(QWidget):
         self.setLayout(self.hBox)
         self.create_fixtureViews()
 
-        self.msgSc = QShortcut(QKeySequence("Ctrl+Shift+A"), self)
-        self.msgSc.activated.connect(self.start_all_fixtures)
-
-        self.msgSt = QShortcut(QKeySequence("Ctrl+Shift+S"), self)
-        self.msgSt.activated.connect(self.stop_all_fixtures)
-
-        self.msgSt = QShortcut(QKeySequence("Ctrl+Shift+R"), self)
-        self.msgSt.activated.connect(self.show_retest_mode)
-        self.msgForceTraceability = QShortcut(QKeySequence("Ctrl+Shift+T"), self)
-        self.msgForceTraceability.activated.connect(
-            self.toggle_force_traceability_enabled
-        )
-
-        self.msgSt = QShortcut(QKeySequence("Ctrl+Shift+L"), self)
-        self.msgSt.activated.connect(self.toggle_lock_enabled_all_fixtures)
-
         self.set_enable_lock(True)
 
     def show_retest_mode(self):

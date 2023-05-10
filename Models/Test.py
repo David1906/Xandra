@@ -53,12 +53,13 @@ class Test:
             return "PASS"
         else:
             shortDescription = ""
-            if self.is_chk_sel_error() or self.is_chk_serialuart_error():
+            if self.is_dimm_error() or self.is_chk_serialuart_error():
                 shortDescription = " - " + self.get_short_description()
             return f"FAIL - {self.stepLabel}{shortDescription}"
+        
 
-    def is_chk_sel_error(self) -> bool:
-        match = re.search("chk_sel", self.stepLabel, re.IGNORECASE)
+    def is_dimm_error(self) -> bool:
+        match = re.search("chk_sel|apos_chk_k2", self.stepLabel, re.IGNORECASE)
         return match != None
 
     def is_chk_serialuart_error(self) -> bool:

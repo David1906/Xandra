@@ -10,8 +10,8 @@ class TestDescriptionParser:
 
     def parse(self, test: Test, fullPath: str) -> str:
         try:
-            if test.is_chk_sel_error():
-                return self.extract_chk_sel_description(fullPath)
+            if test.is_dimm_error():
+                return self.extract_error_description(fullPath)
             elif test.is_chk_serialuart_error():
                 return self.extract_chk_serialuart_description(fullPath)
             else:
@@ -20,7 +20,7 @@ class TestDescriptionParser:
             logging.error(str(e))
             return ""
 
-    def extract_chk_sel_description(self, fullPath: str):
+    def extract_error_description(self, fullPath: str):
         with open(fullPath, "r") as fp:
             dims: "list[str]" = []
             voltageError = None

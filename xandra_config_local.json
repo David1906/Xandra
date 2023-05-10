@@ -23,10 +23,10 @@
     "defaultProductModelName_description" : "Nombre del modelo seleccionado por defecto en FCTHostControl.config (se procesa como expresión regular)",
 
 
-    "uploadSfcScript":  "/home/david/Xandra/Resources/up_sfc.sh",
+    "uploadSfcScript":  "/home/david/documents/repos/Xandra/Resources/up_sfc.sh",
     "uploadSfcScript_description" : "Ruta completa al script encargado de subir la trazabilidad al sistema SFC",
 
-    "logsPath": "/home/david/Documents/logs",
+    "logsPath": "/home/david/documents/xandra_test_logs",
     "logsPath_description":"Ruta donde se guardan los logs de las pruebas realizadas",
 
     "yieldErrorThreshold": 0,

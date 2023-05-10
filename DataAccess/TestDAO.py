@@ -82,7 +82,7 @@ class TestDAO:
         session = Session()
         query = (
             session.query(TestDTO)
-            .filter(TestDTO.isSync == False)
+            .filter(TestDTO.isSync != True)
             .order_by(TestDTO.id.asc())
         )
         tests: "list[Test]" = []
@@ -111,13 +111,13 @@ class TestDAO:
     def bulk_update_is_sync(
         self, testDTOs: "list[TestDTO]", isSync: bool
     ):
-        session = Session()
+        session: Session = Session()
         try:
             items = []
             for testDTO in testDTOs:
                 items.append({"id": testDTO.id, "isSync": isSync})
 
-            session.execute(update(TestDTO), items)
+            session.bulk_update_mappings(TestDTO, items)
             session.commit()
         except:
             session.rollback()

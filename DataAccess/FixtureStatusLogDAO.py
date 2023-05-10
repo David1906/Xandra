@@ -104,7 +104,7 @@ class FixtureStatusLogDAO:
         session = Session()
         query = (
             session.query(FixtureStatusLogDTO)
-            .filter(FixtureStatusLogDTO.isSync == False)
+            .filter(FixtureStatusLogDTO.isSync != True)
             .order_by(FixtureStatusLogDTO.id.asc())
         )
         logs: "list[FixtureStatusLogDTO]" = []
@@ -139,7 +139,7 @@ class FixtureStatusLogDAO:
             for fixtureStatusLogDTO in fixtureStatusLogDTOs:
                 items.append({"id": fixtureStatusLogDTO.id, "isSync": isSync})
 
-            session.execute(update(FixtureStatusLogDTO), items)
+            session.bulk_update_mappings(FixtureStatusLogDTO, items)
             session.commit()
         except:
             session.rollback()

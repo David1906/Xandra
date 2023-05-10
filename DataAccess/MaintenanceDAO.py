@@ -70,7 +70,7 @@ class MaintenanceDAO:
         session = Session()
         query = (
             session.query(MaintenanceDTO)
-            .filter(MaintenanceDTO.isSync == False)
+            .filter(MaintenanceDTO.isSync != True)
             .filter(MaintenanceDTO.testId > 0)
             .order_by(MaintenanceDTO.id.asc())
         )
@@ -106,7 +106,7 @@ class MaintenanceDAO:
             for maintenanceDTO in maintenanceDTOs:
                 items.append({"id": maintenanceDTO.id, "isSync": isSync})
 
-            session.execute(update(MaintenanceDTO), items)
+            session.bulk_update_mappings(MaintenanceDTO, items)
             session.commit()
         except:
             session.rollback()

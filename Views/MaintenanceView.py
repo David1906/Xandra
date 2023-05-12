@@ -15,6 +15,7 @@ from PyQt5.QtGui import QKeySequence, QRegExpValidator
 from Models.Fixture import Fixture
 from Models.Maintenance import Maintenance
 from Utils.Translator import Translator
+from Controllers.MaintenanceController import MaintenanceController
 
 _ = Translator().gettext
 
@@ -38,6 +39,7 @@ class MaintenanceView(QWidget):
         self.fixtureIp = fixtureIp
         self._actions = actions
         self._items = items
+        self._maintenanceController = MaintenanceController()
 
         self._init_ui()
         self._update_texts()
@@ -52,14 +54,14 @@ class MaintenanceView(QWidget):
         self.setLayout(layout)
 
         self.lblInstruction = QLabel()
-        layout.addWidget(self.lblInstruction, 0, 0, 1, 2, QtCore.Qt.AlignCenter)
+        layout.addWidget(self.lblInstruction, 0, 0, 1, 3, QtCore.Qt.AlignCenter)
 
         self.lblPart = QLabel()
         layout.addWidget(self.lblPart, 1, 0)
         self.cboxPart = QComboBox()
         self.cboxPart.addItems(self.items)
         self.cboxPart.setEditable(True)
-        layout.addWidget(self.cboxPart, 2, 0, 1, 2)
+        layout.addWidget(self.cboxPart, 2, 0, 1, 3)
 
         self.lblAction = QLabel()
         layout.addWidget(self.lblAction, 3, 0)
@@ -67,27 +69,33 @@ class MaintenanceView(QWidget):
         self.cboxAction.addItems(self.actions)
         layout.addWidget(self.cboxAction, 4, 0)
 
-        self.lblName = QLabel()
-        layout.addWidget(self.lblName, 3, 1)
-        self.txtName = QLineEdit()
+        self.lblEmployeeNumber = QLabel()
+        layout.addWidget(self.lblEmployeeNumber, 3, 1)
+        self.txtEmployeeNumber = QLineEdit()
         validator = QRegExpValidator(
             QtCore.QRegExp(f"[0-9]{{{MaintenanceView.MIN_EMP_LEN},9}}")
         )
-        self.txtName.setValidator(validator)
-        layout.addWidget(self.txtName, 4, 1)
+        self.txtEmployeeNumber.setValidator(validator)
+        layout.addWidget(self.txtEmployeeNumber, 4, 1)
+
+        self.lblEmployeePassword = QLabel()
+        layout.addWidget(self.lblEmployeePassword, 3, 2)
+        self.txtPassword = QLineEdit()
+        self.txtPassword.setEchoMode(QLineEdit.Password)
+        layout.addWidget(self.txtPassword, 4, 2)
 
         self.lblDescription = QLabel()
         layout.addWidget(self.lblDescription, 5, 0)
         self.txtDescription = QTextEdit()
         self.txtDescription.setMaximumHeight(50)
         self.txtDescription.textChanged.connect(self.on_txt_description_changed)
-        layout.addWidget(self.txtDescription, 6, 0, 1, 2)
+        layout.addWidget(self.txtDescription, 6, 0, 1, 3)
         self.lblDescriptionLen = QLabel(f"0/{MaintenanceView.MAX_DESCRIPTION_LEN}")
         layout.addWidget(self.lblDescriptionLen, 7, 1, QtCore.Qt.AlignRight)
 
         self.btnOk = QPushButton()
         self.btnOk.clicked.connect(self._save)
-        layout.addWidget(self.btnOk, 8, 0, 1, 2, QtCore.Qt.AlignCenter)
+        layout.addWidget(self.btnOk, 8, 0, 1, 3, QtCore.Qt.AlignCenter)
 
     def _update_texts(self):
         self.lblInstruction.setText(
@@ -95,7 +103,8 @@ class MaintenanceView(QWidget):
         )
         self.lblPart.setText(_("Part *:"))
         self.lblAction.setText(_("Action *:"))
-        self.lblName.setText(_("Employee Number *:"))
+        self.lblEmployeeNumber.setText(_("Employee Number *:"))
+        self.lblEmployeePassword.setText(_("Password *:"))
         self.lblDescription.setText(_("Description:"))
         self.btnOk.setText(_("&Save"))
 
@@ -109,7 +118,7 @@ class MaintenanceView(QWidget):
                 fixtureId=self.fixtureId,
                 fixtureIp=self.fixtureIp,
                 part=self.cboxPart.currentText(),
-                employee=self.txtName.text().strip().upper(),
+                employee=self.txtEmployeeNumber.text().strip().upper(),
                 description=self.txtDescription.toPlainText().capitalize(),
                 action=self.cboxAction.currentText(),
             )
@@ -129,13 +138,28 @@ class MaintenanceView(QWidget):
             or self.cboxAction.currentText().strip() == ""
         ):
             labelTxt = self.lblAction.text()
-        elif self.txtName.text().strip() == "":
-            labelTxt = self.lblName.text()
-        elif not self.txtName.hasAcceptableInput():
+        elif self.txtEmployeeNumber.text().strip() == "":
+            labelTxt = self.lblEmployeeNumber.text()
+        elif not self.txtEmployeeNumber.hasAcceptableInput():
             error = _("{0} is invalid it should be at least {1} digits long").replace(
                 "{1}", str(MaintenanceView.MIN_EMP_LEN)
             )
-            labelTxt = self.lblName.text()
+            labelTxt = self.lblEmployeeNumber.text()
+        elif not self._maintenanceController.exists_employee(
+            self.txtEmployeeNumber.text().strip()
+        ):
+            error = _(
+                "Invalid {0} {1}.\n\nIf your number is correct, please contact the engineer."
+            ).replace("{1}", self.txtEmployeeNumber.text().strip())
+            labelTxt = self.lblEmployeeNumber.text()
+        elif not self._maintenanceController.equals_password(  # TODO Add function
+            self.txtEmployeeNumber.text().strip(),
+            self.txtPassword.text().strip(),
+        ):
+            error = _(
+                "Invalid {0}.\n\nIf your password is correct, please contact the engineer."
+            )
+            labelTxt = self.lblEmployeePassword.text()
         else:
             error = ""
         return error.format(labelTxt.replace(":", "").replace("*", "").strip())
@@ -143,7 +167,8 @@ class MaintenanceView(QWidget):
     def reset(self):
         self.cboxPart.clear()
         self.cboxPart.addItems(self.items)
-        self.txtName.clear()
+        self.txtEmployeeNumber.clear()
+        self.txtPassword.clear()
         self.txtDescription.clear()
 
     def on_txt_description_changed(self):

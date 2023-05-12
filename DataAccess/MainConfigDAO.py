@@ -110,6 +110,9 @@ class MainConfigDAO:
     def get_google_statusLogSheetName(self):
         return self._get_value("googleSheets")["statusLogSheetName"]
 
+    def get_google_employeesSheetName(self):
+        return self._get_value("googleSheets")["employeesSheetName"]
+
     def get_google_syncInterval(self):
         return self._get_value("googleSheets")["syncInterval"]
 

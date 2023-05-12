@@ -1,7 +1,10 @@
 from Core.Enums.FixtureStatus import FixtureStatus
+from Core.Enums.SettingType import SettingType
+from DataAccess.EmployeeDAO import EmployeeDAO
 from DataAccess.FixtureStatusLogDAO import FixtureStatusLogDAO
 from DataAccess.MainConfigDAO import MainConfigDAO
 from DataAccess.MaintenanceDAO import MaintenanceDAO
+from DataAccess.SettingDAO import SettingDAO
 from DataAccess.TestDAO import TestDAO
 from oauth2client.service_account import ServiceAccountCredentials
 from PyQt5.QtCore import QObject, pyqtSignal, QRunnable, QTimer
@@ -10,6 +13,7 @@ from typing import TypeVar
 import gspread
 import logging
 import time
+from Models.Employee import Employee
 from Utils.Translator import Translator
 
 _ = Translator().gettext
@@ -39,8 +43,15 @@ class GoogleSheet(QRunnable):
         self._fixtureStatusLogDAO = FixtureStatusLogDAO()
         self._maintenanceDAO = MaintenanceDAO()
         self._mainConfigDAO = MainConfigDAO()
+        self._settingsDAO = SettingDAO()
+        self._employeeDAO = EmployeeDAO()
         self._isSyncing = False
-        self._syncs = [self.sync_tasks, self.sync_maintenance, self.sync_status_log]
+        self._syncs = [
+            self._sync_employees,
+            self.sync_tasks,
+            self.sync_maintenance,
+            self.sync_status_log,
+        ]
         self._currentStep = 0
         self._totalSteps = len(self._syncs)
         self.emitter = Emitter()
@@ -59,13 +70,15 @@ class GoogleSheet(QRunnable):
         return client
 
     def run(self):
-        try:
-            self._currentStep = 0
-            for sync in self._syncs:
-                self._currentStep += 1
+        self._currentStep = 0
+        for sync in self._syncs:
+            self._currentStep += 1
+            try:
                 sync()
-        except:
-            pass
+            except Exception as e:
+                msg = f"Error in run GoogleSheet: " + str(e)
+                print(msg)
+                logging.error(msg)
         self.emitter.done.emit()
 
     def _stop_sync(self):
@@ -175,3 +188,35 @@ class GoogleSheet(QRunnable):
             else:
                 print(msg)
                 logging.error(msg)
+
+    def _sync_employees(self):
+        sheetName = self._mainConfigDAO.get_google_employeesSheetName()
+        sheet = self._get_client().open(sheetName).sheet1
+        cloudEmployeeMD5 = sheet.cell(1, 2).value
+        employeeMD5Setting = self._settingsDAO.find_by_type(SettingType.EMPLOYEES_MD5)
+
+        if cloudEmployeeMD5 == employeeMD5Setting.text:
+            return
+
+        employeeMD5Setting.text = cloudEmployeeMD5
+        self._settingsDAO.add_or_update(employeeMD5Setting)
+
+        rows = sheet.batch_get(("A3:D", "B2:B", "C2:C"))[0]
+        employees = self._extract_employees(rows)
+
+        self._employeeDAO.truncate()
+        self._employeeDAO.bulk_add(employees)
+
+    def _extract_employees(self, rows: "list[list[any]]"):
+        employees: "list[Employee]" = []
+        for row in rows:
+            number, name, password, *unused = row
+            if number.isdecimal():
+                employees.append(
+                    Employee(
+                        number=int(number),
+                        name=str(name),
+                        password=str(password),
+                    )
+                )
+        return employees

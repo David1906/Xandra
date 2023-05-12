@@ -6,7 +6,6 @@ from DataAccess.TestDAO import TestDAO
 from Models.DTO.FixtureDTO import FixtureDTO
 from Models.Fixture import Fixture
 from sqlalchemy import update
-from typing import Tuple
 import subprocess
 
 

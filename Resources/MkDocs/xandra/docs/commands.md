@@ -48,7 +48,7 @@ mkdocs build -d ../../../docs
 
 * Hacer build de traduccion (.mo): 
 ``` shell
-msgfmt -o es/LC_MESSAGES/base.mo es/LC_MESSAGES/base
+msgfmt -o Resources/locales/es/LC_MESSAGES/base.mo Resources/locales/es/LC_MESSAGES/base
 ```
 
 * Generar plantilla de traduccion (.pot): 

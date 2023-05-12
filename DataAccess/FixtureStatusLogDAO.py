@@ -3,7 +3,6 @@ from DataAccess.SqlAlchemyBase import Session
 from datetime import datetime, timedelta
 from Models.DTO.FixtureStatusLogDTO import FixtureStatusLogDTO
 from Models.Fixture import Fixture
-from sqlalchemy import update
 import random
 import sqlalchemy as db
 

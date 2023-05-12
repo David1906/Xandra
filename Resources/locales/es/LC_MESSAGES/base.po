@@ -365,3 +365,15 @@ msgstr "¿Realmente desea salir de Xandra?\n\nEsta acción detendrá todas las f
 #: ../../DataAccess/GoogleSheet.py:119
 msgid "Syncing"
 msgstr "Sincronizando"
+
+#: ../../Views/MaintenanceView.py:151
+msgid "Invalid {0} {1}.\n\nIf your number is correct, please contact the engineer."
+msgstr "{0} {1} inválido.\n\nSi su número de empleado es correcto, por favor repórtelo al ingeniero a cargo del área."
+
+#: ../../Views/MaintenanceView.py:159
+msgid "Invalid {0}.\n\nIf your password is correct, please contact the engineer."
+msgstr "{0} inválida\n\nSi no recuerda su contraseña, por favor repórtelo al ingeniero a cargo del área."
+
+#: ../../Views/MaintenanceView.py:107
+msgid "Password *:"
+msgstr "Contraseña *:"

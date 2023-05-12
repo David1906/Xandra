@@ -18,7 +18,14 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-from Models.DTO import FixtureDTO, TestDTO, FixtureStatusLogDTO, MaintenanceDTO
+from Models.DTO import (
+    FixtureDTO,
+    TestDTO,
+    FixtureStatusLogDTO,
+    MaintenanceDTO,
+    EmployeeDTO,
+    SettingDTO,
+)
 from DataAccess.SqlAlchemyBase import Base
 
 target_metadata = [Base.metadata]

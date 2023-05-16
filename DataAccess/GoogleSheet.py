@@ -1,5 +1,6 @@
 from Core.Enums.FixtureStatus import FixtureStatus
 from Core.Enums.SettingType import SettingType
+from DataAccess.CatalogItemDAO import CatalogItemDAO
 from DataAccess.EmployeeDAO import EmployeeDAO
 from DataAccess.FixtureStatusLogDAO import FixtureStatusLogDAO
 from DataAccess.MainConfigDAO import MainConfigDAO
@@ -13,6 +14,7 @@ from typing import TypeVar
 import gspread
 import logging
 import time
+from Models.CatalogItem import CatalogItem
 from Models.Employee import Employee
 from Utils.Translator import Translator
 
@@ -23,6 +25,7 @@ T = TypeVar("T")
 
 class Emitter(QObject):
     status_update = pyqtSignal(str)
+    catalogs_updated = pyqtSignal()
     done = pyqtSignal()
 
 
@@ -45,8 +48,10 @@ class GoogleSheet(QRunnable):
         self._mainConfigDAO = MainConfigDAO()
         self._settingsDAO = SettingDAO()
         self._employeeDAO = EmployeeDAO()
+        self._catalogItemDAO = CatalogItemDAO()
         self._isSyncing = False
         self._syncs = [
+            self._sync_lists,
             self._sync_employees,
             self.sync_tasks,
             self.sync_maintenance,
@@ -190,7 +195,10 @@ class GoogleSheet(QRunnable):
                 logging.error(msg)
 
     def _sync_employees(self):
-        sheetName = self._mainConfigDAO.get_google_employeesSheetName()
+        self.emitter.status_update.emit(
+            f"({self._currentStep}/{self._totalSteps}) " + _("Syncing employees...")
+        )
+        sheetName = self._mainConfigDAO.get_google_usersSheetName()
         sheet = self._get_client().open(sheetName).sheet1
         cloudEmployeeMD5 = sheet.cell(1, 2).value
         employeeMD5Setting = self._settingsDAO.find_by_type(SettingType.EMPLOYEES_MD5)
@@ -198,14 +206,14 @@ class GoogleSheet(QRunnable):
         if cloudEmployeeMD5 == employeeMD5Setting.text:
             return
 
-        employeeMD5Setting.text = cloudEmployeeMD5
-        self._settingsDAO.add_or_update(employeeMD5Setting)
-
         rows = sheet.batch_get(("A3:D", "B2:B", "C2:C"))[0]
         employees = self._extract_employees(rows)
 
         self._employeeDAO.truncate()
         self._employeeDAO.bulk_add(employees)
+
+        employeeMD5Setting.text = cloudEmployeeMD5
+        self._settingsDAO.add_or_update(employeeMD5Setting)
 
     def _extract_employees(self, rows: "list[list[any]]"):
         employees: "list[Employee]" = []
@@ -220,3 +228,34 @@ class GoogleSheet(QRunnable):
                     )
                 )
         return employees
+
+    def _sync_lists(self):
+        self.emitter.status_update.emit(
+            f"({self._currentStep}/{self._totalSteps}) " + _("Syncing lists...")
+        )
+        sheetName = self._mainConfigDAO.get_google_listsSheetName()
+        sheet = self._get_client().open(sheetName).sheet1
+        cloudListsMD5 = sheet.cell(1, 2).value
+        listsMD5Setting = self._settingsDAO.find_by_type(SettingType.LISTS_MD5)
+
+        if cloudListsMD5 == listsMD5Setting.text:
+            return
+
+        headersRange, catalogItemsRange = sheet.batch_get(("A2:B2", "A3:C"))
+        headers = headersRange[0]
+
+        catalogItems = []
+        for headerIdx in range(0, len(headers)):
+            for catalogItemsRow in catalogItemsRange:
+                if catalogItemsRow[headerIdx] != "":
+                    catalogItems.append(
+                        CatalogItem(headers[headerIdx], catalogItemsRow[headerIdx])
+                    )
+
+        self._catalogItemDAO.truncate()
+        self._catalogItemDAO.bulk_add(catalogItems)
+
+        listsMD5Setting.text = cloudListsMD5
+        self._settingsDAO.add_or_update(listsMD5Setting)
+
+        self.emitter.catalogs_updated.emit()

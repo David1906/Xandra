@@ -38,6 +38,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle(title)
         self._init_ui()
         self._create_actions()
+        self._add_actions()
         self._create_menus()
         self._update_texts()
 
@@ -94,6 +95,10 @@ class MainWindow(QMainWindow):
         )
         self.lblXandraVersion.setToolTip(_("Developed by David Ascencio\nFoxconn"))
 
+    def _add_actions(self):
+        self.addAction(self.toggleRetestAction)
+        self.addAction(self.toggleEnabledTracebilityAction)
+
     def _create_actions(self):
         self.exitAction = QAction(_("&Exit"), self)
         self.exitAction.triggered.connect(self.close)
@@ -106,9 +111,11 @@ class MainWindow(QMainWindow):
         self.stopAllAction.setShortcut("Ctrl+Shift+S")
         self.stopAllAction.triggered.connect(self.fixtureGridView.stop_all_fixtures)
 
-        self.showRetestAction = QAction(_("Toggle &Retest Mode"), self)
-        self.showRetestAction.setShortcut("Ctrl+Shift+R")
-        self.showRetestAction.triggered.connect(self.fixtureGridView.show_retest_mode)
+        self.toggleRetestAction = QAction(_("Toggle &Retest Mode"), self)
+        self.toggleRetestAction.setShortcut("Ctrl+Shift+G")
+        self.toggleRetestAction.triggered.connect(
+            self.fixtureGridView.toggle_retest_mode
+        )
 
         self.toggleEnabledTracebilityAction = QAction(
             _("Toggle &Traceablity Enabled"), self
@@ -128,11 +135,15 @@ class MainWindow(QMainWindow):
         self.openDocsAction.setShortcut("Ctrl+Shift+D")
         self.openDocsAction.triggered.connect(self._launch_help)
 
+        self.syncAction = QAction(_("Sync w&ith server"), self)
+        self.syncAction.setShortcut("Ctrl+Shift+I")
+        self.syncAction.triggered.connect(self._sync_all_async)
+
     def _update_actions_texts(self):
         self.exitAction.setText(_("&Exit"))
         self.startAllAction.setText(_("Start &All Fixtures"))
         self.stopAllAction.setText(_("&Stop All Fixtures"))
-        self.showRetestAction.setText(_("Toggle &Retest Mode"))
+        self.toggleRetestAction.setText(_("Toggle &Retest Mode"))
         self.toggleEnabledTracebilityAction.setText(_("Toggle &Traceablity Enabled"))
         self.toggleLockAction.setText(_("Toggle &Lock Enabled"))
         self.openDocsAction.setText(_("Open &Docs"))
@@ -141,13 +152,12 @@ class MainWindow(QMainWindow):
         menuBar = self.menuBar()
 
         self.fileMenu = menuBar.addMenu(_("&File"))
+        self.fileMenu.addAction(self.syncAction)
         self.fileMenu.addAction(self.exitAction)
 
         self.editMenu = menuBar.addMenu(_("&Run"))
         self.editMenu.addAction(self.startAllAction)
         self.editMenu.addAction(self.stopAllAction)
-        self.editMenu.addAction(self.showRetestAction)
-        self.editMenu.addAction(self.toggleEnabledTracebilityAction)
         self.editMenu.addAction(self.toggleLockAction)
 
         self.helpMenu = menuBar.addMenu(_("&Help"))
@@ -174,6 +184,7 @@ class MainWindow(QMainWindow):
             googleSheet = GoogleSheet()
             googleSheet.emitter.status_update.connect(self._on_sync_status_update)
             googleSheet.emitter.done.connect(self._on_sync_done)
+            googleSheet.emitter.catalogs_updated.connect(self._on_catalogs_updated)
             pool = QtCore.QThreadPool.globalInstance()
             pool.start(googleSheet)
 
@@ -182,6 +193,9 @@ class MainWindow(QMainWindow):
         self._set_status_text(
             _("Last sync: {0}").format(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
         )
+
+    def _on_catalogs_updated(self):
+        self.fixtureGridView.update_catalogs()
 
     def _on_sync_status_update(self, status: str):
         self._set_status_text(status)

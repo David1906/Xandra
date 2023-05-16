@@ -4,6 +4,7 @@ from Core.Enums.FixtureStatus import FixtureStatus
 from DataAccess.FctHostControlDAO import FctHostControlDAO
 from DataAccess.FixtureDAO import FixtureDAO
 from DataAccess.FixtureStatusLogDAO import FixtureStatusLogDAO
+from DataAccess.CatalogItemDAO import CatalogItemDAO
 from DataAccess.MainConfigDAO import MainConfigDAO
 from DataAccess.MaintenanceDAO import MaintenanceDAO
 from DataAccess.TestDAO import TestDAO
@@ -14,6 +15,9 @@ from Models.Test import Test
 
 
 class FixtureController:
+    SPARE_PARTS_GROUP = "Refacción"
+    ACTIONS_GROUP = "Acción"
+
     def __init__(self) -> None:
         self._testDAO = TestDAO()
         self._fixtureDAO = FixtureDAO()
@@ -21,6 +25,7 @@ class FixtureController:
         self._fctHostControlDAO = FctHostControlDAO()
         self._maintenanceDAO = MaintenanceDAO()
         self._fixtureStatusLogDAO = FixtureStatusLogDAO()
+        self._catalogItemDAO = CatalogItemDAO()
 
     def get_fct_host_cmd(self, fixture: Fixture, hasTraceability: bool):
         fullpathSplit = (
@@ -83,7 +88,9 @@ class FixtureController:
         return FixtureMode.ONLINE
 
     def get_maintenance_parts(self):
-        return self._mainConfigDAO.get_maintenance_parts()
+        return self._catalogItemDAO.find_group_values(
+            FixtureController.SPARE_PARTS_GROUP
+        )
 
     def get_maintenance_actions(self):
-        return self._mainConfigDAO.get_maintenance_actions()
+        return self._catalogItemDAO.find_group_values(FixtureController.ACTIONS_GROUP)

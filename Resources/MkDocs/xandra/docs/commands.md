@@ -20,7 +20,7 @@ Dentro de Xandra es posible utilizar distintos atajos de teclado para activar al
 
 * `Ctrl+Shift+A` - Inicia la terminal de todas las fixturas que se encuentren detenidas.
 * `Ctrl+Shift+S` - Detiene la terminal de todas las fixturas que se encuentren iniciadas.
-* `Ctrl+Shift+R` - Habilita o deshabilita el modo retest.
+* `Ctrl+Shift+G` - Habilita o deshabilita el modo retest (requiere contraseña).
 * `Ctrl+Shift+T` - Si se encuentra habilitado el modo retest, con este atajo se permite desbloquear o bloquear el selector de trazabilidad (requiere contraseña).
 * `Ctrl+Shift+L` - Habilita o deshabilita el bloqueo de las fixturas (requiere contraseña).
 

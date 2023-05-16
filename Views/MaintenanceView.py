@@ -91,7 +91,7 @@ class MaintenanceView(QWidget):
         self.txtDescription.textChanged.connect(self.on_txt_description_changed)
         layout.addWidget(self.txtDescription, 6, 0, 1, 3)
         self.lblDescriptionLen = QLabel(f"0/{MaintenanceView.MAX_DESCRIPTION_LEN}")
-        layout.addWidget(self.lblDescriptionLen, 7, 1, QtCore.Qt.AlignRight)
+        layout.addWidget(self.lblDescriptionLen, 7, 2, QtCore.Qt.AlignRight)
 
         self.btnOk = QPushButton()
         self.btnOk.clicked.connect(self._save)
@@ -152,7 +152,7 @@ class MaintenanceView(QWidget):
                 "Invalid {0} {1}.\n\nIf your number is correct, please contact the engineer."
             ).replace("{1}", self.txtEmployeeNumber.text().strip())
             labelTxt = self.lblEmployeeNumber.text()
-        elif not self._maintenanceController.equals_password(  # TODO Add function
+        elif not self._maintenanceController.equals_password(
             self.txtEmployeeNumber.text().strip(),
             self.txtPassword.text().strip(),
         ):

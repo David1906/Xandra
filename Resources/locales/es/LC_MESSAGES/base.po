@@ -377,3 +377,14 @@ msgstr "{0} inválida\n\nSi no recuerda su contraseña, por favor repórtelo al 
 #: ../../Views/MaintenanceView.py:107
 msgid "Password *:"
 msgstr "Contraseña *:"
+
+#: ../../Views/MainWindow.py:138
+msgid "Sync w&ith server"
+msgstr "S&incronizar con el servidor"
+
+#: ../../DataAccess/GoogleSheet.py:138
+msgid "Syncing employees..."
+msgstr "Sincronizando empleados..."
+
+msgid "Syncing lists..."
+msgstr "Sincronizando listas de opciones..."

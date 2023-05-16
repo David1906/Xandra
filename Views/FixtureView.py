@@ -411,3 +411,7 @@ class FixtureView(QGroupBox):
         self._fixture = fixture
         self.maintenanceView.fixtureId = fixture.id
         self.maintenanceView.fixtureIp = fixture.ip
+
+    def update_catalogs(self):
+        self.maintenanceView.items = self._fixtureController.get_maintenance_parts()
+        self.maintenanceView.actions = self._fixtureController.get_maintenance_actions()

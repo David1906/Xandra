@@ -27,6 +27,7 @@ class SettingDAO:
                 .where(SettingDTO.id == setting.id)
                 .values(text=setting.text, number=setting.number)
             )
+            session.commit()
         except:
             session.rollback()
             raise
@@ -50,6 +51,7 @@ class SettingDAO:
     def find_by_type(self, settingType: SettingType):
         setting = self.find(settingType.value)
         if not self.exists(setting):
+            setting.id = settingType.value
             setting.name = settingType.description
         return setting
 

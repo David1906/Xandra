@@ -12,3 +12,4 @@ class SettingType(enum.Enum):
         self.description = description
 
     EMPLOYEES_MD5 = "employees md5 last sync"
+    LISTS_MD5 = "lists md5 last sync"

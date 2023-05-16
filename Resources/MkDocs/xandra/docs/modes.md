@@ -58,7 +58,7 @@ El modo retest está pensado para probar tarjetas que provienen de reparación, 
 !!! info
     Para activar éste modo es necesario realizar los siguientes pasos:
 
-    - Presionar atajo de teclas `Ctrl+Shift+R`.
+    - Presionar atajo de teclas `Ctrl+Shift+G`.
     - **Activar** el selector **Retest Mode**.
 
     ![](Docs/../static/modes/retest_1.png "Activar modo retest")
@@ -82,7 +82,7 @@ Cuando está activado este modo, el sistema `FCTHostControl` es ejecutado fuera 
 !!! info
     Para activar éste modo es necesario realizar los siguientes pasos:
 
-    - Presionar atajo de teclas `Ctrl+Shift+R`.
+    - Presionar atajo de teclas `Ctrl+Shift+G`.
     - **Activar** el selector **Retest Mode**.
     - Presionar atajo de teclas `Ctrl+Shift+T`.
     - Ingresar la contraseña (el ingeniero a cargo debe conocerla).

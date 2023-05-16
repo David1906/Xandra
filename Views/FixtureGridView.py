@@ -37,10 +37,13 @@ class FixtureGridView(QWidget):
 
         self.set_enable_lock(True)
 
-    def show_retest_mode(self):
-        self._showRetestMode = not self._showRetestMode
-        for fixtureView in self._fixtureViews:
-            fixtureView.set_retest_mode_visibility(self._showRetestMode)
+    def toggle_retest_mode(self):
+        authView = AuthView(self)
+        authView.interact()
+        if authView.isAuthorized:
+            self._showRetestMode = not self._showRetestMode
+            for fixtureView in self._fixtureViews:
+                fixtureView.set_retest_mode_visibility(self._showRetestMode)
 
     def toggle_force_traceability_enabled(self):
         if not self._showRetestMode:
@@ -109,3 +112,7 @@ class FixtureGridView(QWidget):
     def save_status(self):
         for fixtureView in self._fixtureViews:
             fixtureView.save_status()
+
+    def update_catalogs(self):
+        for fixtureView in self._fixtureViews:
+            fixtureView.update_catalogs()

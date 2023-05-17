@@ -2,8 +2,7 @@ from Controllers.FixtureGridController import FixtureGridController
 from Models.Fixture import Fixture
 from Models.Test import Test
 from PyQt5 import QtCore
-from PyQt5.QtGui import QKeySequence
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QShortcut
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout
 from Views.AuthView import AuthView
 from Views.FixtureView import FixtureView
 
@@ -20,13 +19,11 @@ class FixtureGridView(QWidget):
         self._fixtureViews: "list[FixtureView]" = []
         self._fixtureGridController = FixtureGridController()
         self._fixtureGridController.fixture_change.connect(self.update_fixture)
-        self._fixtureGridController.test_add.connect(self.on_test_add)
         self._fixtureGridController.config_change.connect(
             lambda event: self.config_change.emit(event)
         )
-        self._fixtureGridController.testing_status_changed.connect(
-            self.on_testing_status_changed
-        )
+        self._fixtureGridController.test_started.connect(self._on_test_started)
+        self._fixtureGridController.test_finished.connect(self._on_test_finished)
         self._showRetestMode = False
         self._isLockEnabled = False
         self.setStyleSheet("QLabel {font: 8pt Open Sans}")
@@ -66,18 +63,21 @@ class FixtureGridView(QWidget):
                 self.hBox.addLayout(vBox)
             vBox.addWidget(self._fixtureViews[i])
 
-    def interact(self):
-        self._fixtureGridController.start_watch_logs()
+    def _on_test_started(self, fixtureIp: str):
+        self._set_fixture_testing(fixtureIp, True)
 
-    def on_testing_status_changed(self, fixtureIp: str, isTesting: bool):
+    def _on_test_finished(self, fixtureIp: str, serialNumber: str, logFileName: str):
+        self._set_fixture_testing(fixtureIp, False)
+        test = self._fixtureGridController.parse_test(logFileName)
+        fixtureView = self._find_fixture_view(fixtureIp)
+        if test != None and fixtureView != None:
+            test.fixtureIp = fixtureIp
+            fixtureView.add_test(test)
+
+    def _set_fixture_testing(self, fixtureIp: str, isTesting: bool):
         fixtureView = self._find_fixture_view(fixtureIp)
         if fixtureView != None:
             fixtureView.set_fixture_isTesting(isTesting)
-
-    def on_test_add(self, test: Test):
-        fixtureView = self._find_fixture_view(test.fixtureIp)
-        if fixtureView != None:
-            fixtureView.add_test(test)
 
     def start_all_fixtures(self):
         for fixtureView in self._fixtureViews:

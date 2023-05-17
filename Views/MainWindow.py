@@ -77,7 +77,6 @@ class MainWindow(QMainWindow):
         widget.setContentsMargins(0, 0, 0, 0)
         widget.setLayout(gridLayout)
         self.setCentralWidget(widget)
-        self.fixtureGridView.interact()
 
     def _update_texts(self):
         self._update_ui_texts()

@@ -7,7 +7,8 @@ import socket
 
 class FixtureSocket(QtCore.QThread):
     HEADER_LENGTH = 10
-    testing_status_changed = QtCore.pyqtSignal(str, bool)
+    test_started = QtCore.pyqtSignal(str)
+    test_finished = QtCore.pyqtSignal(str, str, str)
     SOCKET_PORT = 5002
 
     def __init__(self) -> None:
@@ -54,18 +55,19 @@ class FixtureSocket(QtCore.QThread):
 
     def process(self, notified_socket, data: dict):
         try:
+            fixtureIp = data["fixtureIp"]
+            if fixtureIp == None:
+                return
             if data["message"] == "TEST_START":
-                fixtureIp = data["fixtureIp"]
-                if fixtureIp != None:
-                    fixtureDAO = {
-                        "fixtureIp": fixtureIp,
-                        "shouldAbortTest": self._fixtureDAO.should_abort_test(
-                            fixtureIp
-                        ),
-                    }
-                    notified_socket.send(pickle.dumps(fixtureDAO))
-                self.testing_status_changed.emit(data["fixtureIp"], True)
+                fixtureDAO = {
+                    "fixtureIp": fixtureIp,
+                    "shouldAbortTest": self._fixtureDAO.should_abort_test(fixtureIp),
+                }
+                notified_socket.send(pickle.dumps(fixtureDAO))
+                self.test_started.emit(data["fixtureIp"])
             elif data["message"] == "TEST_END":
-                self.testing_status_changed.emit(data["fixtureIp"], False)
+                self.test_finished.emit(
+                    data["fixtureIp"], data["serialNumber"], data["logFileName"]
+                )
         except Exception as e:
             print("socket error:", e)

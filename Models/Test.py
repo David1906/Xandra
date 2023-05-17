@@ -3,6 +3,8 @@ import re
 
 
 class Test:
+    ALLOWED_EXTENSIONS = [".log"]
+
     def __init__(
         self,
         id: int = None,
@@ -56,7 +58,6 @@ class Test:
             if self.is_dimm_error() or self.is_chk_serialuart_error():
                 shortDescription = " - " + self.get_short_description()
             return f"FAIL - {self.stepLabel}{shortDescription}"
-        
 
     def is_dimm_error(self) -> bool:
         match = re.search("chk_sel|apos_chk_k2", self.stepLabel, re.IGNORECASE)

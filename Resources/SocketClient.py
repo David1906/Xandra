@@ -18,8 +18,17 @@ class SocketClient:
         fixture = pickle.loads(self._socket.recv(1024))
         return fixture["shouldAbortTest"]
 
-    def notify_test_end(self, fixtureIP: str):
+    def notify_test_end(
+        self, fixtureIP: str, serialNumber: str = "", logFileName: str = ""
+    ):
         self._socket.connect((socket.gethostname(), SocketClient.SOCKET_PORT))
-        message = pickle.dumps({"message": "TEST_END", "fixtureIp": fixtureIP})
+        message = pickle.dumps(
+            {
+                "message": "TEST_END",
+                "fixtureIp": fixtureIP,
+                "serialNumber": serialNumber,
+                "logFileName": logFileName,
+            }
+        )
         message_header = f"{len(message):<{SocketClient.HEADER_LENGTH}}".encode("utf-8")
         self._socket.send(message_header + message)

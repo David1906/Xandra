@@ -44,6 +44,7 @@ class MainWindow(QMainWindow):
 
         self._fctHostControlDAO.write_check_station_config()
         self._fctHostControlDAO.write_test_end_call_config()
+        self._fctHostControlDAO.overwrite_run_test()
 
         self._syncTimer = QtCore.QTimer()
         self._syncTimer.timeout.connect(self._sync_all_async)

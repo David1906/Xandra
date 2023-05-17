@@ -131,10 +131,9 @@ class MaintenanceLogView(QtWidgets.QWidget):
                 item = logs[row].__dict__[keys[column]]
                 if item == None:
                     continue
-                else:
-                    self.table.setItem(
-                        row, column, QtWidgets.QTableWidgetItem(str(item))
-                    )
+                if keys[column] == "resultStatus":
+                    item = _("PASS") if item == 1 else _("FAILED")
+                self.table.setItem(row, column, QtWidgets.QTableWidgetItem(str(item)))
         self.table.setHorizontalHeaderLabels([_(key).capitalize() for key in keys])
 
     def _extractKeys(self, tests: "list[Test]") -> "list[str]":

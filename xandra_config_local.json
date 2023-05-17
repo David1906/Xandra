@@ -7,8 +7,8 @@
 
     "fctHostControl": [
         {
-            "path": "./Resources/FctHostControlTest",
-            "executable": "chk_station_is_disabled.py",
+            "path": "/home/david/documents/xandra_test_logs/FctHostControl",
+            "executable": "FCTHostControl_test.sh",
             "config": "FCTHostControl.config"
         },
         {

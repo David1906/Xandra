@@ -1,3 +1,4 @@
+import shutil
 from DataAccess.MainConfigDAO import MainConfigDAO
 from os import fdopen, remove
 from shutil import move, copymode
@@ -29,6 +30,7 @@ class FctHostControlDAO:
 
         self.configIdx = 0
         self._mainConfigDAO = MainConfigDAO()
+        self._pathHelper = PathHelper()
 
         self.load_data_from_first_valid_config()
 
@@ -53,7 +55,7 @@ class FctHostControlDAO:
                 ("Enable", "true"),
                 (
                     "App_Path",
-                    f'"{PathHelper().get_root_path()}/Resources/chk_station_is_disabled.py"',
+                    f'"{self._pathHelper.get_root_path()}/Resources/chk_station_is_disabled.py"',
                 ),
                 ("Delay", f"5000"),
                 ("Timeout", f"0"),
@@ -64,21 +66,34 @@ class FctHostControlDAO:
         self.write_config(
             "Test_End_Call",
             [
-                ("Enable", "true"),
+                ("Enable", "false"),
                 (
                     "App_Path",
-                    f'"{PathHelper().get_root_path()}/Resources/chk_station_test_finished.py"',
+                    f'"{self._pathHelper.get_root_path()}/Resources/chk_station_test_finished.py"',
                 ),
                 ("Delay", f"5000"),
                 ("Timeout", f"0"),
             ],
         )
 
-    def write_config(self, key: str, replaces: "tuple[str,str]"):
+    def overwrite_run_test(self):
+        WRAPPER_SCRIPT = "run_test_xandra_wrapper.sh"
+        wrapperFullpath = f"{self.get_script_fullpath()}/{WRAPPER_SCRIPT}"
+        shutil.copyfile(
+            self._pathHelper.join_root_path(f"/Resources/{WRAPPER_SCRIPT}"),
+            wrapperFullpath,
+        )
+        self._pathHelper.make_executable(wrapperFullpath)
+        self.write_config(
+            "Testing_Main", [("App_Path", f'"{wrapperFullpath}"')], replaceTimes=10
+        )
+
+    def write_config(self, key: str, replaces: "tuple[str,str]", replaceTimes: int = 1):
         file_path = self._mainConfigDAO.get_fct_host_config_fullpath(self.configIdx)
         fh, abs_path = mkstemp()
         inKey = False
         endKey = False
+        timesReplaced = 0
         with fdopen(fh, "w") as new_file:
             with open(file_path) as old_file:
                 for line in old_file:
@@ -89,10 +104,16 @@ class FctHostControlDAO:
                     text = line
                     if inKey and not endKey:
                         for replace in replaces:
-                            key, newValue = replace
-                            if key.casefold() in line.casefold():
+                            subkey, newValue = replace
+                            if subkey.casefold() in line.casefold():
                                 text = self.replace_value(line, newValue)
                                 break
+                    if inKey and endKey:
+                        timesReplaced += timesReplaced
+                        if timesReplaced < replaceTimes:
+                            inKey = False
+                            endKey = False
+
                     new_file.write(text)
         copymode(file_path, abs_path)
         remove(file_path)

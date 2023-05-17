@@ -66,7 +66,7 @@ class FctHostControlDAO:
         self.write_config(
             "Test_End_Call",
             [
-                ("Enable", "false"),
+                ("Enable", "true"),
                 (
                     "App_Path",
                     f'"{self._pathHelper.get_root_path()}/Resources/chk_station_test_finished.py"',

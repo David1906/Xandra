@@ -175,17 +175,19 @@ class Fixture(QtCore.QObject):
         if self.isTesting:
             payload = f"({str(self.get_test_time())})"
         elif not self.lastTest.isNull:
-            payload = _("SN: {0}    Result: {1}").format(self.lastTest.serialNumber, self.lastTest.get_result_string())
+            payload = _("SN: {0}    Result: {1}").format(
+                self.lastTest.serialNumber, self.lastTest.get_result_string()
+            )
         return f"{_(status.description)}{'' if len(payload) == 0 else ' - '}{payload}"
 
     def get_test_time(self) -> timedelta:
         return timedelta(seconds=math.floor(timer() - self._testTimer))
 
     def get_status(self) -> FixtureStatus:
-        if self.is_locked():
-            return FixtureStatus.LOCKED
         if self.isTesting:
             return FixtureStatus.TESTING
+        if self.is_locked():
+            return FixtureStatus.LOCKED
         return FixtureStatus.IDLE
 
     def is_upload_to_sfc(self, test: Test) -> bool:

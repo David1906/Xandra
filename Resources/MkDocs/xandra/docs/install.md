@@ -198,6 +198,7 @@ Para agregar los alias de Xandra realice los siguientes pasos:
     # Set environment variables
     export XANDRA_BASE_PATH=/usr/local/Foxconn/automation/Xandra
     export XANDRA_MAIN_SCRIPT=$XANDRA_BASE_PATH/xandra.py
+    export XANDRA_RESOURCES=$XANDRA_BASE_PATH/Resources
 
     # Open Xandra path and activate pyenv
     alias xandra-pyenv-activate='cd $XANDRA_BASE_PATH && pyenv activate xandra'

@@ -42,9 +42,7 @@ class MainWindow(QMainWindow):
         self._create_menus()
         self._update_texts()
 
-        self._fctHostControlDAO.write_check_station_config()
-        self._fctHostControlDAO.write_test_end_call_config()
-        self._fctHostControlDAO.overwrite_run_test()
+        self._fctHostControlDAO.write_default_settings()
 
         self._syncTimer = QtCore.QTimer()
         self._syncTimer.timeout.connect(self._sync_all_async)

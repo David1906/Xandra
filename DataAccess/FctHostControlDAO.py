@@ -48,6 +48,14 @@ class FctHostControlDAO:
                 return idx
         return 0
 
+    def write_default_settings(self):
+        self.write_check_station_config()
+        self.write_test_end_call_config()
+        self.overwrite_run_test()
+        self.overwrite_testing_led_on()
+        self.overwrite_testing_led_off()
+        self.overwrite_testing_serialuart()
+
     def write_check_station_config(self):
         self.write_config(
             "Check_Station",
@@ -77,16 +85,31 @@ class FctHostControlDAO:
         )
 
     def overwrite_run_test(self):
-        WRAPPER_SCRIPT = "run_test_xandra_wrapper.sh"
-        wrapperFullpath = f"{self.get_script_fullpath()}/{WRAPPER_SCRIPT}"
+        self.wrapp_product_model_script("run_test_xandra_wrapper.sh", "Testing_Main")
+
+    def overwrite_testing_led_off(self):
+        self.wrapp_product_model_script(
+            "chk_led_all_off_xandra_wrapper.sh", "Testing_LED_OFF"
+        )
+
+    def overwrite_testing_led_on(self):
+        self.wrapp_product_model_script(
+            "chk_led_all_on_xandra_wrapper.sh", "Testing_LED_ON"
+        )
+
+    def overwrite_testing_serialuart(self):
+        self.wrapp_product_model_script(
+            "chk_serialuart_xandra_wrapper.sh", "Testing_USB"
+        )
+
+    def wrapp_product_model_script(self, wrapperScript: str, key: str):
+        wrapperFullpath = f"{self.get_script_fullpath()}/{wrapperScript}"
         shutil.copyfile(
-            self._pathHelper.join_root_path(f"/Resources/{WRAPPER_SCRIPT}"),
+            self._pathHelper.join_root_path(f"/Resources/{wrapperScript}"),
             wrapperFullpath,
         )
         self._pathHelper.make_executable(wrapperFullpath)
-        self.write_config(
-            "Testing_Main", [("App_Path", f'"{wrapperFullpath}"')], replaceTimes=10
-        )
+        self.write_config(key, [("App_Path", f'"{wrapperFullpath}"')], replaceTimes=10)
 
     def write_config(self, key: str, replaces: "tuple[str,str]", replaceTimes: int = 1):
         file_path = self._mainConfigDAO.get_fct_host_config_fullpath(self.configIdx)

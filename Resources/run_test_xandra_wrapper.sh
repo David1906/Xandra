@@ -1,21 +1,12 @@
 #!/bin/bash
-
-report_exit_to_xandra() {
-    current_wd="$(pwd)"
-
-    source ~/.bash_aliases
-    xandra_resources=$XANDRA_BASE_PATH/Resources
-    echo change directory xandra resources: $xandra_resources
-    cd $xandra_resources
-    python3 send_station_test_finished.py --ip "$XANDRA_FIXTURE_IP" --sn "${BSN}" --ln "${file_name}"
-
-    cd $current_wd
-    unalias exit
-}
+source ~/.bash_aliases
+source $XANDRA_RESOURCES/xandra_common_bash.sh
 
 shopt -s expand_aliases
 alias exit='report_exit_to_xandra; exit'
 
-source ./run_test.sh
+SCRIPT_NAME="run_test.sh"
+print_wrapper_header "$SCRIPT_NAME"
+source ./$SCRIPT_NAME
 report_exit_to_xandra
 exit $?

@@ -22,6 +22,7 @@ class FixtureGridView(QWidget):
         self._fixtureGridController.config_change.connect(
             lambda event: self.config_change.emit(event)
         )
+        self._fixtureGridController.pre_test_started.connect(self._on_pre_test_started)
         self._fixtureGridController.test_started.connect(self._on_test_started)
         self._fixtureGridController.test_finished.connect(self._on_test_finished)
         self._showRetestMode = False
@@ -63,6 +64,9 @@ class FixtureGridView(QWidget):
                 self.hBox.addLayout(vBox)
             vBox.addWidget(self._fixtureViews[i])
 
+    def _on_pre_test_started(self, fixtureIp: str):
+        self._set_fixture_pre_testing(fixtureIp, True)
+
     def _on_test_started(self, fixtureIp: str):
         self._set_fixture_testing(fixtureIp, True)
 
@@ -73,6 +77,11 @@ class FixtureGridView(QWidget):
         if test != None and fixtureView != None:
             test.fixtureIp = fixtureIp
             fixtureView.add_test(test)
+
+    def _set_fixture_pre_testing(self, fixtureIp: str, isTesting: bool):
+        fixtureView = self._find_fixture_view(fixtureIp)
+        if fixtureView != None:
+            fixtureView.set_fixture_isPreTesting(isTesting)
 
     def _set_fixture_testing(self, fixtureIp: str, isTesting: bool):
         fixtureView = self._find_fixture_view(fixtureIp)

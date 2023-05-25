@@ -11,10 +11,26 @@ report_exit_to_xandra() {
     unalias exit 2>/dev/null
 }
 
+report_start_to_xandra() {
+    current_wd="$(pwd)"
+
+    echo cd Xandra Resources: $XANDRA_RESOURCES
+    cd $XANDRA_RESOURCES
+    python3 send_station_test_started.py --ip "$XANDRA_FIXTURE_IP"
+
+    echo cd: $current_wd
+    cd $current_wd
+}
+
 print_wrapper_header() {
-    echo "**********************************************************"
-    echo "$1 Xandra Wrapper"
-    echo "**********************************************************"
+    echo
+    echo
+    echo "*****************************************************************"
+    text="$1 Xandra Wrapper"
+    spaces=$(((65 - ${#text}) / 2))
+    printf "%-${spaces}s"
+    echo $text
+    echo "*****************************************************************"
 }
 
 # Renders a text based list of options that can be selected by the

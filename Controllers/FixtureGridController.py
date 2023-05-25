@@ -19,6 +19,7 @@ import pathlib
 class FixtureGridController(QtCore.QThread):
     config_change = QtCore.pyqtSignal(object)
     fixture_change = QtCore.pyqtSignal(Fixture)
+    pre_test_started = QtCore.pyqtSignal(str)
     test_started = QtCore.pyqtSignal(str)
     test_finished = QtCore.pyqtSignal(str, str, str)
 
@@ -41,9 +42,14 @@ class FixtureGridController(QtCore.QThread):
         self._fixtureDAO.reset_mode()
 
         self._socket = FixtureSocket()
+        self._socket.pre_test_started.connect(self.on_pre_test_started)
         self._socket.test_started.connect(self.on_test_started)
         self._socket.test_finished.connect(self.on_test_finished)
         self._socket.start()
+        self._socket.setPriority(QtCore.QThread.Priority.HighestPriority)
+
+    def on_pre_test_started(self, fixtureIp: str):
+        self.pre_test_started.emit(fixtureIp)
 
     def on_test_started(self, fixtureIp: str):
         self.test_started.emit(fixtureIp)

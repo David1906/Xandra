@@ -16,6 +16,7 @@ _ = Translator().gettext
 
 
 class Fixture(QtCore.QObject):
+    PRE_TEST_TIMEOUT = timedelta(minutes=10)
     OVER_ELAPSED_THRESHOLD = timedelta(hours=1, minutes=45)
     SEND_STATUS_CHANGE_THRESHOLD = timedelta(minutes=20)
     status_change = QtCore.pyqtSignal(FixtureStatus, datetime, timedelta, FixtureStatus)
@@ -46,6 +47,7 @@ class Fixture(QtCore.QObject):
         self._mode = mode
         self._tests = tests
         self._lastTest = NullTest()
+        self._isPreTesting = False
         self._isTesting = False
         self._isStarted = False
         self._isLockEnabled = False
@@ -68,6 +70,10 @@ class Fixture(QtCore.QObject):
         self._updateTimer.timeout.connect(self._on_tick)
         self._updateTimer.start(1000)
 
+        self._preTestTimeout = QtCore.QTimer()
+        self._preTestTimeout.timeout.connect(self._on_pre_test_timeout)
+        self._preTestTimeout.start(Fixture.PRE_TEST_TIMEOUT.total_seconds() * 1000)
+
     def _on_tick(self):
         elapsed = self.get_elapsed_time()
         if self.isTesting:
@@ -78,6 +84,9 @@ class Fixture(QtCore.QObject):
 
         if elapsed >= Fixture.SEND_STATUS_CHANGE_THRESHOLD:
             self.emit_status_change(force=True)
+
+    def _on_pre_test_timeout(self):
+        self.isTesting = False
 
     def should_abort_test(self):
         if self.mode == FixtureMode.OFFLINE and not self.needs_maintenance():
@@ -173,7 +182,8 @@ class Fixture(QtCore.QObject):
         payload = ""
         status = self.get_status()
         if self.isTesting:
-            payload = f"({str(self.get_test_time())})"
+            payload = f'[{_("pre-testing")}] ' if self.isPreTesting else ""
+            payload += f"({str(self.get_test_time())})"
         elif not self.lastTest.isNull:
             payload = _("SN: {0}    Result: {1}").format(
                 self.lastTest.serialNumber, self.lastTest.get_result_string()
@@ -292,16 +302,30 @@ class Fixture(QtCore.QObject):
         self._property_changed(updateCalcs=True)
 
     @property
+    def isPreTesting(self) -> bool:
+        return self._isPreTesting
+
+    @isPreTesting.setter
+    def isPreTesting(self, value: bool):
+        self._isPreTesting = value
+        if self._isPreTesting:
+            self.isTesting = True
+            self._preTestTimeout.start()
+        else:
+            self._preTestTimeout.stop()
+        self._property_changed()
+
+    @property
     def isTesting(self) -> bool:
         return self._isTesting
 
     @isTesting.setter
     def isTesting(self, value: bool):
-        self._isTesting = value
-        if self._isTesting:
+        if not self.isTesting and value:
             self._wasOverElapsed = False
             self.lastTest = NullTest()
             self._testTimer = timer()
+        self._isTesting = value
         self._property_changed()
 
     @property

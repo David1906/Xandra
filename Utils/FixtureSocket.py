@@ -7,6 +7,7 @@ import socket
 
 class FixtureSocket(QtCore.QThread):
     HEADER_LENGTH = 10
+    pre_test_started = QtCore.pyqtSignal(str)
     test_started = QtCore.pyqtSignal(str)
     test_finished = QtCore.pyqtSignal(str, str, str)
     SOCKET_PORT = 5002
@@ -58,12 +59,14 @@ class FixtureSocket(QtCore.QThread):
             fixtureIp = data["fixtureIp"]
             if fixtureIp == None:
                 return
-            if data["message"] == "TEST_START":
+            if data["message"] == "PRE_TEST_START":
                 fixtureDAO = {
                     "fixtureIp": fixtureIp,
                     "shouldAbortTest": self._fixtureDAO.should_abort_test(fixtureIp),
                 }
                 notified_socket.send(pickle.dumps(fixtureDAO))
+                self.pre_test_started.emit(data["fixtureIp"])
+            elif data["message"] == "TEST_START":
                 self.test_started.emit(data["fixtureIp"])
             elif data["message"] == "TEST_END":
                 self.test_finished.emit(

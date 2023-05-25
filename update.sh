@@ -7,6 +7,7 @@ git pull
 sudo chmod +x Resources/chk_station_is_disabled.py
 sudo chmod +x Resources/chk_station_test_finished.py
 sudo chmod +x Resources/send_station_test_finished.py
+sudo chmod +x Resources/send_station_test_started.py
 sudo chmod +x Resources/run_test_xandra_wrapper.py
 sudo chmod +x Resources/up_sfc.sh
 sudo chmod +x update.sh

@@ -353,7 +353,11 @@ class FixtureView(QGroupBox):
         return self.fixture.equalsIp(fixtureIp)
 
     def set_fixture_isTesting(self, value: bool):
+        self.fixture.isPreTesting = not value
         self.fixture.isTesting = value
+
+    def set_fixture_isPreTesting(self, value: bool):
+        self.fixture.isPreTesting = value
 
     def start(self):
         if not self.fixture.isStarted:

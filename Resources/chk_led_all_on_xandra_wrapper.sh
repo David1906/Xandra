@@ -6,7 +6,16 @@ report_start_to_xandra
 
 SCRIPT_NAME="chk_led_all_on.sh"
 print_wrapper_header "$SCRIPT_NAME"
+
+function fake_basename() {
+    echo $SCRIPT_NAME
+}
+shopt -s expand_aliases
+alias basename='fake_basename'
+
 (. ./"$SCRIPT_NAME" "$@")
+
+unalias basename 2>/dev/null
 
 exitCode=$?
 if [ $exitCode -ne 0 ]; then

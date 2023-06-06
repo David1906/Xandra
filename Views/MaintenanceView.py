@@ -145,21 +145,6 @@ class MaintenanceView(QWidget):
                 "{1}", str(MaintenanceView.MIN_EMP_LEN)
             )
             labelTxt = self.lblEmployeeNumber.text()
-        elif not self._maintenanceController.exists_employee(
-            self.txtEmployeeNumber.text().strip()
-        ):
-            error = _(
-                "Invalid {0} {1}.\n\nIf your number is correct, please contact the engineer."
-            ).replace("{1}", self.txtEmployeeNumber.text().strip())
-            labelTxt = self.lblEmployeeNumber.text()
-        elif not self._maintenanceController.equals_password(
-            self.txtEmployeeNumber.text().strip(),
-            self.txtPassword.text().strip(),
-        ):
-            error = _(
-                "Invalid {0}.\n\nIf your password is correct, please contact the engineer."
-            )
-            labelTxt = self.lblEmployeePassword.text()
         else:
             error = ""
         return error.format(labelTxt.replace(":", "").replace("*", "").strip())

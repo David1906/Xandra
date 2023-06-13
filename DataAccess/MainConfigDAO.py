@@ -98,37 +98,14 @@ class MainConfigDAO:
     def get_upload_sfc_script(self) -> str:
         return self._get_value("uploadSfcScript")
 
-    def get_google_isActivated(self):
-        return self._get_value("googleSheets")["isActivated"]
-
-    def get_google_sheetName(self):
-        return self._get_value("googleSheets")["sheetName"]
-
-    def get_google_maintenanceSheetName(self):
-        return self._get_value("googleSheets")["maintenanceSheetName"]
-
-    def get_google_statusLogSheetName(self):
-        return self._get_value("googleSheets")["statusLogSheetName"]
-
-    def get_google_usersSheetName(self):
-        return self._get_value("googleSheets")["usersSheetName"]
-
-    def get_google_listsSheetName(self):
-        return self._get_value("googleSheets")["listsSheetName"]
-
-    def get_google_syncInterval(self):
-        return self._get_value("googleSheets")["syncInterval"]
-
-    def get_google_keyfilePath(self, no: int = 0):
-        return self._get_value("googleSheets")[
-            f"keyfilePath{'' if no <=0 else str(no)}"
-        ]
-
-    def get_maintenance_parts(self):
-        return self._get_value("maintenanceParts")
-
-    def get_maintenance_actions(self):
-        return self._get_value("maintenanceActions")
-
     def get_language(self):
         return self._get_value("language")
+
+    def get_sync_is_activated(self):
+        return self._get_value("sync")["isActivated"]
+
+    def get_sync_interval(self):
+        return self._get_value("sync")["interval"]
+
+    def get_sync_server(self):
+        return self._get_value("sync")["server"]

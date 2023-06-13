@@ -52,3 +52,19 @@ class CatalogItemDAO:
         finally:
             session.close()
             Session.remove()
+
+    def delete_group(self, group: str):
+        session = Session()
+        try:
+            session.execute(
+                sa_text(
+                    f"""DELETE FROM {CatalogItemDTO.__tablename__} WHERE {CatalogItemDTO.__tablename__} .group = '{group}'"""
+                )
+            )
+            session.commit()
+        except:
+            session.rollback()
+            raise
+        finally:
+            session.close()
+            Session.remove()

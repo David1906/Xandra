@@ -1,6 +1,7 @@
 import os
 from Core.Enums.FixtureMode import FixtureMode
 from Core.Enums.FixtureStatus import FixtureStatus
+from Core.Enums.SettingType import SettingType
 from DataAccess.FctHostControlDAO import FctHostControlDAO
 from DataAccess.FixtureDAO import FixtureDAO
 from DataAccess.FixtureStatusLogDAO import FixtureStatusLogDAO
@@ -15,9 +16,6 @@ from Models.Test import Test
 
 
 class FixtureController:
-    SPARE_PARTS_GROUP = "Refacción"
-    ACTIONS_GROUP = "Acción"
-
     def __init__(self) -> None:
         self._testDAO = TestDAO()
         self._fixtureDAO = FixtureDAO()
@@ -89,8 +87,10 @@ class FixtureController:
 
     def get_maintenance_parts(self):
         return self._catalogItemDAO.find_group_values(
-            FixtureController.SPARE_PARTS_GROUP
+            SettingType.SPARE_PARTS_LAST_SYNC.group
         )
 
     def get_maintenance_actions(self):
-        return self._catalogItemDAO.find_group_values(FixtureController.ACTIONS_GROUP)
+        return self._catalogItemDAO.find_group_values(
+            SettingType.ACTIONS_LAST_SYNC.group
+        )

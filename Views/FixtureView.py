@@ -385,7 +385,7 @@ class FixtureView(QGroupBox):
 
     def copy_configs(self, fixture: Fixture):
         self.fixture.copy_configs(fixture)
-        self.maintenanceView.items = self._fixtureController.get_maintenance_parts()
+        self.update_catalogs()
 
     @property
     def fixture(self) -> Fixture:

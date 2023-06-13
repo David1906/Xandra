@@ -1,10 +1,10 @@
 import random
 import subprocess
 from DataAccess.FctHostControlDAO import FctHostControlDAO
-from DataAccess.GoogleSheet import GoogleSheet
 from DataAccess.MainConfigDAO import MainConfigDAO
 from datetime import datetime
 from PyQt5 import QtGui, QtCore, QtWidgets
+from DataAccess.Strapi.StrapiDAO import StrapiDAO
 from Utils.PathHelper import PathHelper
 from Views.FixtureGridView import FixtureGridView
 import os
@@ -167,11 +167,10 @@ class MainWindow(QMainWindow):
         self.helpMenu.setTitle(_("&Help"))
 
     def _update_sync_timer(self):
-        if self._mainConfigDAO.get_google_isActivated():
+        if self._mainConfigDAO.get_sync_is_activated():
             self._sync_all_async()
             self._syncTimer.start(
-                self._mainConfigDAO.get_google_syncInterval()
-                + random.randint(3600, 7200)
+                self._mainConfigDAO.get_sync_interval() + random.randint(3600, 7200)
             )
         else:
             self._syncTimer.stop()
@@ -179,12 +178,12 @@ class MainWindow(QMainWindow):
     def _sync_all_async(self):
         if not self._isSyncing:
             self._isSyncing = True
-            googleSheet = GoogleSheet()
-            googleSheet.emitter.status_update.connect(self._on_sync_status_update)
-            googleSheet.emitter.done.connect(self._on_sync_done)
-            googleSheet.emitter.catalogs_updated.connect(self._on_catalogs_updated)
+            syncDAO = StrapiDAO()
+            syncDAO.emitter.status_update.connect(self._on_sync_status_update)
+            syncDAO.emitter.done.connect(self._on_sync_done)
+            syncDAO.emitter.catalogs_updated.connect(self._on_catalogs_updated)
             pool = QtCore.QThreadPool.globalInstance()
-            pool.start(googleSheet)
+            pool.start(syncDAO)
 
     def _on_sync_done(self):
         self._isSyncing = False

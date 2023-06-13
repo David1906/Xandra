@@ -8,8 +8,10 @@ class SettingType(enum.Enum):
         obj._value_ = value
         return obj
 
-    def __init__(self, description: str):
+    def __init__(self, description: str, group: str):
+        self.group = group
         self.description = description
 
-    EMPLOYEES_MD5 = "employees md5 last sync"
-    LISTS_MD5 = "lists md5 last sync"
+    EMPLOYEES_LAST_SYNC = "employees last sync", "employees"
+    ACTIONS_LAST_SYNC = "actions last sync", "actions"
+    SPARE_PARTS_LAST_SYNC = "spare parts last sync", "spare-parts"

@@ -50,6 +50,7 @@ class FctHostControlDAO:
 
     def write_default_settings(self):
         self.write_check_station_config()
+        self.write_pretest_config()
         self.write_test_end_call_config()
         self.overwrite_run_test()
         self.overwrite_testing_led_on()
@@ -70,6 +71,9 @@ class FctHostControlDAO:
             ],
         )
 
+    def write_pretest_config(self):
+        self.wrap_app_path_script("boot_sol_wrapper.sh", "Pretest")
+
     def write_test_end_call_config(self):
         self.write_config(
             "Test_End_Call",
@@ -85,24 +89,20 @@ class FctHostControlDAO:
         )
 
     def overwrite_run_test(self):
-        self.wrapp_product_model_script("run_test_xandra_wrapper.sh", "Testing_Main")
+        self.wrap_app_path_script("run_test_xandra_wrapper.sh", "Testing_Main")
 
     def overwrite_testing_led_off(self):
-        self.wrapp_product_model_script(
+        self.wrap_app_path_script(
             "chk_led_all_off_xandra_wrapper.sh", "Testing_LED_OFF"
         )
 
     def overwrite_testing_led_on(self):
-        self.wrapp_product_model_script(
-            "chk_led_all_on_xandra_wrapper.sh", "Testing_LED_ON"
-        )
+        self.wrap_app_path_script("chk_led_all_on_xandra_wrapper.sh", "Testing_LED_ON")
 
     def overwrite_testing_serialuart(self):
-        self.wrapp_product_model_script(
-            "chk_serialuart_xandra_wrapper.sh", "Testing_USB"
-        )
+        self.wrap_app_path_script("chk_serialuart_xandra_wrapper.sh", "Testing_USB")
 
-    def wrapp_product_model_script(self, wrapperScript: str, key: str):
+    def wrap_app_path_script(self, wrapperScript: str, key: str):
         wrapperFullpath = f"{self.get_script_fullpath()}/{wrapperScript}"
         shutil.copyfile(
             self._pathHelper.join_root_path(f"/Resources/{wrapperScript}"),

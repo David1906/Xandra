@@ -161,7 +161,7 @@ class Fixture(QtCore.QObject):
         total = 0
         maxTotal = 0
         for test in self.tests[: self.get_min_tests_qty()]:
-            if not test.status:
+            if not test.status and test.mode == FixtureMode.ONLINE.value:
                 total = total + 1
             else:
                 total = 0

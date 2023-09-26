@@ -51,7 +51,7 @@
     "sync": {
         "isActivated" : true,
         "interval" : 180000,
-        "server": "http://10.12.206.231:9002/api"
+        "server": "http://10.12.206.232:9002/api"
     },
     "sync_description":"Configuración para sincronizar datos con el servidor especificado"
 }

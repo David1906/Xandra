@@ -9,7 +9,7 @@ class FixtureSocket(QtCore.QThread):
     HEADER_LENGTH = 10
     pre_test_started = QtCore.pyqtSignal(str)
     test_started = QtCore.pyqtSignal(str)
-    test_finished = QtCore.pyqtSignal(str, str, str)
+    test_finished = QtCore.pyqtSignal(str, str, str, str)
     SOCKET_PORT = 5002
 
     def __init__(self) -> None:
@@ -56,6 +56,7 @@ class FixtureSocket(QtCore.QThread):
 
     def process(self, notified_socket, data: dict):
         try:
+            print(data)
             fixtureIp = data["fixtureIp"]
             if fixtureIp == None:
                 return
@@ -70,7 +71,10 @@ class FixtureSocket(QtCore.QThread):
                 self.test_started.emit(data["fixtureIp"])
             elif data["message"] == "TEST_END":
                 self.test_finished.emit(
-                    data["fixtureIp"], data["serialNumber"], data["logFileName"]
+                    data["fixtureIp"],
+                    data["serialNumber"],
+                    data["logFileName"],
+                    data["currentTest"],
                 )
         except Exception as e:
             print("socket error:", e)

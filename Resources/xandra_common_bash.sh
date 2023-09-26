@@ -3,7 +3,7 @@ report_exit_to_xandra() {
 
     echo cd Xandra Resources: $XANDRA_RESOURCES
     cd $XANDRA_RESOURCES
-    python3 send_station_test_finished.py --ip "$XANDRA_FIXTURE_IP" --sn "${BSN}" --ln "${file_name}"
+    python3 send_station_test_finished.py --ip "$XANDRA_FIXTURE_IP" --sn "${BSN}" --ln "${file_name}" --ct "$1"
 
     echo cd: $current_wd
     cd $current_wd

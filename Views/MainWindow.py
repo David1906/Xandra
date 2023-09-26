@@ -185,11 +185,12 @@ class MainWindow(QMainWindow):
             pool = QtCore.QThreadPool.globalInstance()
             pool.start(syncDAO)
 
-    def _on_sync_done(self):
+    def _on_sync_done(self, isSuccess: bool):
         self._isSyncing = False
-        self._set_status_text(
-            _("Last sync: {0}").format(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
-        )
+        msg = "Error"
+        if isSuccess:
+            msg = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        self._set_status_text(_("Last sync: {0}").format(msg))
 
     def _on_catalogs_updated(self):
         self.fixtureGridView.update_catalogs()

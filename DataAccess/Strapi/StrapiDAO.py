@@ -26,7 +26,7 @@ T = TypeVar("T")
 class Emitter(QObject):
     status_update = pyqtSignal(str)
     catalogs_updated = pyqtSignal()
-    done = pyqtSignal()
+    done = pyqtSignal(bool)
 
 
 class StrapiDAO(QRunnable):
@@ -71,6 +71,7 @@ class StrapiDAO(QRunnable):
 
     def run(self):
         self._currentStep = 0
+        isSuccess = True
         for sync in self._syncs:
             self._currentStep += 1
             try:
@@ -79,11 +80,12 @@ class StrapiDAO(QRunnable):
                 msg = f"Error in run StrapiDAO: " + str(e)
                 print(msg)
                 logging.error(msg)
-        self.emitter.done.emit()
+                isSuccess = False
+        self.emitter.done.emit(isSuccess)
 
     def _stop_sync(self):
         self._interrupt = True
-        self.emitter.done.emit()
+        self.emitter.done.emit(True)
 
     def sync_tests(self):
         iso_date = self.get_iso_date()

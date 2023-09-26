@@ -10,14 +10,12 @@ class StrapiApi:
         self._url = url
 
     def get(self, path: str) -> any:
-        response = requests.get(self._url + path, headers=self._headers)
+        response = requests.get(self._url + path, headers=self._headers, timeout=30)
         return response.json()["data"]
 
     def post(self, path: str, data: "list[any]") -> any:
         response = requests.post(
-            self._url + path,
-            json={"data": data},
-            headers=self._headers,
+            self._url + path, json={"data": data}, headers=self._headers, timeout=30
         )
         response.raise_for_status()
         return response.json()["data"]

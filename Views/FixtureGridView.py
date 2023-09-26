@@ -1,3 +1,4 @@
+from datetime import datetime
 from Controllers.FixtureGridController import FixtureGridController
 from Models.Fixture import Fixture
 from Models.Test import Test
@@ -70,11 +71,24 @@ class FixtureGridView(QWidget):
     def _on_test_started(self, fixtureIp: str):
         self._set_fixture_testing(fixtureIp, True)
 
-    def _on_test_finished(self, fixtureIp: str, serialNumber: str, logFileName: str):
+    def _on_test_finished(
+        self, fixtureIp: str, serialNumber: str, logFileName: str, currentTest: str
+    ):
+        if currentTest == "" and logFileName == "":
+            return
         self._set_fixture_testing(fixtureIp, False)
         test = self._fixtureGridController.parse_test(logFileName)
         fixtureView = self._find_fixture_view(fixtureIp)
-        if test != None and fixtureView != None:
+        if test == None:
+            test = Test(
+                serialNumber=serialNumber,
+                fixtureIp=fixtureIp,
+                stepLabel=currentTest,
+                startTime=datetime.today(),
+                endTime=datetime.today(),
+                status=False,
+            )
+        if fixtureView != None and test != None:
             test.fixtureIp = fixtureIp
             fixtureView.add_test(test)
 

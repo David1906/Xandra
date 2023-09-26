@@ -37,10 +37,14 @@ class FixtureSocketNotifier:
             self.outputNoConnection()
 
     def notify_finish(
-        self, fixtureIp: str, serialNumber: str = "", logFileName: str = ""
+        self,
+        fixtureIp: str,
+        serialNumber: str = "",
+        logFileName: str = "",
+        currentTest: str = "",
     ) -> bool:
         try:
-            self._socketClient.notify_test_end(fixtureIp, serialNumber, logFileName)
+            self._socketClient.notify_test_end(fixtureIp, serialNumber, logFileName, currentTest)
             self.printHeader("Test Finished", FixtureSocketNotifier.WHITE_COLOR)
         except:
             self.outputNoConnection()

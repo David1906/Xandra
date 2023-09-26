@@ -37,7 +37,7 @@ class BaseDAO:
             result = self._strapiApi.get(f"/{self.group[:-1]}/lastUpdate")
             return result["updateTime"]
         except:
-            return None
+            raise Exception("Api no response")
 
     def find(self):
         pass

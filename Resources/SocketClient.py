@@ -32,7 +32,11 @@ class SocketClient:
         self._socket.close()
 
     def notify_test_end(
-        self, fixtureIP: str, serialNumber: str = "", logFileName: str = ""
+        self,
+        fixtureIP: str,
+        serialNumber: str = "",
+        logFileName: str = "",
+        currentTest: str = "",
     ):
         self._socket.connect((socket.gethostname(), SocketClient.SOCKET_PORT))
         message = pickle.dumps(
@@ -41,6 +45,7 @@ class SocketClient:
                 "fixtureIp": fixtureIP,
                 "serialNumber": serialNumber,
                 "logFileName": logFileName,
+                "currentTest": currentTest,
             }
         )
         message_header = f"{len(message):<{SocketClient.HEADER_LENGTH}}".encode("utf-8")

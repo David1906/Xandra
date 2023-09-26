@@ -14,11 +14,11 @@ shopt -s expand_aliases
 alias basename='fake_basename'
 
 (. ./"$SCRIPT_NAME" "$@")
+exitCode=$?
 
 unalias basename 2>/dev/null
 
-exitCode=$?
 if [ $exitCode -ne 0 ]; then
-    report_exit_to_xandra
+    report_exit_to_xandra "$SCRIPT_NAME"
 fi
 exit $exitCode

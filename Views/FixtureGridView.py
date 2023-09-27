@@ -87,6 +87,7 @@ class FixtureGridView(QWidget):
                 startTime=datetime.today(),
                 endTime=datetime.today(),
                 status=False,
+                description="{currentTest} Failed",
             )
         if fixtureView != None and test != None:
             test.fixtureIp = fixtureIp

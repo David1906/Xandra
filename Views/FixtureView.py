@@ -152,7 +152,7 @@ class FixtureView(QGroupBox):
         self.btnMaintenanceLog.clicked.connect(self.on_btnMaintenanceLog_clicked)
         buttonsLayout.addWidget(self.btnMaintenanceLog, 1, 2, 1, 1)
 
-        self.terminal = EmbeddedTerminal()
+        self.terminal = EmbeddedTerminal(self.fixture.id)
         self.terminal.finished.connect(self._on_terminal_finished)
         gridLayout.addWidget(self.terminal, 0, 0, 1, 1)
 
@@ -360,7 +360,7 @@ class FixtureView(QGroupBox):
         self.fixture.isPreTesting = value
 
     def start(self):
-        if not self.fixture.isStarted:
+        if not self.fixture.isStarted and not self.fixture.is_locked():
             self.on_btnStart_clicked()
 
     def stop(self):

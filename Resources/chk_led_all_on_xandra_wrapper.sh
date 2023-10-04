@@ -13,7 +13,7 @@ function fake_basename() {
 shopt -s expand_aliases
 alias basename='fake_basename'
 
-(. ./"$SCRIPT_NAME" "$@")
+(bash ./"$SCRIPT_NAME" "$@")
 exitCode=$?
 
 unalias basename 2>/dev/null

@@ -1,4 +1,5 @@
-from subprocess import call, run
+from subprocess import call, run, PIPE, getoutput
+import subprocess
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import pyqtSignal
 
@@ -60,8 +61,24 @@ class EmbeddedTerminal(QtWidgets.QFrame):
         self.finished.emit(exitCode)
 
     def Stop(self):
+        result = self.buffer_extract("Run Test Result:\s*\K.*") == "PASS"
+        ct = self.buffer_contains("PASS")
         call(f"tmux kill-session -t {self.sessionId}", shell=True)
         self.process.kill()
 
     def get_terminal_winId(self) -> str:
         return str(int(self.winId()))
+
+    def buffer_contains(self, regex: str) -> bool:
+        p1 = subprocess.Popen(
+            ["tmux", "capture-pane", "-t", self.sessionId, "-pS", "-"], stdout=PIPE
+        )
+        p2 = subprocess.Popen(["grep", "-Poi", regex], stdin=p1.stdout)
+        p1.stdout.close()
+        p2.communicate()
+        return p2.returncode == 0
+
+    def buffer_extract(self, regex: str) -> str:
+        return getoutput(
+            f'tmux capture-pane -t {self.sessionId} -pS - | grep -Poi "{regex}" | head -1'
+        )

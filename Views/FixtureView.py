@@ -2,12 +2,14 @@ from Controllers.FixtureController import FixtureController
 from Core.Enums.FixtureMode import FixtureMode
 from Core.Enums.FixtureStatus import FixtureStatus
 from datetime import datetime
+from Core.Enums.TerminalStatus import TerminalStatus
 from Models.Fixture import Fixture
 from Models.Maintenance import Maintenance
+from Models.TerminalAnalysis import TerminalAnalysis
 from Models.Test import Test
 from PyQt5 import QtCore, QtGui
 from Utils.PathHelper import PathHelper
-from Views.EmbeddedTerminal import EmbeddedTerminal
+from Views.Terminal import Terminal
 from Views.LastFailuresWindow import LastFailuresWindow
 from Views.LastTestsWindow import LastTestsWindow
 from Views.LedIndicator import LedIndicator
@@ -152,8 +154,9 @@ class FixtureView(QGroupBox):
         self.btnMaintenanceLog.clicked.connect(self.on_btnMaintenanceLog_clicked)
         buttonsLayout.addWidget(self.btnMaintenanceLog, 1, 2, 1, 1)
 
-        self.terminal = EmbeddedTerminal(self.fixture.id)
+        self.terminal = Terminal(self.fixture.id)
         self.terminal.finished.connect(self._on_terminal_finished)
+        self.terminal.change.connect(self.on_terminal_change)
         gridLayout.addWidget(self.terminal, 0, 0, 1, 1)
 
         self.maintenanceView = MaintenanceView(
@@ -319,6 +322,17 @@ class FixtureView(QGroupBox):
     def _on_terminal_finished(self, exitStatus):
         self.fixture.isStarted = False
         self.fixture.isTesting = False
+
+    def on_terminal_change(self, terminalAnalysis: TerminalAnalysis):
+        if self.fixture.isTesting and terminalAnalysis.status in [
+            TerminalStatus.FAIL,
+            TerminalStatus.PASS,
+        ]:
+            test = self._fixtureController.parse_test(terminalAnalysis)
+            self.add_test(test)
+        else:
+            self.fixture.testItem = terminalAnalysis.stepLabel
+        self.fixture.isTesting = terminalAnalysis.is_testing()
 
     def save_status(self):
         self.fixture.emit_status_change(force=True)

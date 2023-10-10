@@ -56,6 +56,7 @@ class Fixture(QtCore.QObject):
         self._startTimer = timer()
         self._testTimer = timer()
         self._maintenance = NullMaintenance()
+        self._testItem = ""
 
         self._shouldUpdateRemainingToUnlock = True
         self._lastRemainingToUnlock = 0
@@ -182,7 +183,7 @@ class Fixture(QtCore.QObject):
         payload = ""
         status = self.get_status()
         if self.isTesting:
-            payload = f'[{_("pre-testing")}] ' if self.isPreTesting else ""
+            payload = f"[{self.testItem}] " if self.testItem != "" else ""
             payload += f"({str(self.get_test_time())})"
         elif not self.lastTest.isNull:
             payload = _("SN: {0}    Result: {1}").format(
@@ -375,4 +376,13 @@ class Fixture(QtCore.QObject):
             self.maintenance = NullMaintenance()
         if not self._lastTest.isNull:
             self.isTesting = False
+        self._property_changed()
+
+    @property
+    def testItem(self) -> str:
+        return self._testItem
+
+    @testItem.setter
+    def testItem(self, value: str):
+        self._testItem = value
         self._property_changed()

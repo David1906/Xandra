@@ -1,4 +1,6 @@
+import logging
 import os
+import pathlib
 from Core.Enums.FixtureMode import FixtureMode
 from Core.Enums.FixtureStatus import FixtureStatus
 from Core.Enums.SettingType import SettingType
@@ -10,8 +12,10 @@ from DataAccess.MainConfigDAO import MainConfigDAO
 from DataAccess.MaintenanceDAO import MaintenanceDAO
 from DataAccess.TestDAO import TestDAO
 from datetime import datetime, timedelta
+from DataAccess.TestParser import TestParser
 from Models.Fixture import Fixture
 from Models.Maintenance import Maintenance
+from Models.TerminalAnalysis import TerminalAnalysis
 from Models.Test import Test
 
 
@@ -24,6 +28,7 @@ class FixtureController:
         self._maintenanceDAO = MaintenanceDAO()
         self._fixtureStatusLogDAO = FixtureStatusLogDAO()
         self._catalogItemDAO = CatalogItemDAO()
+        self._testParser = TestParser()
 
     def get_fct_host_cmd(self, fixture: Fixture, hasTraceability: bool):
         fullpathSplit = (
@@ -50,6 +55,7 @@ class FixtureController:
         if fixture.is_upload_to_sfc(test):
             isUploadOk = self._fixtureDAO.upload_pass_to_sfc(test.serialNumber)
             test.description += f" Xandra SFC Upload: {'OK' if isUploadOk else 'error'}"
+        test.fixtureIp = fixture.ip
         self._testDAO.add(test, fixture.mode.value)
 
     def add_status_log(
@@ -94,3 +100,25 @@ class FixtureController:
         return self._catalogItemDAO.find_group_values(
             SettingType.ACTIONS_LAST_SYNC.group
         )
+
+    def parse_test(self, terminalAnalysis: TerminalAnalysis) -> Test:
+        try:
+            test = None
+            if (
+                os.path.isfile(terminalAnalysis.logfile)
+                and pathlib.Path(terminalAnalysis.logfile).suffix
+                in Test.ALLOWED_EXTENSIONS
+            ):
+                test = self._testParser.parse(terminalAnalysis.logfile)
+            if test == None:
+                test = Test(
+                    serialNumber=terminalAnalysis.serialNumber,
+                    stepLabel=terminalAnalysis.stepLabel,
+                    startTime=datetime.today(),
+                    endTime=datetime.today(),
+                    status=False,
+                    description=f"{terminalAnalysis.stepLabel} Failed",
+                )
+            return test
+        except Exception as e:
+            logging.error(str(e))

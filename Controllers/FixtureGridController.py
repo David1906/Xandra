@@ -8,7 +8,6 @@ from Models.Test import Test
 from PyQt5 import QtCore
 from Utils.BaseEventHandler import BaseEventHandler
 from Utils.FileWatchdog import FileWatchdog
-from Utils.FixtureSocket import FixtureSocket
 from Utils.Translator import Translator
 import atexit
 import logging
@@ -19,9 +18,6 @@ import pathlib
 class FixtureGridController(QtCore.QThread):
     config_change = QtCore.pyqtSignal(object)
     fixture_change = QtCore.pyqtSignal(Fixture)
-    pre_test_started = QtCore.pyqtSignal(str)
-    test_started = QtCore.pyqtSignal(str)
-    test_finished = QtCore.pyqtSignal(str, str, str, str)
 
     def __init__(self):
         QtCore.QThread.__init__(self)
@@ -40,28 +36,6 @@ class FixtureGridController(QtCore.QThread):
         atexit.register(lambda: self._configWatchdog.stop())
 
         self._fixtureDAO.reset_mode()
-
-        self._socket = FixtureSocket()
-        self._socket.pre_test_started.connect(self.on_pre_test_started)
-        self._socket.test_started.connect(self.on_test_started)
-        self._socket.test_finished.connect(self.on_test_finished)
-        self._socket.start()
-        self._socket.setPriority(QtCore.QThread.Priority.HighestPriority)
-
-    def on_pre_test_started(self, fixtureIp: str):
-        self.pre_test_started.emit(fixtureIp)
-
-    def on_test_started(self, fixtureIp: str):
-        self.test_started.emit(fixtureIp)
-
-    def on_test_finished(
-        self,
-        fixtureIp: str,
-        serialNumber: str = "",
-        logFileName: str = "",
-        currentTest: str = "",
-    ):
-        self.test_finished.emit(fixtureIp, serialNumber, logFileName, currentTest)
 
     def on_config_change(self, event):
         Translator().set_language_from_config()

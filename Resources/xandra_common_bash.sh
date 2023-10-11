@@ -1,27 +1,3 @@
-report_exit_to_xandra() {
-    current_wd="$(pwd)"
-
-    echo cd Xandra Resources: $XANDRA_RESOURCES
-    cd $XANDRA_RESOURCES
-    python3 send_station_test_finished.py --ip "$XANDRA_FIXTURE_IP" --sn "${BSN}" --ln "${file_name}" --ct ""
-
-    echo cd: $current_wd
-    cd $current_wd
-
-    unalias exit 2>/dev/null
-}
-
-report_start_to_xandra() {
-    current_wd="$(pwd)"
-
-    echo cd Xandra Resources: $XANDRA_RESOURCES
-    cd $XANDRA_RESOURCES
-    python3 send_station_test_started.py --ip "$XANDRA_FIXTURE_IP"
-
-    echo cd: $current_wd
-    cd $current_wd
-}
-
 print_wrapper_header() {
     echo
     echo

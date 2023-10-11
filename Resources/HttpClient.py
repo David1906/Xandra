@@ -1,9 +1,12 @@
-from SocketClient import SocketClient
 import math
 import os
+import requests
 
 
-class FixtureSocketNotifier:
+class HttpClient:
+    SERVER_URL_FIXTURE_STATUS = (
+        "http://127.0.0.1:5002/fixture/status?fixtureIp={fixtureIp}"
+    )
     BASE_PATH = os.path.dirname(os.path.abspath(__file__))
     RED_COLOR = "\033[91m"
     GREEN_COLOR = "\033[92m"
@@ -11,15 +14,21 @@ class FixtureSocketNotifier:
     END_COLOR = "\033[0m"
 
     def __init__(self, resultFileName: str = "result.result"):
-        self._socketClient = SocketClient()
-        self._result_file = f"{FixtureSocketNotifier.BASE_PATH}/{resultFileName}"
+        self._result_file = f"{HttpClient.BASE_PATH}/{resultFileName}"
         os.environ["RESULTFILE"] = self._result_file
         if os.path.exists(self._result_file):
             os.remove(self._result_file)
 
     def is_locked(self, fixtureIp: str) -> bool:
         try:
-            if self._socketClient.get_is_disabled(fixtureIp):
+            print(
+                HttpClient.SERVER_URL_FIXTURE_STATUS.format(fixtureIp=fixtureIp),
+                fixtureIp,
+            )
+            response = requests.get(
+                HttpClient.SERVER_URL_FIXTURE_STATUS.format(fixtureIp=fixtureIp)
+            )
+            if response.json()["shouldAbortTest"]:
                 self.outputFail("Fixture Locked")
                 return False
             else:
@@ -29,44 +38,24 @@ class FixtureSocketNotifier:
             self.outputNoConnection()
             return True
 
-    def notify_test_start(self, fixtureIp: str) -> bool:
-        try:
-            self._socketClient.notify_test_start(fixtureIp)
-            self.printHeader("Test Started", FixtureSocketNotifier.WHITE_COLOR)
-        except:
-            self.outputNoConnection()
-
-    def notify_finish(
-        self,
-        fixtureIp: str,
-        serialNumber: str = "",
-        logFileName: str = "",
-        currentTest: str = "",
-    ) -> bool:
-        try:
-            self._socketClient.notify_test_end(fixtureIp, serialNumber, logFileName, currentTest)
-            self.printHeader("Test Finished", FixtureSocketNotifier.WHITE_COLOR)
-        except:
-            self.outputNoConnection()
-
     def outputNoConnection(self):
         self.printHeader(
             "Connection Error With Xandra",
-            FixtureSocketNotifier.WHITE_COLOR,
+            HttpClient.WHITE_COLOR,
         )
         self.outputResultFile("PASS")
 
     def outputOk(self, text: str):
         self.printHeader(
             text,
-            FixtureSocketNotifier.GREEN_COLOR,
+            HttpClient.GREEN_COLOR,
         )
         self.outputResultFile("PASS")
 
     def outputFail(self, text: str):
         self.printHeader(
             text,
-            FixtureSocketNotifier.RED_COLOR,
+            HttpClient.RED_COLOR,
         )
         self.outputResultFile("FAIL")
 
@@ -91,7 +80,7 @@ class FixtureSocketNotifier:
         )
 
     def printColored(self, text, color):
-        print(f"{color}{text}{FixtureSocketNotifier.END_COLOR}")
+        print(f"{color}{text}{HttpClient.END_COLOR}")
 
     def outputResultFile(self, result):
         with open(self._result_file, "w") as outfile:

@@ -57,7 +57,7 @@ class FctHostControlDAO:
                 ("Enable", "true"),
                 (
                     "App_Path",
-                    f'"{self._pathHelper.get_root_path()}/Resources/chk_station_is_disabled.py"',
+                    f'"{self._pathHelper.get_root_path()}/Resources/chk_station_is_locked.py"',
                 ),
                 ("Delay", f"5000"),
                 ("Timeout", f"0"),

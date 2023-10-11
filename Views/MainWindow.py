@@ -1,13 +1,14 @@
-import random
-import subprocess
 from DataAccess.FctHostControlDAO import FctHostControlDAO
 from DataAccess.MainConfigDAO import MainConfigDAO
+from DataAccess.Strapi.StrapiDAO import StrapiDAO
 from datetime import datetime
 from PyQt5 import QtGui, QtCore, QtWidgets
-from DataAccess.Strapi.StrapiDAO import StrapiDAO
+from Utils.HttpServer import HttpServer
 from Utils.PathHelper import PathHelper
 from Views.FixtureGridView import FixtureGridView
 import os
+import random
+import subprocess
 from PyQt5.QtWidgets import (
     QAction,
     QGridLayout,
@@ -47,6 +48,10 @@ class MainWindow(QMainWindow):
         self._syncTimer = QtCore.QTimer()
         self._syncTimer.timeout.connect(self._sync_all_async)
         self._update_sync_timer()
+
+        self._httpServer = HttpServer(self)
+        self._httpServer.start()
+        self._httpServer.setPriority(QtCore.QThread.Priority.HighestPriority)
 
     def _init_ui(self):
         self.setWindowIcon(QtGui.QIcon(MainWindow.ICON_FULLPATH))
@@ -225,6 +230,7 @@ class MainWindow(QMainWindow):
         if reply == QMessageBox.Yes:
             self.fixtureGridView.save_status()
             QtWidgets.QApplication.closeAllWindows()
+            self._httpServer.stop()
             event.accept()
         else:
             event.ignore()

@@ -1,22 +1,22 @@
-import logging
-import os
-import pathlib
 from Core.Enums.FixtureMode import FixtureMode
 from Core.Enums.FixtureStatus import FixtureStatus
 from Core.Enums.SettingType import SettingType
+from DataAccess.CatalogItemDAO import CatalogItemDAO
 from DataAccess.FctHostControlDAO import FctHostControlDAO
 from DataAccess.FixtureDAO import FixtureDAO
 from DataAccess.FixtureStatusLogDAO import FixtureStatusLogDAO
-from DataAccess.CatalogItemDAO import CatalogItemDAO
 from DataAccess.MainConfigDAO import MainConfigDAO
 from DataAccess.MaintenanceDAO import MaintenanceDAO
 from DataAccess.TestDAO import TestDAO
 from datetime import datetime, timedelta
-from DataAccess.TestParser import TestParser
 from Models.Fixture import Fixture
 from Models.Maintenance import Maintenance
 from Models.TerminalAnalysis import TerminalAnalysis
 from Models.Test import Test
+from Products.TestParserBuilder import TestParserBuilder
+import logging
+import os
+import pathlib
 
 
 class FixtureController:
@@ -28,7 +28,7 @@ class FixtureController:
         self._maintenanceDAO = MaintenanceDAO()
         self._fixtureStatusLogDAO = FixtureStatusLogDAO()
         self._catalogItemDAO = CatalogItemDAO()
-        self._testParser = TestParser()
+        self._testParser = TestParserBuilder().build_based_on_main_config()
 
     def get_fct_host_cmd(self, fixture: Fixture, hasTraceability: bool):
         fullpathSplit = (

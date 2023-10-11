@@ -19,16 +19,16 @@
     ],
     "fctHostControl_description":"Configuración de ruta completa a la carpeta que contiene los archivos FCTHostControl y FCTHostControl.config",
 
+    "product": "C4",
+    "product_description": "[C4; MOBO] Producto que se correrá en xandra",
+
     "defaultProductModelName":  "^C4.*",
     "defaultProductModelName_description" : "Nombre del modelo seleccionado por defecto en FCTHostControl.config (se procesa como expresión regular)",
 
 
     "uploadSfcScript":  "/home/david/documents/repos/Xandra/Resources/up_sfc.sh",
     "uploadSfcScript_description" : "Ruta completa al script encargado de subir la trazabilidad al sistema SFC",
-
-    "logsPath": "/home/david/documents/xandra_test_logs",
-    "logsPath_description":"Ruta donde se guardan los logs de las pruebas realizadas",
-
+    
     "yieldErrorThreshold": 0,
     "yieldErrorThreshold_description": "[0-100; 0 = deshabilitado] - Porcentaje de yield el cual una vez alcanzado bloqueará la fixtura y lo pintará de color rojo en la interfaz (0 para deshabilitar)",
 

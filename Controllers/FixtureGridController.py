@@ -2,17 +2,12 @@ from Core.Enums.FixtureMode import FixtureMode
 from DataAccess.FixtureDAO import FixtureDAO
 from DataAccess.MainConfigDAO import MainConfigDAO
 from DataAccess.TestDAO import TestDAO
-from DataAccess.TestParser import TestParser
 from Models.Fixture import Fixture
-from Models.Test import Test
 from PyQt5 import QtCore
 from Utils.BaseEventHandler import BaseEventHandler
 from Utils.FileWatchdog import FileWatchdog
 from Utils.Translator import Translator
 import atexit
-import logging
-import os
-import pathlib
 
 
 class FixtureGridController(QtCore.QThread):
@@ -25,7 +20,6 @@ class FixtureGridController(QtCore.QThread):
         self._testDAO = TestDAO()
         self._fixtureDAO = FixtureDAO()
         self._mainConfigDAO = MainConfigDAO()
-        self._testParser = TestParser()
 
         self._baseEventHandler = BaseEventHandler()
         self._baseEventHandler.modified.connect(
@@ -51,14 +45,3 @@ class FixtureGridController(QtCore.QThread):
                 fixture.mode = FixtureMode.ONLINE
                 self._fixtureDAO.create_or_update(fixture)
         return fixtures
-
-    def parse_test(self, logFileName) -> Test:
-        try:
-            logFullpath = f"{self._mainConfigDAO.get_logs_path()}/{logFileName}"
-            if (
-                os.path.isfile(logFullpath)
-                and pathlib.Path(logFullpath).suffix in Test.ALLOWED_EXTENSIONS
-            ):
-                return self._testParser.parse(logFullpath)
-        except Exception as e:
-            logging.error(str(e))

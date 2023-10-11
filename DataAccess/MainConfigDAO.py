@@ -69,9 +69,6 @@ class MainConfigDAO:
             + self.get_fct_host_control()[index]["config"]
         )
 
-    def get_logs_path(self) -> str:
-        return self._get_value("logsPath")
-
     def get_yield_error_threshold(self) -> float:
         value = self._get_value("yieldErrorThreshold")
         return self.YIELD_ERROR_THRESHOLD_INTERVAL.normalize(value)
@@ -109,3 +106,6 @@ class MainConfigDAO:
 
     def get_sync_server(self):
         return self._get_value("sync")["server"]
+
+    def get_product(self):
+        return self._get_value("product")

@@ -1,8 +1,8 @@
-import subprocess
 from abc import ABC, abstractmethod
-from typing import Tuple
 from Models.NullTerminalAnalysis import NullTerminalAnalysis
 from Models.TerminalAnalysis import TerminalAnalysis
+from typing import Tuple
+import subprocess
 
 
 class TerminalAnalyzer(ABC):

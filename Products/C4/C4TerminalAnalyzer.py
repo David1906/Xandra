@@ -1,10 +1,10 @@
 from typing import Tuple
 from Core.Enums.TerminalStatus import TerminalStatus
 from Models.TerminalAnalysis import TerminalAnalysis
-from Models.TerminalAnalyzer import TerminalAnalyzer
+from DataAccess.TerminalAnalyzer import TerminalAnalyzer
 
 
-class TerminalAnalyzerSparrow(TerminalAnalyzer):
+class C4TerminalAnalyzer(TerminalAnalyzer):
     def __init__(self, sessionId: str) -> None:
         super().__init__(sessionId)
         self.serialNumber = ""

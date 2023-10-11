@@ -3,7 +3,7 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import pyqtSignal
 from Models.NullTerminalAnalysis import NullTerminalAnalysis
 from Models.TerminalAnalysis import TerminalAnalysis
-from Models.TerminalAnalyzerSparrow import TerminalAnalyzerSparrow
+from Products.TerminalAnalyzerBuilder import TerminalAnalyzerBuilder
 
 
 class Terminal(QtWidgets.QFrame):
@@ -18,7 +18,9 @@ class Terminal(QtWidgets.QFrame):
 
         self.sessionId = f"console_{id}"
         self.terminal = QtWidgets.QFrame()
-        self.terminalAnalyzer = TerminalAnalyzerSparrow(self.sessionId)
+        self._analyzer = TerminalAnalyzerBuilder().build_based_on_main_config(
+            self.sessionId
+        )
         self.lastAnalysis = NullTerminalAnalysis()
         self.setStyleSheet(
             """
@@ -78,7 +80,7 @@ class Terminal(QtWidgets.QFrame):
         return str(int(self.winId()))
 
     def _analyze(self):
-        currentAnalysis = self.terminalAnalyzer.analyze()
+        currentAnalysis = self._analyzer.analyze()
         if not self.lastAnalysis.equals(currentAnalysis):
             self.change.emit(currentAnalysis)
         self.lastAnalysis = currentAnalysis

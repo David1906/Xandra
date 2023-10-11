@@ -4,7 +4,7 @@ import logging
 import re
 
 
-class TestDescriptionParser:
+class C4TestDescriptionParser:
     def __init__(self) -> None:
         self._version = 1
 

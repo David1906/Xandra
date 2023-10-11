@@ -1,5 +1,4 @@
 from Core.Enums.FixtureMode import FixtureMode
-from DataAccess.FctHostControlDAO import FctHostControlDAO
 from DataAccess.MainConfigDAO import MainConfigDAO
 from DataAccess.SqlAlchemyBase import Session
 from DataAccess.TestDAO import TestDAO
@@ -8,10 +7,12 @@ from Models.Fixture import Fixture
 from sqlalchemy import update
 import subprocess
 
+from Products.HostControlBuilder import HostControlBuilder
+
 
 class FixtureDAO:
     def __init__(self) -> None:
-        self._fctHostControlDAO = FctHostControlDAO()
+        self._hostControl = HostControlBuilder().build_based_on_main_config()
         self._mainConfigDAO = MainConfigDAO()
         self._testDAO = TestDAO()
 
@@ -54,11 +55,11 @@ class FixtureDAO:
 
     def find_all(self) -> "list[Fixture]":
         fixtures = []
-        for fixtureConfig in self._fctHostControlDAO.get_all_fixture_configs():
+        for fixtureConfig in self._hostControl.get_all_fixture_configs():
             fixtures.append(
                 self.find(
-                    fixtureConfig[FctHostControlDAO.PLC_IP_KEY],
-                    fixtureConfig[FctHostControlDAO.PLC_ID_KEY],
+                    fixtureConfig.ip,
+                    fixtureConfig.id,
                 )
             )
         return fixtures
@@ -104,10 +105,10 @@ class FixtureDAO:
 
     def upload_pass_to_sfc(self, serialNumber) -> bool:
         result = subprocess.run(
-            f'{self._fctHostControlDAO.get_upload_sfc_script_fullpath()} -s "{serialNumber}"',
+            f'{self._hostControl.get_upload_sfc_script_fullpath()} -s "{serialNumber}"',
             stdout=subprocess.PIPE,
             shell=True,
-            cwd=self._fctHostControlDAO.get_script_fullpath(),
+            cwd=self._hostControl.get_script_fullpath(),
         )
         print(result.stdout.decode())
         return result.returncode == 0

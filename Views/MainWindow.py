@@ -1,10 +1,11 @@
-from DataAccess.FctHostControlDAO import FctHostControlDAO
 from DataAccess.MainConfigDAO import MainConfigDAO
 from DataAccess.Strapi.StrapiDAO import StrapiDAO
 from datetime import datetime
+from Products.HostControlBuilder import HostControlBuilder
 from PyQt5 import QtGui, QtCore, QtWidgets
 from Utils.HttpServer import HttpServer
 from Utils.PathHelper import PathHelper
+from Utils.Translator import Translator
 from Views.FixtureGridView import FixtureGridView
 import os
 import random
@@ -19,7 +20,6 @@ from PyQt5.QtWidgets import (
     QMessageBox,
     QWidget,
 )
-from Utils.Translator import Translator
 
 _ = Translator().gettext
 
@@ -32,7 +32,7 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.isLockEnabled = True
-        self._fctHostControlDAO = FctHostControlDAO()
+        self._hostControl = HostControlBuilder().build_based_on_main_config()
         self._mainConfigDAO = MainConfigDAO()
         self._isSyncing = False
 
@@ -43,7 +43,7 @@ class MainWindow(QMainWindow):
         self._create_menus()
         self._update_texts()
 
-        self._fctHostControlDAO.write_default_settings()
+        self._hostControl.initialize()
 
         self._syncTimer = QtCore.QTimer()
         self._syncTimer.timeout.connect(self._sync_all_async)
@@ -92,9 +92,7 @@ class MainWindow(QMainWindow):
             _("Xandra Version: {0}").format(os.environ.get("XANDRA_VERSION"))
         )
         self.lblScriptVersion.setText(
-            _("Script Version: {0}").format(
-                self._fctHostControlDAO.get_script_version()
-            )
+            _("Script Version: {0}").format(self._hostControl.get_script_version())
         )
         self.lblXandraVersion.setToolTip(_("Developed by David Ascencio\nFoxconn"))
 

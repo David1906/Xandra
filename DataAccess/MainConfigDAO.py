@@ -46,27 +46,27 @@ class MainConfigDAO:
     def get_fixture_ip_env_name(self) -> str:
         return self._get_value("fixtureIpEnvironmentName")
 
-    def get_fct_host_control(self) -> str:
-        return self._get_value("fctHostControl")
+    def get_host_control(self) -> str:
+        return self._get_value("hostControl")
 
     def get_fct_host_control_len(self) -> int:
-        return len(self.get_fct_host_control())
+        return len(self.get_host_control())
 
     def get_fct_host_control_path(self, index: int = 0) -> str:
-        return self.get_fct_host_control()[index]["path"]
+        return self.get_host_control()[index]["path"]
 
     def get_fct_host_control_executable_fullpath(self, index: int = 0) -> str:
         return (
             self.get_fct_host_control_path(index)
             + "/"
-            + self.get_fct_host_control()[index]["executable"]
+            + self.get_host_control()[index]["executable"]
         )
 
     def get_fct_host_config_fullpath(self, index: int = 0) -> str:
         return (
             self.get_fct_host_control_path(index)
             + "/"
-            + self.get_fct_host_control()[index]["config"]
+            + self.get_host_control()[index]["config"]
         )
 
     def get_yield_error_threshold(self) -> float:
@@ -88,9 +88,6 @@ class MainConfigDAO:
     def get_lock_fail_qty(self) -> str:
         value = self._get_value("lockFailQty")
         return self.LOCK_FAIL_QTY_INTERVAL.normalize(value)
-
-    def get_default_product_name(self) -> "list[str]":
-        return self._get_value("defaultProductModelName")
 
     def get_upload_sfc_script(self) -> str:
         return self._get_value("uploadSfcScript")

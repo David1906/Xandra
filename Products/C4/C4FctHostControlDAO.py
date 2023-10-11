@@ -8,7 +8,8 @@ import os
 import re
 
 
-class FctHostControlDAO:
+class C4FctHostControlDAO:
+    DEFAULT_PRODUCT_NAME = "^C4.*"
     FIXTURES_ARRAY_KEY = "Fixtures"
     PLC_ID_KEY = "ID"
     PLC_IP_KEY = "PLC_IP"
@@ -17,7 +18,7 @@ class FctHostControlDAO:
 
     def __new__(cls, *args, **kwargs):
         if not hasattr(cls, "instance"):
-            cls.instance = super(FctHostControlDAO, cls).__new__(cls, *args, **kwargs)
+            cls.instance = super(C4FctHostControlDAO, cls).__new__(cls, *args, **kwargs)
             cls.instance.initialized = False
         return cls.instance
 
@@ -104,11 +105,11 @@ class FctHostControlDAO:
         return "%s %s %s" % (line[:start], newValue, line[end:])
 
     def get_all_fixture_configs(self) -> "list[dict]":
-        return self.data[FctHostControlDAO.FIXTURES_ARRAY_KEY]
+        return self.data[C4FctHostControlDAO.FIXTURES_ARRAY_KEY]
 
     def get_all_fixtures_ip(self) -> "list[str]":
         configs = self.get_all_fixture_configs()
-        return [config[FctHostControlDAO.PLC_IP_KEY] for config in configs]
+        return [config[C4FctHostControlDAO.PLC_IP_KEY] for config in configs]
 
     def get_script_version(self):
         scriptFullPath = self.get_script_fullpath()
@@ -127,11 +128,13 @@ class FctHostControlDAO:
         return self._mainConfigDAO.get_upload_sfc_script(self.configIdx)
 
     def get_script_fullpath(self) -> str:
-        productName = self._mainConfigDAO.get_default_product_name()
-        products = self.data[FctHostControlDAO.PRODUCT_MODELS_KEY]
+        products = self.data[C4FctHostControlDAO.PRODUCT_MODELS_KEY]
         for product in products:
             if bool(
-                re.search(productName, product[FctHostControlDAO.PRODUCT_NAME_KEY])
+                re.search(
+                    self.DEFAULT_PRODUCT_NAME,
+                    product[C4FctHostControlDAO.PRODUCT_NAME_KEY],
+                )
             ):
                 return self._extract_script_path(product)
         return ""

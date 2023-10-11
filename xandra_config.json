@@ -5,19 +5,9 @@
     "fixtureIpEnvironmentName": "XANDRA_FIXTURE_IP",
     "fixtureIpEnvironmentName_description":"Variable del entorno en la cuál se inyectará la ip de la fixtura",
 
-    "fctHostControl": [
+    "hostControl": [
         {
             "path": "/usr/local/Foxconn/automation/DA194/Bahubali_Sparrow_C3_4.3",
-            "executable": "FCTHostControl",
-            "config": "FCTHostControl.config"
-        },
-        {
-            "path": "/usr/local/Foxconn/automation/DA194/Bahubali_Sparrow_C3_4.2",
-            "executable": "FCTHostControl",
-            "config": "FCTHostControl.config"
-        },
-        {
-            "path": "/usr/local/Foxconn/automation/DA194/Bahubali_Sparrow_C3",
             "executable": "FCTHostControl",
             "config": "FCTHostControl.config"
         }
@@ -26,9 +16,6 @@
 
     "product": "C4",
     "product_description": "[C4; MOBO] Producto que se correrá en xandra",
-
-    "defaultProductModelName":  "^C4.*",
-    "defaultProductModelName_description" : "Nombre del modelo seleccionado por defecto en FCTHostControl.config (se procesa como expresión regular)",
 
     "uploadSfcScript":  "/usr/local/Foxconn/automation/Xandra/Resources/up_sfc.sh",
     "uploadSfcScript_description" : "Ruta completa al script encargado de subir la trazabilidad al sistema SFC",

@@ -2,7 +2,6 @@ from Core.Enums.FixtureMode import FixtureMode
 from Core.Enums.FixtureStatus import FixtureStatus
 from Core.Enums.SettingType import SettingType
 from DataAccess.CatalogItemDAO import CatalogItemDAO
-from DataAccess.FctHostControlDAO import FctHostControlDAO
 from DataAccess.FixtureDAO import FixtureDAO
 from DataAccess.FixtureStatusLogDAO import FixtureStatusLogDAO
 from DataAccess.MainConfigDAO import MainConfigDAO
@@ -13,6 +12,7 @@ from Models.Fixture import Fixture
 from Models.Maintenance import Maintenance
 from Models.TerminalAnalysis import TerminalAnalysis
 from Models.Test import Test
+from Products.HostControlBuilder import HostControlBuilder
 from Products.TestParserBuilder import TestParserBuilder
 import logging
 import os
@@ -24,26 +24,14 @@ class FixtureController:
         self._testDAO = TestDAO()
         self._fixtureDAO = FixtureDAO()
         self._mainConfigDAO = MainConfigDAO()
-        self._fctHostControlDAO = FctHostControlDAO()
+        self._hostControl = HostControlBuilder().build_based_on_main_config()
         self._maintenanceDAO = MaintenanceDAO()
         self._fixtureStatusLogDAO = FixtureStatusLogDAO()
         self._catalogItemDAO = CatalogItemDAO()
         self._testParser = TestParserBuilder().build_based_on_main_config()
 
     def get_fct_host_cmd(self, fixture: Fixture, hasTraceability: bool):
-        fullpathSplit = (
-            self._fctHostControlDAO.get_fct_host_control_executable_fullpath().split(
-                "/"
-            )
-        )
-        fileName = fullpathSplit[-1]
-        path = "/".join(fullpathSplit[0:-1])
-        cmd = f"cd {path} && source ~/.bashrc && pyenv activate fctHostControl && python --version && which python && {self._mainConfigDAO.get_fixture_ip_env_name()}={fixture.ip} ./{fileName} -f {fixture.id}"
-        if os.environ.get("ENV") == "testing":
-            cmd = f"cd {path} && {self._mainConfigDAO.get_fixture_ip_env_name()}={fixture.ip} ./{fileName} -f {fixture.id}"
-        if hasTraceability == False:
-            cmd += " -m"
-        return cmd
+        return self._hostControl.get_start_cmd(fixture, hasTraceability)
 
     def find(self, fixtureIp: str) -> Fixture:
         return self._fixtureDAO.find(fixtureIp)

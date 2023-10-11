@@ -1,6 +1,7 @@
 from DataAccess.MainConfigDAO import MainConfigDAO
 from DataAccess.TerminalAnalyzer import TerminalAnalyzer
 from Products.C4.C4TerminalAnalyzer import C4TerminalAnalyzer
+from Products.Mobo.MoboTerminalAnalyzer import MoboTerminalAnalyzer
 
 
 class TerminalAnalyzerBuilder:
@@ -13,3 +14,5 @@ class TerminalAnalyzerBuilder:
     def build(self, model: str, sessionId: str) -> TerminalAnalyzer:
         if model == "C4":
             return C4TerminalAnalyzer(sessionId)
+        elif model == "MOBO":
+            return MoboTerminalAnalyzer(sessionId)

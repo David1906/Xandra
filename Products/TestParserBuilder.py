@@ -1,6 +1,7 @@
 from DataAccess.MainConfigDAO import MainConfigDAO
 from DataAccess.TestParser import TestParser
 from Products.C4.C4TestParser import C4TestParser
+from Products.Mobo.MoboTestParser import MoboTestParser
 
 
 class TestParserBuilder:
@@ -13,3 +14,5 @@ class TestParserBuilder:
     def build(self, model: str) -> TestParser:
         if model == "C4":
             return C4TestParser()
+        elif model == "MOBO":
+            return MoboTestParser()

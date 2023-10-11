@@ -14,3 +14,5 @@ class HostControlBuilder:
     def build(self, model: str) -> HostControl:
         if model == "C4":
             return C4HostControl()
+        elif model == "MOBO":
+            return MoboHostControl()

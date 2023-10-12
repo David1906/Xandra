@@ -7,14 +7,14 @@
 
     "hostControl": [
         {
-            "path": "/usr/local/Foxconn/automation/DA194/Bahubali_Sparrow_C3_4.3",
+            "path": "/usr/local/Foxconn/automation/DA194/Bahubali_Sparrow_C3",
             "executable": "FCTHostControl",
             "config": "FCTHostControl.config"
         }
     ],
     "fctHostControl_description":"Configuración de ruta completa a la carpeta que contiene los archivos FCTHostControl y FCTHostControl.config",
 
-    "product": "C4",
+    "product": "MOBO",
     "product_description": "[C4; MOBO] Producto que se correrá en xandra",
 
     "uploadSfcScript":  "/usr/local/Foxconn/automation/Xandra/Resources/up_sfc.sh",

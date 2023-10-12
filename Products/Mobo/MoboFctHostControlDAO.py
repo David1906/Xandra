@@ -9,7 +9,7 @@ import re
 
 
 class MoboFctHostControlDAO:
-    DEFAULT_PRODUCT_NAME = "^C4.*"
+    DEFAULT_PRODUCT_NAME = "^L6.*"
     FIXTURES_ARRAY_KEY = "Fixtures"
     PLC_ID_KEY = "ID"
     PLC_IP_KEY = "PLC_IP"

@@ -29,7 +29,7 @@ class MoboTestParser(TestParser):
                 test = Test()
                 test.fullPath = fullPath
                 for l_no, line in enumerate(fp):
-                    if test.serialNumber == None and self.search("Board\s*SN", line):
+                    if test.serialNumber == None and self.search("Serial\s*Number", line):
                         test.serialNumber = self.extract_value(line)
                         continue
 

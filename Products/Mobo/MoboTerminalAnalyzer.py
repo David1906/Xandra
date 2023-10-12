@@ -43,7 +43,7 @@ class MoboTerminalAnalyzer(TerminalAnalyzer):
         return self.buffer_extract("Test_Item\s*:\s*\K.*")
 
     def _get_serial_number(self) -> Tuple[int, str]:
-        return self.buffer_extract("SN\s*:\s*\K.*")
+        return self.buffer_extract("Serial Number\s*:\s*<*\K.*?(?=<)")
 
     def _get_logfile_path(self):
         logRegex = "out log\s*:\s*"

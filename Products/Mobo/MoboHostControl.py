@@ -39,7 +39,7 @@ class MoboHostControl(HostControl):
                     ip=fixtureConfig[C4FctHostControlDAO.PLC_IP_KEY],
                 )
             )
-        return fixtures
+        return fixtures[:9]
 
     def get_upload_sfc_script_fullpath(self) -> str:
         return self._fctHostControlDAO.get_upload_sfc_script_fullpath()

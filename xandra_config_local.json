@@ -1,8 +1,10 @@
 {
     "language": "es",
-    "language_description": "[en=inglés, es=español] Seleccionar el idioma de la interfaz",
+    "language_description":"[en=inglés, es=español] Seleccionar el idioma de la interfaz",
+
     "fixtureIpEnvironmentName": "XANDRA_FIXTURE_IP",
-    "fixtureIpEnvironmentName_description": "Variable del entorno en la cuál se inyectará la ip de la fixtura",
+    "fixtureIpEnvironmentName_description":"Variable del entorno en la cuál se inyectará la ip de la fixtura",
+
     "hostControl": [
         {
             "path": "/home/david/documents/xandra_test_logs/FctHostControl",
@@ -10,25 +12,33 @@
             "config": "FCTHostControl.config"
         }
     ],
-    "fctHostControl_description": "Configuración de ruta completa a la carpeta que contiene los archivos FCTHostControl y FCTHostControl.config",
-    "product": "C4",
+    "fctHostControl_description":"Configuración de ruta completa a la carpeta que contiene los archivos FCTHostControl y FCTHostControl.config",
+
+    "product": "MOBO",
     "product_description": "[C4; MOBO] Producto que se correrá en xandra",
-    "uploadSfcScript": "/home/david/documents/repos/Xandra/Resources/up_sfc.sh",
-    "uploadSfcScript_description": "Ruta completa al script encargado de subir la trazabilidad al sistema SFC",
+
+    "uploadSfcScript":  "/usr/local/Foxconn/automation/Xandra/Resources/up_sfc.sh",
+    "uploadSfcScript_description" : "Ruta completa al script encargado de subir la trazabilidad al sistema SFC",
+
     "yieldErrorThreshold": 0,
     "yieldErrorThreshold_description": "[0-100; 0 = deshabilitado] - Porcentaje de yield el cual una vez alcanzado bloqueará la fixtura y lo pintará de color rojo en la interfaz (0 para deshabilitar)",
+
     "yieldWarningThreshold": 70,
     "yieldWarningThreshold_description": "[0-99] - Porcentaje de yield el cual una vez alcanzado pintará la fixtura de color amarillo en la interfaz",
+
     "yieldCalcQty": 10,
-    "yieldCalcQty_description": "[0-1000] - Cantidad de pruebas con las que se calculará el yield",
+    "yieldCalcQty_description" : "[0-1000] - Cantidad de pruebas con las que se calculará el yield",
+
     "unlockPassQty": 1,
-    "unlockPassQty_description": "[1-5] - Cantidad de pruebas consecutivas con estatus PASS necesarias para desbloquear la fixtura",
+    "unlockPassQty_description" : "[1-5] - Cantidad de pruebas consecutivas con estatus PASS necesarias para desbloquear la fixtura",
+
     "lockFailQty": 3,
-    "lockFailQty_description": "[0-10; 0 = deshabilitado] - Cantidad de pruebas consecutivas con estatus FAILED necesarias para bloquear la fixtura",
+    "lockFailQty_description" : "[0-10; 0 = deshabilitado] - Cantidad de pruebas consecutivas con estatus FAILED necesarias para bloquear la fixtura",
+
     "sync": {
-        "isActivated": false,
-        "interval": 180000,
-        "server": "http://192.168.30.232:9002/api"
+        "isActivated" : false,
+        "interval" : 180000,
+        "server": "http://10.12.206.253:9002/api"
     },
-    "sync_description": "Configuración para subir resultados de las pruebas realizadas a servidor especificado"
+    "sync_description":"Configuración para sincronizar datos con el servidor especificado"
 }

@@ -47,7 +47,7 @@ class Terminal(QtWidgets.QFrame):
             "-fg",
             "white",
             "-e",
-            f"tmux attach-session -t {self.sessionId};",
+            f"TMUX='' tmux attach-session -t {self.sessionId};",
         ]
         self.process.start("xterm", fullArgs)
         self._updateTimer.start(self.analysisInterval)
@@ -55,7 +55,7 @@ class Terminal(QtWidgets.QFrame):
     def create_tmux_session(self, command: str):
         tmuxSession = run(["tmux", "has-session", "-t", self.sessionId])
         if tmuxSession.returncode != 0:
-            call(f"tmux new-session -A -s {self.sessionId} \; detach", shell=True)
+            call(f"TMUX='' tmux new-session -A -s {self.sessionId} \; detach", shell=True)
             call(
                 f'tmux send-keys -t {self.sessionId} "{command};exit" Enter',
                 shell=True,

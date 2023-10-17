@@ -23,5 +23,8 @@ class TerminalAnalysis:
     def is_testing(self) -> bool:
         return self.status == TerminalStatus.TESTING
 
+    def is_pass(self) -> bool:
+        return self.status == TerminalStatus.PASS
+
     def equals(self, other: TerminalAnalysis) -> bool:
         return self.status == other.status and self.stepLabel == other.stepLabel

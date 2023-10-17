@@ -101,11 +101,15 @@ class FixtureController:
             if test == None:
                 test = Test(
                     serialNumber=terminalAnalysis.serialNumber,
-                    stepLabel=terminalAnalysis.stepLabel,
+                    stepLabel=""
+                    if terminalAnalysis.is_pass()
+                    else terminalAnalysis.stepLabel,
                     startTime=datetime.today(),
                     endTime=datetime.today(),
-                    status=False,
-                    description=f"{terminalAnalysis.stepLabel} Failed",
+                    status=terminalAnalysis.is_pass(),
+                    description=""
+                    if terminalAnalysis.is_pass()
+                    else f"{terminalAnalysis.stepLabel} Failed",
                 )
             return test
         except Exception as e:

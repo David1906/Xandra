@@ -8,7 +8,7 @@ from Products.TerminalAnalyzerBuilder import TerminalAnalyzerBuilder
 
 
 class Terminal(QtWidgets.QFrame):
-    analysisInterval = 1500 + Random.randint(500)
+    analysisInterval = 1500 + Random.randint(0, 500)
     finished = pyqtSignal(int)
     change = pyqtSignal(TerminalAnalysis)
 

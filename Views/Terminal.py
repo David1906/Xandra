@@ -7,7 +7,7 @@ from Products.TerminalAnalyzerBuilder import TerminalAnalyzerBuilder
 
 
 class Terminal(QtWidgets.QFrame):
-    analysisInterval = 500
+    analysisInterval = 1500
     finished = pyqtSignal(int)
     change = pyqtSignal(TerminalAnalysis)
 
@@ -84,7 +84,7 @@ class Terminal(QtWidgets.QFrame):
     def _analyze(self):
         currentAnalysis = self._analyzer.analyze()
         if currentAnalysis.is_stopped():
-            #self.Stop()
+            self.Stop()
             return
         if not self.lastAnalysis.equals(currentAnalysis):
             self.change.emit(currentAnalysis)

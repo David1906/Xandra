@@ -35,6 +35,7 @@ class MoboTerminalAnalyzer(TerminalAnalyzer):
         elif currentStatus == testFinished:
             self.currentAnalysis = self._get_test_finished_analysis(testing)
             self.serialNumber = ""
+            self.lastNonSFCTest = ""
         return self.currentAnalysis
 
     def _get_testing_analysis(self, testing: Tuple[int, str]) -> TerminalAnalysis:
@@ -56,9 +57,10 @@ class MoboTerminalAnalyzer(TerminalAnalyzer):
             if self.serialNumber != ""
             else self._get_serial_number()[1]
         )
-        return TerminalAnalysis(
-            self._get_pass_or_fail_status(), logfile, testing[1], serialNumber
-        )
+        terminalStatus = TerminalStatus.IDLE
+        if self.lastNonSFCTest != "":
+            terminalStatus = self._get_pass_or_fail_status()
+        return TerminalAnalysis(terminalStatus, logfile, testing[1], serialNumber)
 
     def _get_pass_or_fail_status(self) -> TerminalStatus:
         passStatus = self._get_pass()
@@ -78,7 +80,7 @@ class MoboTerminalAnalyzer(TerminalAnalyzer):
         )
 
     def _get_testing_item(self) -> Tuple[int, str]:
-        return self.buffer_extract("Test_Item\s*:\s*\K.*|Power On Board")
+        return self.buffer_extract("Test_Item\s*:\s*\K.*")
 
     def _get_serial_number(self) -> Tuple[int, str]:
         return self.buffer_extract("Serial Number\s*:\s*<*\K.*?(?=>)")

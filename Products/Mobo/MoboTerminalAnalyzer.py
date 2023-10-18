@@ -1,3 +1,4 @@
+import re
 from typing import Tuple
 from Core.Enums.TerminalStatus import TerminalStatus
 from Models.TerminalAnalysis import TerminalAnalysis
@@ -8,33 +9,41 @@ class MoboTerminalAnalyzer(TerminalAnalyzer):
     def __init__(self, sessionId: str) -> None:
         super().__init__(sessionId)
         self.serialNumber = ""
+        self.lastNonSFCTest = ""
+        self.currentAnalysis = TerminalAnalysis(TerminalStatus.IDLE)
 
     def calc_analysis(self) -> TerminalAnalysis:
+        idle = self._get_idle()
         terminalStopped = self._get_terminal_stopped()
         testStarted = self._get_test_started()
         testing = self._get_testing_item()
         testFinished = self._get_test_finished()
         currentStatus = self._get_latest(
-            [terminalStopped, testStarted, testing, testFinished]
+            [idle, terminalStopped, testStarted, testing, testFinished]
         )
 
-        analysis = TerminalAnalysis(TerminalStatus.IDLE)
-        if currentStatus == terminalStopped:
-            analysis = TerminalAnalysis(TerminalStatus.STOPPED)
+        if currentStatus == idle:
+            self.currentAnalysis = TerminalAnalysis(TerminalStatus.IDLE)
+        elif currentStatus == terminalStopped:
+            self.currentAnalysis = TerminalAnalysis(TerminalStatus.STOPPED)
         elif currentStatus[0] == self.ERROR_ID:
-            analysis = TerminalAnalysis(TerminalStatus.IDLE)
+            self.currentAnalysis = TerminalAnalysis(TerminalStatus.IDLE)
         elif currentStatus == testing or currentStatus == testStarted:
             if self.serialNumber == "":
                 self.serialNumber = self._get_serial_number()[1]
-            analysis = self._get_testing_analysis(testing)
+            self.currentAnalysis = self._get_testing_analysis(testing)
         elif currentStatus == testFinished:
-            analysis = self._get_test_finished_analysis(testing)
+            self.currentAnalysis = self._get_test_finished_analysis(testing)
             self.serialNumber = ""
-        return analysis
+        return self.currentAnalysis
 
     def _get_testing_analysis(self, testing: Tuple[int, str]) -> TerminalAnalysis:
+        if not re.match("sfc", testing[1]):
+            self.lastNonSFCTest = testing[1]
         return TerminalAnalysis(
-            TerminalStatus.TESTING, serialNumber=self.serialNumber, stepLabel=testing[1]
+            TerminalStatus.TESTING,
+            serialNumber=self.serialNumber,
+            stepLabel=self.lastNonSFCTest,
         )
 
     def _get_test_finished_analysis(self, testing: Tuple[int, str]) -> TerminalAnalysis:
@@ -64,7 +73,9 @@ class MoboTerminalAnalyzer(TerminalAnalyzer):
         return self.buffer_extract("─────────── End Test ───────────")
 
     def _get_idle(self) -> Tuple[int, str]:
-        return self.buffer_extract("Fixture\s*status\s*is|what.*\s*your\s*product")
+        return self.buffer_extract(
+            "Checking\s*fixture\s*status\s*is|what.*\s*your\s*product"
+        )
 
     def _get_testing_item(self) -> Tuple[int, str]:
         return self.buffer_extract("Test_Item\s*:\s*\K.*|Power On Board")
@@ -73,7 +84,15 @@ class MoboTerminalAnalyzer(TerminalAnalyzer):
         return self.buffer_extract("Serial Number\s*:\s*<*\K.*?(?=>)")
 
     def _get_terminal_stopped(self) -> Tuple[int, str]:
-        return self.buffer_extract("\[\s*root@pxe.*\].*#")
+        xandraStarted = self._get_terminal_start_xandra()
+        xandraStopped = self.buffer_extract("\[\s*root@pxe.*\].*#")
+        currentStatus = self._get_latest([xandraStarted, xandraStopped])
+        if currentStatus == xandraStarted:
+            return (-1, "")
+        return xandraStopped
+
+    def _get_terminal_start_xandra(self) -> Tuple[int, str]:
+        return self.buffer_extract("\[\s*root@pxe.*Xandra\].*#")
 
     def _get_logfile_path(self):
         logRegex = "out log\s*:\s*"

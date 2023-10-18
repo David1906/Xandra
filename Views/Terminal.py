@@ -1,4 +1,4 @@
-from random import Random
+from random import randint
 from subprocess import call, run
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import pyqtSignal
@@ -8,7 +8,7 @@ from Products.TerminalAnalyzerBuilder import TerminalAnalyzerBuilder
 
 
 class Terminal(QtWidgets.QFrame):
-    analysisInterval = 1500 + Random.randint(0, 500)
+    analysisInterval = 1500 + randint(0, 500)
     finished = pyqtSignal(int)
     change = pyqtSignal(TerminalAnalysis)
 

@@ -54,7 +54,7 @@ class MoboTerminalAnalyzer(TerminalAnalyzer):
         return self.buffer_extract("Fixture status is.*\(.*TAU_ready")
 
     def _get_test_finished(self) -> Tuple[int, str]:
-        return self.buffer_extract("End Test")
+        return self.buffer_extract("─────────── End Test ───────────")
 
     def _get_idle(self) -> Tuple[int, str]:
         return self.buffer_extract("Fixture\s*status\s*is|what.*\s*your\s*product")
@@ -75,7 +75,7 @@ class MoboTerminalAnalyzer(TerminalAnalyzer):
         return self.buffer_extract("Main testing PASS")
 
     def _get_fail(self):
-        return self.buffer_extract("Main testing FAIL")
+        return self.buffer_extract("Main testing FAIL|Checking board station FAIL")
 
     def _get_latest(self, tuples: "list[Tuple[int,str]]") -> Tuple[int, str]:
         latest = tuples[0]

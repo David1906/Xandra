@@ -1,3 +1,4 @@
+from random import Random
 from subprocess import call, run
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import pyqtSignal
@@ -7,12 +8,13 @@ from Products.TerminalAnalyzerBuilder import TerminalAnalyzerBuilder
 
 
 class Terminal(QtWidgets.QFrame):
-    analysisInterval = 1500
+    analysisInterval = 1500 + Random.randint(500)
     finished = pyqtSignal(int)
     change = pyqtSignal(TerminalAnalysis)
 
     def __init__(self, id: str):
         super().__init__()
+        self.isAnalazyng = False
         self.process = QtCore.QProcess(self)
         self.process.finished.connect(self.on_finished)
 
@@ -82,6 +84,9 @@ class Terminal(QtWidgets.QFrame):
         return str(int(self.winId()))
 
     def _analyze(self):
+        if self.isAnalazyng:
+            return
+        self.isAnalazyng = True
         currentAnalysis = self._analyzer.analyze()
         if currentAnalysis.is_stopped():
             self.Stop()
@@ -89,3 +94,4 @@ class Terminal(QtWidgets.QFrame):
         if not self.lastAnalysis.equals(currentAnalysis):
             self.change.emit(currentAnalysis)
         self.lastAnalysis = currentAnalysis
+        self.isAnalazyng = False

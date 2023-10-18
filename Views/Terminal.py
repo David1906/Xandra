@@ -55,7 +55,9 @@ class Terminal(QtWidgets.QFrame):
     def create_tmux_session(self, command: str):
         tmuxSession = run(["tmux", "has-session", "-t", self.sessionId])
         if tmuxSession.returncode != 0:
-            call(f"TMUX='' tmux new-session -A -s {self.sessionId} \; detach", shell=True)
+            call(
+                f"TMUX='' tmux new-session -A -s {self.sessionId} \; detach", shell=True
+            )
             call(
                 f'tmux send-keys -t {self.sessionId} "{command};exit" Enter',
                 shell=True,
@@ -81,6 +83,9 @@ class Terminal(QtWidgets.QFrame):
 
     def _analyze(self):
         currentAnalysis = self._analyzer.analyze()
+        if currentAnalysis.is_stopped():
+            self.Stop()
+            return
         if not self.lastAnalysis.equals(currentAnalysis):
             self.change.emit(currentAnalysis)
         self.lastAnalysis = currentAnalysis

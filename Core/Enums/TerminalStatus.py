@@ -11,6 +11,7 @@ class TerminalStatus(enum.Enum):
     def __init__(self, description: str):
         self.description = description
 
+    STOPPED = "Stopped"
     UNKNOWN = "Unknown"
     IDLE = "IDLE"
     TESTING = "Testing"

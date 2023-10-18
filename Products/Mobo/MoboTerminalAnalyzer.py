@@ -10,13 +10,18 @@ class MoboTerminalAnalyzer(TerminalAnalyzer):
         self.serialNumber = ""
 
     def calc_analysis(self) -> TerminalAnalysis:
+        terminalStopped = self._get_terminal_stopped()
         testStarted = self._get_test_started()
         testing = self._get_testing_item()
         testFinished = self._get_test_finished()
-        currentStatus = self._get_latest([testStarted, testing, testFinished])
+        currentStatus = self._get_latest(
+            [terminalStopped, testStarted, testing, testFinished]
+        )
 
         analysis = TerminalAnalysis(TerminalStatus.IDLE)
-        if currentStatus[0] == self.ERROR_ID:
+        if currentStatus == terminalStopped:
+            analysis = TerminalAnalysis(TerminalStatus.STOPPED)
+        elif currentStatus[0] == self.ERROR_ID:
             analysis = TerminalAnalysis(TerminalStatus.IDLE)
         elif currentStatus == testing or currentStatus == testStarted:
             if self.serialNumber == "":
@@ -38,7 +43,9 @@ class MoboTerminalAnalyzer(TerminalAnalyzer):
         if outLog[0] < testing[0]:
             logfile = ""
         serialNumber = (
-            self.serialNumber if self.serialNumber != "" else self._get_serial_number()[1]
+            self.serialNumber
+            if self.serialNumber != ""
+            else self._get_serial_number()[1]
         )
         return TerminalAnalysis(
             self._get_pass_or_fail_status(), logfile, testing[1], serialNumber
@@ -64,6 +71,9 @@ class MoboTerminalAnalyzer(TerminalAnalyzer):
 
     def _get_serial_number(self) -> Tuple[int, str]:
         return self.buffer_extract("Serial Number\s*:\s*<*\K.*?(?=>)")
+
+    def _get_terminal_stopped(self) -> Tuple[int, str]:
+        return self.buffer_extract("\[\s*root@pxe.*\].*#")
 
     def _get_logfile_path(self):
         logRegex = "out log\s*:\s*"

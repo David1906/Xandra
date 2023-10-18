@@ -26,5 +26,8 @@ class TerminalAnalysis:
     def is_pass(self) -> bool:
         return self.status == TerminalStatus.PASS
 
+    def is_stopped(self) -> bool:
+        return self.status == TerminalStatus.STOPPED
+
     def equals(self, other: TerminalAnalysis) -> bool:
         return self.status == other.status and self.stepLabel == other.stepLabel

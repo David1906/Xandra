@@ -39,7 +39,7 @@ class MoboTerminalAnalyzer(TerminalAnalyzer):
         return self.currentAnalysis
 
     def _get_testing_analysis(self, testing: Tuple[int, str]) -> TerminalAnalysis:
-        if not re.match("sfc", testing[1]):
+        if not re.match(".*sfc.*", testing[1]):
             self.lastNonSFCTest = testing[1]
         return TerminalAnalysis(
             TerminalStatus.TESTING,

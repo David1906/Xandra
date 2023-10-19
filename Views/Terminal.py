@@ -1,17 +1,12 @@
-from random import randint
 from subprocess import call, run
-from time import sleep
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import pyqtSignal
-from Core.StateMachines.TeminalObserver import TemrinalObserver
-from Core.StateMachines.TerminalStateMachine import TerminalStateMachine
 from Models.NullTerminalAnalysis import NullTerminalAnalysis
 from Models.TerminalAnalysis import TerminalAnalysis
-from Products.TerminalAnalyzerBuilder import TerminalAnalyzerBuilder
+from Utils.TerminalThread import TerminalThread
 
 
 class Terminal(QtWidgets.QFrame):
-    analysisInterval = 1000 + randint(0, 500)
     finished = pyqtSignal(int)
     change = pyqtSignal(TerminalAnalysis)
 
@@ -23,9 +18,6 @@ class Terminal(QtWidgets.QFrame):
 
         self.sessionId = f"console_{id}"
         self.terminal = QtWidgets.QFrame()
-        self._analyzer = TerminalAnalyzerBuilder().build_based_on_main_config(
-            self.sessionId
-        )
         self.lastAnalysis = NullTerminalAnalysis()
         self.setStyleSheet(
             """
@@ -35,21 +27,8 @@ class Terminal(QtWidgets.QFrame):
             """
         )
 
-        terminalAnalyzer = TerminalAnalyzerBuilder().build_based_on_main_config(
-            self.sessionId
-        )
-        self._sm = TerminalStateMachine(terminalAnalyzer=terminalAnalyzer)
-        self._terminalObserver = TemrinalObserver(self, terminalAnalyzer)
-        self._terminalObserver.update.connect(self._terminal_updated)
-        self._sm.add_observer(self._terminalObserver)
-
-        self._updateTimer = QtCore.QTimer()
-        self._updateTimer.timeout.connect(self._sm.cycle)
-
-    def keyPressEvent(self, event):
-        if event.modifiers() & QtCore.Qt.ControlModifier:
-            if event.key() == QtCore.Qt.Key_R:
-                print("Ctrl + R")
+        self.terminalThread = TerminalThread(self.sessionId)
+        self.terminalThread.updated.connect(self._terminal_updated)
 
     def start(self, args: "list[str]" = []):
         self.create_tmux_session(";".join(args))
@@ -69,7 +48,7 @@ class Terminal(QtWidgets.QFrame):
             f"TMUX='' tmux attach-session -t {self.sessionId};",
         ]
         self.process.start("xterm", fullArgs)
-        self._updateTimer.start(self.analysisInterval)
+        self.terminalThread.start()
 
     def create_tmux_session(self, command: str):
         tmuxSession = run(["tmux", "has-session", "-t", self.sessionId])
@@ -91,7 +70,7 @@ class Terminal(QtWidgets.QFrame):
 
     def on_finished(self, exitCode, exitStatus):
         self.finished.emit(exitCode)
-        self._updateTimer.stop()
+        self.terminalThread.abort()
 
     def Stop(self):
         call(f"tmux kill-session -t {self.sessionId}", shell=True)

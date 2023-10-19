@@ -99,7 +99,7 @@ class MoboTerminalAnalyzer(TerminalAnalyzer):
         return TerminalStatus.PASS if latest == passStatus else TerminalStatus.FAIL
 
     def _get_test_started(self) -> Tuple[int, str]:
-        return self.buffer_extract("Fixture status is.*\(.*TAU_ready")
+        return self.buffer_extract(".*Checking.*SN.*MAC.*")
 
     def _get_test_powered_on(self) -> Tuple[int, str]:
         return self.buffer_extract("Fixture status is.*\(.*UUT_powered")

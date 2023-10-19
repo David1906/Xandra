@@ -1,14 +1,17 @@
 from random import randint
 from subprocess import call, run
+from time import sleep
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import pyqtSignal
+from Core.StateMachines.TeminalObserver import TemrinalObserver
+from Core.StateMachines.TerminalStateMachine import TerminalStateMachine
 from Models.NullTerminalAnalysis import NullTerminalAnalysis
 from Models.TerminalAnalysis import TerminalAnalysis
 from Products.TerminalAnalyzerBuilder import TerminalAnalyzerBuilder
 
 
 class Terminal(QtWidgets.QFrame):
-    analysisInterval = 1500 + randint(0, 500)
+    analysisInterval = 1000 + randint(0, 500)
     finished = pyqtSignal(int)
     change = pyqtSignal(TerminalAnalysis)
 
@@ -31,8 +34,22 @@ class Terminal(QtWidgets.QFrame):
             background-color: #e6ebe7;
             """
         )
+
+        terminalAnalyzer = TerminalAnalyzerBuilder().build_based_on_main_config(
+            self.sessionId
+        )
+        self._sm = TerminalStateMachine(terminalAnalyzer=terminalAnalyzer)
+        self._terminalObserver = TemrinalObserver(self, terminalAnalyzer)
+        self._terminalObserver.update.connect(self._terminal_updated)
+        self._sm.add_observer(self._terminalObserver)
+
         self._updateTimer = QtCore.QTimer()
-        self._updateTimer.timeout.connect(self._analyze)
+        self._updateTimer.timeout.connect(self._sm.cycle)
+
+    def keyPressEvent(self, event):
+        if event.modifiers() & QtCore.Qt.ControlModifier:
+            if event.key() == QtCore.Qt.Key_R:
+                print("Ctrl + R")
 
     def start(self, args: "list[str]" = []):
         self.create_tmux_session(";".join(args))
@@ -61,7 +78,7 @@ class Terminal(QtWidgets.QFrame):
                 f"TMUX='' tmux new-session -A -s {self.sessionId} \; detach", shell=True
             )
             call(
-                f'tmux send-keys -t {self.sessionId} "{command};exit" Enter',
+                f'tmux send-keys -t {self.sessionId} "{command} || exit" Enter',
                 shell=True,
             )
             self.set_tmux_option("status", "off")
@@ -83,15 +100,10 @@ class Terminal(QtWidgets.QFrame):
     def get_terminal_winId(self) -> str:
         return str(int(self.winId()))
 
-    def _analyze(self):
-        if self.isAnalazyng:
-            return
-        self.isAnalazyng = True
-        currentAnalysis = self._analyzer.analyze()
-        if currentAnalysis.is_stopped():
+    def _terminal_updated(self, terminalAnalysis: TerminalAnalysis):
+        if terminalAnalysis.is_stopped():
             self.Stop()
             return
-        if not self.lastAnalysis.equals(currentAnalysis):
-            self.change.emit(currentAnalysis)
-        self.lastAnalysis = currentAnalysis
-        self.isAnalazyng = False
+        if not self.lastAnalysis.equals(terminalAnalysis):
+            self.change.emit(terminalAnalysis)
+        self.lastAnalysis = terminalAnalysis

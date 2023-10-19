@@ -94,7 +94,7 @@ class MainWindow(QMainWindow):
         self.lblScriptVersion.setText(
             _("Script Version: {0}").format(self._hostControl.get_script_version())
         )
-        self.lblXandraVersion.setToolTip(_("Developed by David Ascencio\nFoxconn"))
+        self.lblXandraVersion.setToolTip(_("Developed by David Ascencio and Omar Ascencio @Foxconn"))
 
     def _add_actions(self):
         self.addAction(self.toggleRetestAction)

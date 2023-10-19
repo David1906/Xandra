@@ -14,13 +14,40 @@ class TerminalAnalyzer(ABC):
         self.prevLastLine = ""
         self.currentAnalysis = NullTerminalAnalysis()
 
-    def analyze(self) -> TerminalAnalysis:
-        if self.has_changed():
-            self.currentAnalysis = self.calc_analysis()
-        return self.currentAnalysis
+    @abstractmethod
+    def is_board_loaded(self) -> bool:
+        pass
 
     @abstractmethod
-    def calc_analysis(self) -> TerminalAnalysis:
+    def is_power_on(self) -> bool:
+        pass
+
+    @abstractmethod
+    def refresh_serial_number(self) -> str:
+        pass
+
+    @abstractmethod
+    def is_finished(self) -> bool:
+        pass
+
+    @abstractmethod
+    def is_testing(self) -> bool:
+        pass
+
+    @abstractmethod
+    def get_test_item(self) -> str:
+        pass
+
+    @abstractmethod
+    def is_result_parsed(self) -> bool:
+        pass
+
+    @abstractmethod
+    def is_stopped(self) -> bool:
+        pass
+
+    @abstractmethod
+    def get_finished_terminalAnalysis(self) -> TerminalAnalysis:
         pass
 
     def buffer_contains(self, regex: str) -> bool:

@@ -91,26 +91,6 @@ class FixtureController:
 
     def parse_test(self, terminalAnalysis: TerminalAnalysis) -> Test:
         try:
-            test = None
-            if (
-                os.path.isfile(terminalAnalysis.logfile)
-                and pathlib.Path(terminalAnalysis.logfile).suffix
-                in Test.ALLOWED_EXTENSIONS
-            ):
-                test = self._testParser.parse(terminalAnalysis.logfile)
-            if test == None:
-                test = Test(
-                    serialNumber=terminalAnalysis.serialNumber,
-                    stepLabel=""
-                    if terminalAnalysis.is_pass()
-                    else terminalAnalysis.stepLabel,
-                    startTime=datetime.today(),
-                    endTime=datetime.today(),
-                    status=terminalAnalysis.is_pass(),
-                    description=""
-                    if terminalAnalysis.is_pass()
-                    else f"{terminalAnalysis.stepLabel} Failed",
-                )
-            return test
+            return self._testParser.parse(terminalAnalysis)
         except Exception as e:
             logging.error(str(e))

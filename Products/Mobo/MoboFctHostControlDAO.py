@@ -9,7 +9,7 @@ import re
 
 
 class MoboFctHostControlDAO:
-    DEFAULT_PRODUCT_NAME = "^L6.*"
+    DEFAULT_PRODUCT_NAME = "^Hanuman$"
     FIXTURES_ARRAY_KEY = "Fixtures"
     PLC_ID_KEY = "ID"
     PLC_IP_KEY = "PLC_IP"
@@ -130,6 +130,18 @@ class MoboFctHostControlDAO:
         return self._mainConfigDAO.get_upload_sfc_script(self.configIdx)
 
     def get_script_fullpath(self) -> str:
+        product = self._extract_product()
+        if product == None:
+            return ""
+        return self._extract_script_path(product)
+
+    def get_script_out_path(self) -> str:
+        product = self._extract_product()
+        if product == None:
+            return ""
+        return product["OutPath"]
+
+    def _extract_product(self) -> any:
         products = self.data[MoboFctHostControlDAO.PRODUCT_MODELS_KEY]
         for product in products:
             if bool(
@@ -138,8 +150,8 @@ class MoboFctHostControlDAO:
                     product[MoboFctHostControlDAO.PRODUCT_NAME_KEY],
                 )
             ):
-                return self._extract_script_path(product)
-        return ""
+                return product
+        return None
 
     def _extract_script_path(self, product: dict):
         appPath: str = product["Testing_Main"]["App_Path"]

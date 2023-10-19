@@ -1,5 +1,8 @@
 from datetime import datetime
+import os
+import pathlib
 from DataAccess.TestParser import TestParser
+from Models.TerminalAnalysis import TerminalAnalysis
 from Models.Test import Test
 from Products.C4.C4TestDescriptionParser import C4TestDescriptionParser
 import logging
@@ -23,13 +26,37 @@ class MoboTestParser(TestParser):
 
         self._testDescriptionParser = C4TestDescriptionParser()
 
-    def parse(self, fullPath: str) -> Test:
+    def parse(self, terminalAnalysis: TerminalAnalysis) -> Test:
+        if (
+            False  # TODO Add file parser to extract failure detail
+            and os.path.isfile(terminalAnalysis.logfile)
+            and pathlib.Path(terminalAnalysis.logfile).suffix in Test.ALLOWED_EXTENSIONS
+        ):
+            return self._parse_log(terminalAnalysis.logfile)
+        return self._default_test(terminalAnalysis)
+
+    def _default_test(self, terminalAnalysis: TerminalAnalysis) -> Test:
+        return Test(
+            serialNumber=terminalAnalysis.serialNumber,
+            stepLabel="" if terminalAnalysis.is_pass() else terminalAnalysis.stepLabel,
+            startTime=datetime.today(),
+            endTime=datetime.today(),
+            status=terminalAnalysis.is_pass(),
+            fullPath=terminalAnalysis.logfile,
+            description=""
+            if terminalAnalysis.is_pass()
+            else f"{terminalAnalysis.stepLabel} Failed",
+        )
+
+    def _parse_log(self, fullPath: str) -> Test:
         try:
             with open(fullPath, "r") as fp:
                 test = Test()
                 test.fullPath = fullPath
                 for l_no, line in enumerate(fp):
-                    if test.serialNumber == None and self.search("Serial\s*Number", line):
+                    if test.serialNumber == None and self.search(
+                        "Serial\s*Number", line
+                    ):
                         test.serialNumber = self.extract_value(line)
                         continue
 

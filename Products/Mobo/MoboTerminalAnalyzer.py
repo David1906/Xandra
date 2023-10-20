@@ -89,7 +89,7 @@ class MoboTerminalAnalyzer(TerminalAnalyzer):
         return popen.returncode != 0
 
     def _get_test_started(self) -> Tuple[int, str]:
-        return self.buffer_extract(".*Checking.*SN.*MAC.*")
+        return self.buffer_extract("Fixture status is.*\(.*UUT_powering")
 
     def _get_test_powered_on(self) -> Tuple[int, str]:
         return self.buffer_extract("Fixture status is.*\(.*UUT_powered")

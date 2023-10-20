@@ -32,3 +32,7 @@ class HostControl(ABC):
     @abstractmethod
     def get_script_version(self) -> str:
         pass
+
+    @abstractmethod
+    def get_automatic_product_selection(self) -> int:
+        pass

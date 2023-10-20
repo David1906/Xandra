@@ -2,14 +2,15 @@ from DataAccess.HostControl import HostControl
 from DataAccess.MainConfigDAO import MainConfigDAO
 from Models.Fixture import Fixture
 from Models.FixtureConfig import FixtureConfig
-from Products.C4.C4FctHostControlDAO import C4FctHostControlDAO
+from Products.Mobo.MoboFctHostControlDAO import MoboFctHostControlDAO
 import os
+
 
 
 class MoboHostControl(HostControl):
     def __init__(self) -> None:
         super().__init__()
-        self._fctHostControlDAO = C4FctHostControlDAO()
+        self._fctHostControlDAO = MoboFctHostControlDAO()
         self._mainConfigDAO = MainConfigDAO()
 
     def initialize(self):
@@ -35,8 +36,8 @@ class MoboHostControl(HostControl):
         for fixtureConfig in self._fctHostControlDAO.get_all_fixture_configs():
             fixtures.append(
                 FixtureConfig(
-                    id=fixtureConfig[C4FctHostControlDAO.PLC_ID_KEY],
-                    ip=fixtureConfig[C4FctHostControlDAO.PLC_IP_KEY],
+                    id=fixtureConfig[MoboFctHostControlDAO.PLC_ID_KEY],
+                    ip=fixtureConfig[MoboFctHostControlDAO.PLC_IP_KEY],
                 )
             )
         return fixtures[:9]
@@ -49,3 +50,6 @@ class MoboHostControl(HostControl):
 
     def get_script_version(self) -> str:
         return "MOBO - " + self._fctHostControlDAO.get_script_version()
+
+    def get_automatic_product_selection(self) -> int:
+        return self._fctHostControlDAO.AUTOMATIC_PRODUCT_SELECTION

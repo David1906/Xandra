@@ -359,8 +359,8 @@ msgid "Exit Xandra"
 msgstr "Salir de Xandra"
 
 #: ../../Views/MainWindow.py:119
-msgid "Are you sure to exit Xandra?\n\nIt will stop all fixtures"
-msgstr "¿Realmente desea salir de Xandra?\n\nEsta acción detendrá todas las fixturas"
+msgid "Are you sure to exit Xandra?"
+msgstr "¿Realmente desea salir de Xandra?"
 
 #: ../../DataAccess/GoogleSheet.py:119
 msgid "Syncing"

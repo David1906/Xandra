@@ -17,6 +17,9 @@
     "product": "MOBO",
     "product_description": "[C4; MOBO] Producto que se correrá en xandra",
 
+    "automaticProductSelection": 2,
+    "automaticProductSelection_description": "[0-10; -1 = deshabilitado] Producto que se seleccionará de forma automática en la terminal",
+
     "uploadSfcScript":  "/usr/local/Foxconn/automation/Xandra/Resources/up_sfc.sh",
     "uploadSfcScript_description" : "Ruta completa al script encargado de subir la trazabilidad al sistema SFC",
 

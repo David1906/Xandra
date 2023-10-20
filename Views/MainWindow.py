@@ -221,7 +221,7 @@ class MainWindow(QMainWindow):
         reply = QMessageBox.question(
             self,
             _("Exit Xandra"),
-            _("Are you sure to exit Xandra?\n\nIt will stop all fixtures"),
+            _("Are you sure to exit Xandra?"),
             QMessageBox.Yes | QMessageBox.No,
             QMessageBox.No,
         )

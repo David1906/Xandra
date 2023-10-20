@@ -50,7 +50,7 @@ class Fixture(QtCore.QObject):
         self._isPreTesting = False
         self._isTesting = False
         self._isStarted = False
-        self._isLockEnabled = False
+        self._isLockEnabled = True
         self._wasOverElapsed = False
         self._startDateTime = datetime.now()
         self._startTimer = timer()
@@ -94,7 +94,7 @@ class Fixture(QtCore.QObject):
             return False
         return self.is_locked()
 
-    def is_locked(self) -> str:
+    def is_locked(self) -> bool:
         return self.get_lock() != LockType.UNLOCKED
 
     def get_lock(self) -> LockType:

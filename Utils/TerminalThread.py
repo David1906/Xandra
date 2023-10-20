@@ -34,7 +34,7 @@ class TerminalThread(QtCore.QThread):
 
     def abort(self):
         self._sm.stop()
-        self.wait()
+        self.quit()
 
     def _terminal_updated(self, terminalAnalysis: TerminalAnalysis):
         self.updated.emit(terminalAnalysis)

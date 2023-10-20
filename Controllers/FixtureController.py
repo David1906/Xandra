@@ -94,3 +94,6 @@ class FixtureController:
             return self._testParser.parse(terminalAnalysis)
         except Exception as e:
             logging.error(str(e))
+
+    def get_automatic_product_selection(self) -> int:
+        return self._mainConfigDAO.get_automatic_product_selection()

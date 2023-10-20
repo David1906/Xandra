@@ -1,4 +1,5 @@
 from subprocess import call, run
+import subprocess
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import pyqtSignal
 from Models.NullTerminalAnalysis import NullTerminalAnalysis
@@ -7,15 +8,17 @@ from Utils.TerminalThread import TerminalThread
 
 
 class Terminal(QtWidgets.QFrame):
+    AUTOMATIC_SELECTION_DELAY = 5
     finished = pyqtSignal(int)
     change = pyqtSignal(TerminalAnalysis)
 
-    def __init__(self, id: str):
+    def __init__(self, id: str, automaticProductSelection: int = -1):
         super().__init__()
         self.isAnalazyng = False
         self.process = QtCore.QProcess(self)
         self.process.finished.connect(self.on_finished)
 
+        self.automaticProductSelection = automaticProductSelection
         self.sessionId = f"console_{id}"
         self.terminal = QtWidgets.QFrame()
         self.lastAnalysis = NullTerminalAnalysis()
@@ -51,22 +54,40 @@ class Terminal(QtWidgets.QFrame):
         self.terminalThread.start(priority=QtCore.QThread.Priority.HighPriority)
 
     def create_tmux_session(self, command: str):
-        tmuxSession = run(["tmux", "has-session", "-t", self.sessionId])
-        if tmuxSession.returncode != 0:
+        if not self.has_tmux_session():
             call(
                 f"TMUX='' tmux new-session -A -s {self.sessionId} \; detach", shell=True
             )
             call(
-                f'tmux send-keys -t {self.sessionId} "{command} || exit" Enter',
+                self._get_tmux_send_keys(f'"{command} || exit"') + " Enter",
                 shell=True,
             )
             self.set_tmux_option("status", "off")
             self.set_tmux_option("history-limit", "3000")
             self.set_tmux_option("mouse", "on")
             self.set_tmux_option("mode-keys", "vi")
+            self.automatic_product_selection()
+
+    def has_tmux_session(self) -> bool:
+        tmuxSession = run(["tmux", "has-session", "-t", self.sessionId])
+        return tmuxSession.returncode == 0
 
     def set_tmux_option(self, option: str, value: str):
         call(f"tmux set-option -t {self.sessionId} {option} {value}", shell=True)
+
+    def automatic_product_selection(self):
+        if self.automaticProductSelection == -1:
+            return
+        subprocess.Popen(
+            f"""sleep {self.AUTOMATIC_SELECTION_DELAY}; 
+            {self._get_tmux_send_keys(f"Down " * self.automaticProductSelection)}; 
+            sleep 1.5; 
+            {self._get_tmux_send_keys("Enter")};""".strip(),
+            shell=True,
+        )
+
+    def _get_tmux_send_keys(self, keys: str) -> str:
+        return f"tmux send-keys -t {self.sessionId} {keys}"
 
     def on_finished(self, exitCode, exitStatus):
         self.terminalThread.abort()

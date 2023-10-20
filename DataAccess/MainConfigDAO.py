@@ -106,3 +106,6 @@ class MainConfigDAO:
 
     def get_product(self):
         return self._get_value("product")
+
+    def get_automatic_product_selection(self) -> int:
+        return int(self._get_value("automaticProductSelection"))

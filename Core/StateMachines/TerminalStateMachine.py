@@ -60,9 +60,6 @@ class TerminalStateMachine(StateMachine):
             else TerminalAnalyzerBuilder().build_based_on_main_config()
         )
 
-    def before_cycle(self, event: str, source: State, target: State, message: str = ""):
-        print("Cycle", target)
-
     def is_board_loaded(self):
         return self.terminalAnalyzer.is_board_loaded()
 

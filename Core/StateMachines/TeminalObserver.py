@@ -25,6 +25,7 @@ class TemrinalObserver(QtCore.QObject):
         self.update.emit(TerminalAnalysis(TerminalStatus.IDLE))
 
     def on_enter_Loaded(self):
+        self._terminalAnalyzer.initialize_files()
         self._emit_terminalAnalysis("Board Loaded")
 
     def on_enter_PoweredOn(self):

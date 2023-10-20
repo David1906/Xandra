@@ -26,6 +26,13 @@ class MoboTerminalAnalyzer(TerminalAnalyzer):
         latest = self._get_latest([testStarted, testFinished])
         return testStarted[0] != self.ERROR_ID and testStarted == latest
 
+    def initialize_files(self) -> str:
+        subprocess.Popen(
+            f'echo "" > {self.currentLogFullpath}/{self.RUN_STATUS_FILE}',
+            stdout=None,
+            shell=True,
+        )
+
     def is_power_on(self) -> bool:
         testStarted = self._get_test_started()
         testPowered = self._get_test_powered_on()
@@ -84,7 +91,9 @@ class MoboTerminalAnalyzer(TerminalAnalyzer):
         )
 
     def is_stopped(self) -> bool:
-        popen = subprocess.Popen(f"tmux has-session -t {self.sessionId}",stdout=None, shell=True)
+        popen = subprocess.Popen(
+            f"tmux has-session -t {self.sessionId}", stdout=None, shell=True
+        )
         popen.communicate()
         return popen.returncode != 0
 

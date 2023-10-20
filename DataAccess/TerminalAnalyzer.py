@@ -19,6 +19,10 @@ class TerminalAnalyzer(ABC):
         pass
 
     @abstractmethod
+    def initialize_files(self) -> str:
+        pass
+
+    @abstractmethod
     def is_power_on(self) -> bool:
         pass
 

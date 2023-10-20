@@ -50,7 +50,7 @@ class MoboTerminalAnalyzer(TerminalAnalyzer):
         )
 
     def _is_popen_ok(self, cmd: str):
-        popen = subprocess.Popen(cmd, shell=True)
+        popen = subprocess.Popen(cmd, stdout=None, shell=True)
         popen.communicate()
         return popen.returncode == 0
 
@@ -58,10 +58,6 @@ class MoboTerminalAnalyzer(TerminalAnalyzer):
         return subprocess.getoutput(
             f"cat {self.currentLogFullpath}/test_item | awk '{{print $1}}'"
         )
-
-    def is_result_parsed(self) -> bool:
-        # TODO
-        return True
 
     def get_finished_terminalAnalysis(self) -> TerminalAnalysis:
         terminalStatus = TerminalStatus.PASS
@@ -88,15 +84,9 @@ class MoboTerminalAnalyzer(TerminalAnalyzer):
         )
 
     def is_stopped(self) -> bool:
-        popen = subprocess.Popen(f"tmux has-session -t {self.sessionId}", shell=True)
+        popen = subprocess.Popen(f"tmux has-session -t {self.sessionId}",stdout=None, shell=True)
         popen.communicate()
         return popen.returncode != 0
-
-    def _get_pass_or_fail_status(self) -> TerminalStatus:
-        passStatus = self._get_pass()
-        failStatus = self._get_fail()
-        latest = self._get_latest([passStatus, failStatus])
-        return TerminalStatus.PASS if latest == passStatus else TerminalStatus.FAIL
 
     def _get_test_started(self) -> Tuple[int, str]:
         return self.buffer_extract(".*Checking.*SN.*MAC.*")
@@ -106,37 +96,6 @@ class MoboTerminalAnalyzer(TerminalAnalyzer):
 
     def _get_test_finished(self) -> Tuple[int, str]:
         return self.buffer_extract("─────────── End Test ───────────")
-
-    def _get_idle(self) -> Tuple[int, str]:
-        return self.buffer_extract(
-            "Checking\s*fixture\s*status\s*is|what.*\s*your\s*product"
-        )
-
-    def _get_testing_item(self) -> Tuple[int, str]:
-        return self.buffer_extract("Test_Item\s*:\s*\K.*")
-
-    def _get_terminal_stopped(self) -> Tuple[int, str]:
-        xandraStarted = self._get_terminal_start_xandra()
-        xandraStopped = self.buffer_extract("\[\s*root@pxe.*\].*#")
-        currentStatus = self._get_latest([xandraStarted, xandraStopped])
-        if currentStatus == xandraStarted:
-            return (-1, "")
-        return xandraStopped
-
-    def _get_terminal_start_xandra(self) -> Tuple[int, str]:
-        return self.buffer_extract("\[\s*root@pxe.*Xandra\].*#")
-
-    def _get_logfile_path(self):
-        logRegex = "out log\s*:\s*"
-        lineNo = self.buffer_extract(logRegex)
-        path = self.buffer_extract(f"{logRegex}\K.*?\.log", multiline=True)
-        return (lineNo[0], path[1])
-
-    def _get_pass(self):
-        return self.buffer_extract("Main testing PASS")
-
-    def _get_fail(self):
-        return self.buffer_extract("Main testing FAIL|Checking board station FAIL")
 
     def _get_latest(self, tuples: "list[Tuple[int,str]]") -> Tuple[int, str]:
         latest = tuples[0]

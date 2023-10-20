@@ -39,10 +39,6 @@ class TerminalAnalyzer(ABC):
         pass
 
     @abstractmethod
-    def is_result_parsed(self) -> bool:
-        pass
-
-    @abstractmethod
     def is_stopped(self) -> bool:
         pass
 

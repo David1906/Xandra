@@ -1,5 +1,5 @@
 from Core.StateMachines.TeminalObserver import TemrinalObserver
-from Core.StateMachines.TerminalStateMachine import TerminalStateMachine
+from Core.StateMachines.TerminalStateMachine import TemrinalStatus, TerminalStateMachine
 from Models.TerminalAnalysis import TerminalAnalysis
 from Products.TerminalAnalyzerBuilder import TerminalAnalyzerBuilder
 from PyQt5 import QtCore
@@ -10,32 +10,31 @@ import time
 
 class TerminalThread(QtCore.QThread):
     updated = pyqtSignal(TerminalAnalysis)
-    analysisInterval = randint(700, 1100) / 1000
 
     def __init__(self, sessionId: str):
         super().__init__()
+        self._analysisInterval = randint(700, 1000) / 1000
         self._abort = False
-        self.sessionId = sessionId
-        self.sm = None
-        self.terminalObserver = None
+        self._sessionId = sessionId
+        self._sm = None
+        self._terminalObserver = None
 
     def run(self):
-        self._abort = False
         terminalAnalyzer = TerminalAnalyzerBuilder().build_based_on_main_config(
-            self.sessionId
+            self._sessionId
         )
-        self.terminalObserver = TemrinalObserver(None, terminalAnalyzer)
-        self.terminalObserver.update.connect(self._terminal_updated)
-        self.sm = TerminalStateMachine(terminalAnalyzer=terminalAnalyzer)
-        self.sm.add_observer(self.terminalObserver)
+        self._terminalObserver = TemrinalObserver(None, terminalAnalyzer)
+        self._terminalObserver.update.connect(self._terminal_updated)
+        self._sm = TerminalStateMachine(terminalAnalyzer=terminalAnalyzer)
+        self._sm.add_observer(self._terminalObserver)
 
-        while not self._abort:
-            time.sleep(self.analysisInterval)
-            self.sm.cycle()
+        while self._sm.current_state.value != TemrinalStatus.Stopped.value:
+            time.sleep(self._analysisInterval)
+            self._sm.cycle()
 
     def abort(self):
-        self._abort = True
-        self.quit()
+        self._sm.stop()
+        self.wait()
 
     def _terminal_updated(self, terminalAnalysis: TerminalAnalysis):
         self.updated.emit(terminalAnalysis)

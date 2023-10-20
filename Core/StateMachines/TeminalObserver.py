@@ -15,7 +15,7 @@ class TemrinalObserver(QtCore.QObject):
         terminalAnalyzer: TerminalAnalyzer = None,
     ) -> None:
         super().__init__(parent)
-        self.terminalAnalyzer = (
+        self._terminalAnalyzer = (
             terminalAnalyzer
             if terminalAnalyzer != None
             else TerminalAnalyzerBuilder().build_based_on_main_config()
@@ -28,14 +28,17 @@ class TemrinalObserver(QtCore.QObject):
         self._emit_terminalAnalysis("Board Loaded")
 
     def on_enter_PoweredOn(self):
-        self.terminalAnalyzer.refresh_serial_number()
+        self._terminalAnalyzer.refresh_serial_number()
         self._emit_terminalAnalysis("Board Powered On")
 
     def on_enter_Tested(self):
-        self._emit_terminalAnalysis(self.terminalAnalyzer.get_test_item())
+        self._emit_terminalAnalysis(self._terminalAnalyzer.get_test_item())
 
     def on_enter_Finished(self):
-        self.update.emit(self.terminalAnalyzer.get_finished_terminalAnalysis())
+        self.update.emit(self._terminalAnalyzer.get_finished_terminalAnalysis())
+
+    def on_enter_Stopped(self):
+        self.update.emit(TerminalAnalysis(TerminalStatus.IDLE))
 
     def _emit_terminalAnalysis(self, stepLabel: str):
         self.update.emit(TerminalAnalysis(TerminalStatus.TESTING, stepLabel=stepLabel))

@@ -7,8 +7,8 @@
 
     "hostControl": [
         {
-            "path": "/home/david/documents/xandra_test_logs/FctHostControl",
-            "executable": "FCTHostControl_test.sh",
+            "path": "/usr/local/Foxconn/automation/DA194/Bahubali_Sparrow_C3",
+            "executable": "FCTHostControl",
             "config": "FCTHostControl.config"
         }
     ],

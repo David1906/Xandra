@@ -7,21 +7,21 @@ import enum
 
 
 class TemrinalStatus(enum.Enum):
-    IDLE = 0
-    Loaded = 1
-    PoweredOn = 2
-    Tested = 3
-    Finished = 4
-    Released = 5
-    Stopped = 6
+    Stopped = 1
+    IDLE = 2
+    Loaded = 3
+    PoweredOn = 4
+    Tested = 5
+    Finished = 6
+    Released = 7
 
 
 class TerminalStateMachine(StateMachine):
-    states = States.from_enum(
-        TemrinalStatus, initial=TemrinalStatus.IDLE, final=TemrinalStatus.Stopped
-    )
+    states = States.from_enum(TemrinalStatus, initial=TemrinalStatus.Stopped)
     cycle = (
-        states.IDLE.to(states.Loaded, cond="is_board_loaded")
+        states.Stopped.to(states.IDLE, cond="can_start")
+        | states.Stopped.to.itself()
+        | states.IDLE.to(states.Loaded, cond="is_board_loaded")
         | states.IDLE.to.itself()
         | states.Loaded.to(states.Stopped, cond="is_stopped")
         | states.Loaded.to(states.PoweredOn, cond="is_power_on")
@@ -35,6 +35,7 @@ class TerminalStateMachine(StateMachine):
         | states.Tested.to(states.Finished, cond="is_finished")
         | states.Tested.to.itself()
         | states.Finished.to(states.Released)
+        | states.Released.to(states.Stopped, cond="is_fixture_released")
         | states.Released.to(states.IDLE, cond="is_fixture_released")
         | states.Released.to.itself()
     )
@@ -52,11 +53,15 @@ class TerminalStateMachine(StateMachine):
             model, state_field, start_value, rtc, allow_event_without_transition
         )
         self._isStopped = False
+        self._canStart = False
         self.terminalAnalyzer = (
             terminalAnalyzer
             if terminalAnalyzer != None
             else TerminalAnalyzerBuilder().build_based_on_main_config()
         )
+
+    def before_cycle(self, event: str, source: State, target: State, message: str = ""):
+        print("Cycle", target)
 
     def is_board_loaded(self):
         return self.terminalAnalyzer.is_board_loaded()
@@ -79,5 +84,12 @@ class TerminalStateMachine(StateMachine):
     def is_stopped(self):
         return self._isStopped
 
+    def can_start(self):
+        return self._canStart
+
     def stop(self):
         self._isStopped = True
+
+    def reset(self):
+        self._isStopped = False
+        self._canStart = True

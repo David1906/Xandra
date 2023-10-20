@@ -30,7 +30,7 @@ class TerminalThread(QtCore.QThread):
             self._sm = TerminalStateMachine(terminalAnalyzer=terminalAnalyzer)
             self._sm.add_observer(self._terminalObserver)
 
-            while self._sm.current_state.value != TemrinalStatus.Stopped.value:
+            while True:
                 time.sleep(self._analysisInterval)
                 self._sm.cycle()
         except Exception as e:
@@ -38,10 +38,13 @@ class TerminalThread(QtCore.QThread):
             logging.error(msg)
             print(msg)
 
-    def abort(self):
-        print("Thread Aborted")
+    def stop(self):
+        print("Terminal Thread Stop")
         self._sm.stop()
-        self.quit()
+
+    def reset(self):
+        print("Terminal Thread reset")
+        self._sm.reset()
 
     def _terminal_updated(self, terminalAnalysis: TerminalAnalysis):
         self.updated.emit(terminalAnalysis)

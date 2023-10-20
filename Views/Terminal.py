@@ -32,6 +32,7 @@ class Terminal(QtWidgets.QFrame):
 
         self.terminalThread = TerminalThread(self.sessionId)
         self.terminalThread.updated.connect(self._terminal_updated)
+        self.terminalThread.start(priority=QtCore.QThread.Priority.HighPriority)
 
     def start(self, args: "list[str]" = []):
         self.create_tmux_session(";".join(args))
@@ -51,7 +52,7 @@ class Terminal(QtWidgets.QFrame):
             f"TMUX='' tmux attach-session -t {self.sessionId};",
         ]
         self.process.start("xterm", fullArgs)
-        self.terminalThread.start(priority=QtCore.QThread.Priority.HighPriority)
+        self.terminalThread.reset()
 
     def create_tmux_session(self, command: str):
         if not self.has_tmux_session():
@@ -91,7 +92,7 @@ class Terminal(QtWidgets.QFrame):
 
     def on_finished(self, exitCode, exitStatus):
         print("Finished ", self.sessionId, exitCode, exitStatus)
-        self.terminalThread.abort()
+        self.terminalThread.stop()
         self.finished.emit(exitCode)
 
     def Stop(self):

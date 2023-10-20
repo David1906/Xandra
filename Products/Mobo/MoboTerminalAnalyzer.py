@@ -11,6 +11,7 @@ from Products.Mobo.MoboFctHostControlDAO import MoboFctHostControlDAO
 class MoboTerminalAnalyzer(TerminalAnalyzer):
     RUN_STATUS_FILE = "run_status"
     TEST_ITEM_FILE = "test_item"
+    SUMARY_TABLE_FILE = "summary_table.conf"
     LOG_FILE = "run_test.log"
 
     def __init__(self, sessionId: str) -> None:
@@ -28,7 +29,7 @@ class MoboTerminalAnalyzer(TerminalAnalyzer):
 
     def initialize_files(self) -> str:
         subprocess.Popen(
-            f'echo "" > {self.currentLogFullpath}/{self.RUN_STATUS_FILE}',
+            f'echo "" > {self.currentLogFullpath}/{self.RUN_STATUS_FILE} ; echo "" > {self.currentLogFullpath}/{self.SUMARY_TABLE_FILE}',
             stdout=None,
             shell=True,
         )
@@ -52,9 +53,13 @@ class MoboTerminalAnalyzer(TerminalAnalyzer):
         )
 
     def is_finished(self) -> bool:
-        return self._is_popen_ok(
-            f'cat {self.currentLogFullpath}/{self.RUN_STATUS_FILE} | grep -Poi "PASS|FAIL"'
+        runStaus = self._is_popen_ok(
+            f'cat {self.currentLogFullpath}/{self.RUN_STATUS_FILE} | grep -Poi "^PASS|^FAIL"'
         )
+        sumaryTable = self._is_popen_ok(
+            f'cat {self.currentLogFullpath}/{self.SUMARY_TABLE_FILE} | grep -Poi "chk_log\s*PASS|FAILED$"'
+        )
+        return runStaus and sumaryTable
 
     def _is_popen_ok(self, cmd: str):
         popen = subprocess.Popen(cmd, stdout=None, shell=True)
@@ -78,6 +83,12 @@ class MoboTerminalAnalyzer(TerminalAnalyzer):
             serialNumber=self.serialNumber,
             stepLabel=stepLabel,
         )
+
+    def is_fixture_released(self) -> bool:
+        testStarted = self._get_test_started()
+        testFinished = self._get_test_finished()
+        latest = self._get_latest([testStarted, testFinished])
+        return testFinished[0] != self.ERROR_ID and testFinished == latest
 
     def _get_logfile(self):
         path = f"{self._moboFctHostControlDAO.get_script_out_path()}/{self.serialNumber}/{self.LOG_FILE}"

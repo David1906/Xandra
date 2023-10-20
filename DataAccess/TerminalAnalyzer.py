@@ -39,6 +39,10 @@ class TerminalAnalyzer(ABC):
         pass
 
     @abstractmethod
+    def is_fixture_released(self) -> bool:
+        pass
+
+    @abstractmethod
     def get_test_item(self) -> str:
         pass
 

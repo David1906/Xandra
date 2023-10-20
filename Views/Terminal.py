@@ -90,6 +90,7 @@ class Terminal(QtWidgets.QFrame):
         return f"tmux send-keys -t {self.sessionId} {keys}"
 
     def on_finished(self, exitCode, exitStatus):
+        print("Finished ", self.sessionId, exitCode, exitStatus)
         self.terminalThread.abort()
         self.finished.emit(exitCode)
 

@@ -1,7 +1,7 @@
 from typing import Any
 from DataAccess.TerminalAnalyzer import TerminalAnalyzer
 from Products.TerminalAnalyzerBuilder import TerminalAnalyzerBuilder
-from statemachine import StateMachine
+from statemachine import State, StateMachine
 from statemachine.states import States
 import enum
 
@@ -12,7 +12,8 @@ class TemrinalStatus(enum.Enum):
     PoweredOn = 2
     Tested = 3
     Finished = 4
-    Stopped = 5
+    Released = 5
+    Stopped = 6
 
 
 class TerminalStateMachine(StateMachine):
@@ -33,7 +34,9 @@ class TerminalStateMachine(StateMachine):
         | states.Tested.to(states.Stopped, cond="is_stopped")
         | states.Tested.to(states.Finished, cond="is_finished")
         | states.Tested.to.itself()
-        | states.Finished.to(states.IDLE)
+        | states.Finished.to(states.Released)
+        | states.Released.to(states.IDLE, cond="is_fixture_released")
+        | states.Released.to.itself()
     )
 
     def __init__(
@@ -66,6 +69,12 @@ class TerminalStateMachine(StateMachine):
 
     def is_testing(self):
         return self.terminalAnalyzer.is_testing()
+
+    def is_testing(self):
+        return self.terminalAnalyzer.is_testing()
+
+    def is_fixture_released(self):
+        return self.terminalAnalyzer.is_fixture_released()
 
     def is_stopped(self):
         return self._isStopped

@@ -6,6 +6,7 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal
 from random import randint
 import time
+import logging
 
 
 class TerminalThread(QtCore.QThread):
@@ -20,19 +21,25 @@ class TerminalThread(QtCore.QThread):
         self._terminalObserver = None
 
     def run(self):
-        terminalAnalyzer = TerminalAnalyzerBuilder().build_based_on_main_config(
-            self._sessionId
-        )
-        self._terminalObserver = TemrinalObserver(None, terminalAnalyzer)
-        self._terminalObserver.update.connect(self._terminal_updated)
-        self._sm = TerminalStateMachine(terminalAnalyzer=terminalAnalyzer)
-        self._sm.add_observer(self._terminalObserver)
+        try:
+            terminalAnalyzer = TerminalAnalyzerBuilder().build_based_on_main_config(
+                self._sessionId
+            )
+            self._terminalObserver = TemrinalObserver(None, terminalAnalyzer)
+            self._terminalObserver.update.connect(self._terminal_updated)
+            self._sm = TerminalStateMachine(terminalAnalyzer=terminalAnalyzer)
+            self._sm.add_observer(self._terminalObserver)
 
-        while self._sm.current_state.value != TemrinalStatus.Stopped.value:
-            time.sleep(self._analysisInterval)
-            self._sm.cycle()
+            while self._sm.current_state.value != TemrinalStatus.Stopped.value:
+                time.sleep(self._analysisInterval)
+                self._sm.cycle()
+        except Exception as e:
+            msg = "Error in TerminalThread: " + str(e)
+            logging.error(msg)
+            print(msg)
 
     def abort(self):
+        print("Thread Aborted")
         self._sm.stop()
         self.quit()
 

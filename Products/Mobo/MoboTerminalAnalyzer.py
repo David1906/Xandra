@@ -30,7 +30,7 @@ class MoboTerminalAnalyzer(TerminalAnalyzer):
     def initialize_files(self) -> str:
         subprocess.Popen(
             f'echo "" > {self.currentLogFullpath}/{self.RUN_STATUS_FILE} ; echo "" > {self.currentLogFullpath}/{self.SUMARY_TABLE_FILE}',
-            stdout=None,
+            stdout=subprocess.DEVNULL,
             shell=True,
         )
 
@@ -62,7 +62,7 @@ class MoboTerminalAnalyzer(TerminalAnalyzer):
         return runStaus and sumaryTable
 
     def _is_popen_ok(self, cmd: str):
-        popen = subprocess.Popen(cmd, stdout=None, shell=True)
+        popen = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, shell=True)
         popen.communicate()
         return popen.returncode == 0
 
@@ -103,7 +103,7 @@ class MoboTerminalAnalyzer(TerminalAnalyzer):
 
     def is_stopped(self) -> bool:
         popen = subprocess.Popen(
-            f"tmux has-session -t {self.sessionId}", stdout=None, shell=True
+            f"tmux has-session -t {self.sessionId}", stdout=subprocess.DEVNULL, shell=True
         )
         popen.communicate()
         return popen.returncode != 0

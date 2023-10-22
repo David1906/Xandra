@@ -1,14 +1,14 @@
 from subprocess import call, run
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import pyqtSignal
-from Models.NullTerminalAnalysis import NullTerminalAnalysis
-from Models.TerminalAnalysis import TerminalAnalysis
+from Models.NullTestAnalysis import NullTestAnalysis
+from Models.TestAnalysis import TestAnalysis
 from Utils.TerminalThread import TerminalThread
 
 
 class Terminal(QtWidgets.QFrame):
     finished = pyqtSignal(int)
-    change = pyqtSignal(TerminalAnalysis)
+    change = pyqtSignal(TestAnalysis)
 
     def __init__(self, id: str):
         super().__init__()
@@ -18,7 +18,7 @@ class Terminal(QtWidgets.QFrame):
 
         self.sessionId = f"console_{id}"
         self.terminal = QtWidgets.QFrame()
-        self.lastAnalysis = NullTerminalAnalysis()
+        self.lastAnalysis = NullTestAnalysis()
         self.setStyleSheet(
             """
             border-radius: 5px;
@@ -79,10 +79,7 @@ class Terminal(QtWidgets.QFrame):
     def get_terminal_winId(self) -> str:
         return str(int(self.winId()))
 
-    def _terminal_updated(self, terminalAnalysis: TerminalAnalysis):
-        if terminalAnalysis.is_stopped():
-            self.Stop()
-            return
-        if not self.lastAnalysis.equals(terminalAnalysis):
-            self.change.emit(terminalAnalysis)
-        self.lastAnalysis = terminalAnalysis
+    def _terminal_updated(self, testAnalysis: TestAnalysis):
+        if not self.lastAnalysis.equals(testAnalysis):
+            self.change.emit(testAnalysis)
+        self.lastAnalysis = testAnalysis

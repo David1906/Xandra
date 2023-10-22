@@ -2,10 +2,10 @@ from Controllers.FixtureController import FixtureController
 from Core.Enums.FixtureMode import FixtureMode
 from Core.Enums.FixtureStatus import FixtureStatus
 from datetime import datetime
-from Core.Enums.TerminalStatus import TerminalStatus
+from Core.Enums.TestStatus import TestStatus
 from Models.Fixture import Fixture
 from Models.Maintenance import Maintenance
-from Models.TerminalAnalysis import TerminalAnalysis
+from Models.TestAnalysis import TestAnalysis
 from Models.Test import Test
 from PyQt5 import QtCore, QtGui
 from Utils.PathHelper import PathHelper
@@ -323,16 +323,16 @@ class FixtureView(QGroupBox):
         self.fixture.isStarted = False
         self.fixture.isTesting = False
 
-    def on_terminal_change(self, terminalAnalysis: TerminalAnalysis):
-        if self.fixture.isTesting and terminalAnalysis.status in [
-            TerminalStatus.FAIL,
-            TerminalStatus.PASS,
+    def on_terminal_change(self, testAnalysis: TestAnalysis):
+        if self.fixture.isTesting and testAnalysis.status in [
+            TestStatus.FAIL,
+            TestStatus.PASS,
         ]:
-            test = self._fixtureController.parse_test(terminalAnalysis)
+            test = self._fixtureController.parse_test(testAnalysis)
             self.add_test(test)
         else:
-            self.fixture.testItem = terminalAnalysis.stepLabel
-        self.fixture.isTesting = terminalAnalysis.is_testing()
+            self.fixture.testItem = testAnalysis.stepLabel
+        self.fixture.isTesting = testAnalysis.is_testing()
 
     def save_status(self):
         self.fixture.emit_status_change(force=True)

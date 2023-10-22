@@ -1,40 +1,40 @@
 from typing import Tuple
-from Core.Enums.TerminalStatus import TerminalStatus
-from Models.TerminalAnalysis import TerminalAnalysis
-from DataAccess.TerminalAnalyzer import TerminalAnalyzer
+from Core.Enums.TestStatus import TestStatus
+from Models.TestAnalysis import TestAnalysis
+from DataAccess.TestAnalyzer import TestAnalyzer
 
 
-class C4TerminalAnalyzer(TerminalAnalyzer):
+class C4TestAnalyzer(TestAnalyzer):
     def __init__(self, sessionId: str) -> None:
         super().__init__(sessionId)
         self.serialNumber = ""
 
-    def calc_analysis(self) -> TerminalAnalysis:
+    def calc_analysis(self) -> TestAnalysis:
         testing = self._get_testing_item()
         finished = self._get_test_finished()
         latest = self._get_latest([testing, finished])
-        analysis = TerminalAnalysis(TerminalStatus.IDLE)
+        analysis = TestAnalysis(TestStatus.IDLE)
         if latest == testing:
             serialNumber = self._get_serial_number()
             if serialNumber[1] != "":
                 self.serialNumber = serialNumber[1]
-            analysis = TerminalAnalysis(TerminalStatus.TESTING, stepLabel=testing[1])
+            analysis = TestAnalysis(TestStatus.TESTING, stepLabel=testing[1])
         elif latest == finished:
             outLog = self._get_logfile_path()
             logfile = outLog[1]
             if outLog[0] < testing[0]:
                 logfile = ""
-            analysis = TerminalAnalysis(
+            analysis = TestAnalysis(
                 self._get_pass_or_fail_status(), logfile, testing[1], self.serialNumber
             )
             self.serialNumber = ""
         return analysis
 
-    def _get_pass_or_fail_status(self) -> TerminalStatus:
+    def _get_pass_or_fail_status(self) -> TestStatus:
         passStatus = self._get_pass()
         failStatus = self._get_fail()
         latest = self._get_latest([passStatus, failStatus])
-        return TerminalStatus.PASS if latest == passStatus else TerminalStatus.FAIL
+        return TestStatus.PASS if latest == passStatus else TestStatus.FAIL
 
     def _get_test_finished(self) -> Tuple[int, str]:
         return self.buffer_extract("Total Duration\s*:\s*\K.*")

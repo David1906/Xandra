@@ -1,44 +1,44 @@
+from Core.Enums.TestStatus import TestStatus
+from DataAccess.TestAnalyzer import TestAnalyzer
+from Models.TestAnalysis import TestAnalysis
+from Products.TestAnalyzerBuilder import TestAnalyzerBuilder
 from PyQt5 import QtCore
 from PyQt5.QtCore import QObject
-from Core.Enums.TerminalStatus import TerminalStatus
-from DataAccess.TerminalAnalyzer import TerminalAnalyzer
-from Models.TerminalAnalysis import TerminalAnalysis
-from Products.TerminalAnalyzerBuilder import TerminalAnalyzerBuilder
 
 
 class TemrinalObserver(QtCore.QObject):
-    update = QtCore.pyqtSignal(TerminalAnalysis)
+    update = QtCore.pyqtSignal(TestAnalysis)
 
     def __init__(
         self,
         parent: QObject,
-        terminalAnalyzer: TerminalAnalyzer = None,
+        testAnalyzer: TestAnalyzer = None,
     ) -> None:
         super().__init__(parent)
-        self._terminalAnalyzer = (
-            terminalAnalyzer
-            if terminalAnalyzer != None
-            else TerminalAnalyzerBuilder().build_based_on_main_config()
+        self._testAnalyzer = (
+            testAnalyzer
+            if testAnalyzer != None
+            else TestAnalyzerBuilder().build_based_on_main_config()
         )
 
-    def on_enter_IDLE(self):
-        self.update.emit(TerminalAnalysis(TerminalStatus.IDLE))
+    def on_enter_Idle(self):
+        self.update.emit(TestAnalysis(TestStatus.Idle))
 
-    def on_enter_Loaded(self):
-        self._emit_terminalAnalysis("Board Loaded")
+    def on_enter_Initialized(self):
+        self._testAnalyzer.initialize_files()
 
-    def on_enter_PoweredOn(self):
-        self._terminalAnalyzer.refresh_serial_number()
-        self._emit_terminalAnalysis("Board Powered On")
+    def on_enter_PreTested(self):
+        self._testAnalyzer.refresh_serial_number()
+        self._emit_testAnalysis("Pre-Test")
+
+    def on_enter_PreTestFailed(self):
+        self._emit_testAnalysis("Pre-Test Failed")
 
     def on_enter_Tested(self):
-        self._emit_terminalAnalysis(self._terminalAnalyzer.get_test_item())
+        self._emit_testAnalysis(self._testAnalyzer.get_test_item())
 
     def on_enter_Finished(self):
-        self.update.emit(self._terminalAnalyzer.get_finished_terminalAnalysis())
+        self.update.emit(self._testAnalyzer.get_released_test_analysis())
 
-    def on_enter_Stopped(self):
-        self.update.emit(TerminalAnalysis(TerminalStatus.IDLE))
-
-    def _emit_terminalAnalysis(self, stepLabel: str):
-        self.update.emit(TerminalAnalysis(TerminalStatus.TESTING, stepLabel=stepLabel))
+    def _emit_testAnalysis(self, stepLabel: str):
+        self.update.emit(TestAnalysis(TestStatus.Tested, stepLabel=stepLabel))

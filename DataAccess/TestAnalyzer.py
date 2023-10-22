@@ -1,37 +1,33 @@
 from abc import ABC, abstractmethod
-from Models.NullTerminalAnalysis import NullTerminalAnalysis
-from Models.TerminalAnalysis import TerminalAnalysis
+from Models.NullTestAnalysis import NullTestAnalysis
+from Models.TestAnalysis import TestAnalysis
 from typing import Tuple
 import subprocess
 
 
-class TerminalAnalyzer(ABC):
+class TestAnalyzer(ABC):
     ERROR_ID = -1
     DELETE_NEW_LINE_PIPE = "| tr --delete '\n'"
 
     def __init__(self, sessionId: str) -> None:
         self.sessionId = sessionId
         self.prevLastLine = ""
-        self.currentAnalysis = NullTerminalAnalysis()
+        self.currentAnalysis = NullTestAnalysis()
+
+    @abstractmethod
+    def can_recover(self) -> bool:
+        pass
 
     @abstractmethod
     def is_board_loaded(self) -> bool:
         pass
 
     @abstractmethod
-    def initialize_files(self) -> str:
+    def initialize_files(self) -> bool:
         pass
 
     @abstractmethod
-    def is_power_on(self) -> bool:
-        pass
-
-    @abstractmethod
-    def refresh_serial_number(self) -> str:
-        pass
-
-    @abstractmethod
-    def is_finished(self) -> bool:
+    def refresh_serial_number(self) -> bool:
         pass
 
     @abstractmethod
@@ -39,7 +35,15 @@ class TerminalAnalyzer(ABC):
         pass
 
     @abstractmethod
-    def is_fixture_released(self) -> bool:
+    def is_pretest_failed(self) -> str:
+        pass
+
+    @abstractmethod
+    def is_finished(self) -> bool:
+        pass
+
+    @abstractmethod
+    def is_board_released(self) -> bool:
         pass
 
     @abstractmethod
@@ -47,11 +51,11 @@ class TerminalAnalyzer(ABC):
         pass
 
     @abstractmethod
-    def is_stopped(self) -> bool:
+    def is_pass(self) -> TestAnalysis:
         pass
 
     @abstractmethod
-    def get_finished_terminalAnalysis(self) -> TerminalAnalysis:
+    def is_failed(self) -> TestAnalysis:
         pass
 
     def buffer_contains(self, regex: str) -> bool:
@@ -91,6 +95,7 @@ class TerminalAnalyzer(ABC):
         )
         hasChanged = currentLastLine != self.prevLastLine
         self.prevLastLine = currentLastLine
+        
         return hasChanged
 
     def _get_tmux_capture_cmd(self):

@@ -2,7 +2,7 @@ from datetime import datetime
 import os
 import pathlib
 from DataAccess.TestParser import TestParser
-from Models.TerminalAnalysis import TerminalAnalysis
+from Models.TestAnalysis import TestAnalysis
 from Models.Test import Test
 from Products.C4.C4TestDescriptionParser import C4TestDescriptionParser
 import logging
@@ -26,26 +26,26 @@ class MoboTestParser(TestParser):
 
         self._testDescriptionParser = C4TestDescriptionParser()
 
-    def parse(self, terminalAnalysis: TerminalAnalysis) -> Test:
+    def parse(self, testAnalysis: TestAnalysis) -> Test:
         if (
             False  # TODO Add file parser to extract failure detail
-            and os.path.isfile(terminalAnalysis.logfile)
-            and pathlib.Path(terminalAnalysis.logfile).suffix in Test.ALLOWED_EXTENSIONS
+            and os.path.isfile(testAnalysis.logfile)
+            and pathlib.Path(testAnalysis.logfile).suffix in Test.ALLOWED_EXTENSIONS
         ):
-            return self._parse_log(terminalAnalysis.logfile)
-        return self._default_test(terminalAnalysis)
+            return self._parse_log(testAnalysis.logfile)
+        return self._default_test(testAnalysis)
 
-    def _default_test(self, terminalAnalysis: TerminalAnalysis) -> Test:
+    def _default_test(self, testAnalysis: TestAnalysis) -> Test:
         return Test(
-            serialNumber=terminalAnalysis.serialNumber,
-            stepLabel="" if terminalAnalysis.is_pass() else terminalAnalysis.stepLabel,
+            serialNumber=testAnalysis.serialNumber,
+            stepLabel="" if testAnalysis.is_pass() else testAnalysis.stepLabel,
             startTime=datetime.today(),
             endTime=datetime.today(),
-            status=terminalAnalysis.is_pass(),
-            fullPath=terminalAnalysis.logfile,
+            status=testAnalysis.is_pass(),
+            fullPath=testAnalysis.logfile,
             description=""
-            if terminalAnalysis.is_pass()
-            else f"{terminalAnalysis.stepLabel} Failed",
+            if testAnalysis.is_pass()
+            else f"{testAnalysis.stepLabel} Failed",
         )
 
     def _parse_log(self, fullPath: str) -> Test:

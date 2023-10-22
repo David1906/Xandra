@@ -10,7 +10,7 @@ from DataAccess.TestDAO import TestDAO
 from datetime import datetime, timedelta
 from Models.Fixture import Fixture
 from Models.Maintenance import Maintenance
-from Models.TerminalAnalysis import TerminalAnalysis
+from Models.TestAnalysis import TestAnalysis
 from Models.Test import Test
 from Products.HostControlBuilder import HostControlBuilder
 from Products.TestParserBuilder import TestParserBuilder
@@ -89,9 +89,9 @@ class FixtureController:
             SettingType.ACTIONS_LAST_SYNC.group
         )
 
-    def parse_test(self, terminalAnalysis: TerminalAnalysis) -> Test:
+    def parse_test(self, testAnalysis: TestAnalysis) -> Test:
         try:
-            return self._testParser.parse(terminalAnalysis)
+            return self._testParser.parse(testAnalysis)
         except Exception as e:
             logging.error(str(e))
 

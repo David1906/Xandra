@@ -1,17 +1,16 @@
+from Core.Enums.TestStatus import TestStatus
+from DataAccess.TestAnalyzer import TestAnalyzer
+from Models.TestAnalysis import TestAnalysis
+from Products.Mobo.MoboFctHostControlDAO import MoboFctHostControlDAO
+from typing import Tuple
 import os
 import re
 import subprocess
-from typing import Tuple
-from Core.Enums.TerminalStatus import TerminalStatus
-from Models.TerminalAnalysis import TerminalAnalysis
-from DataAccess.TerminalAnalyzer import TerminalAnalyzer
-from Products.Mobo.MoboFctHostControlDAO import MoboFctHostControlDAO
 
 
-class MoboTerminalAnalyzer(TerminalAnalyzer):
+class MoboTestAnalyzer(TestAnalyzer):
     RUN_STATUS_FILE = "run_status"
     TEST_ITEM_FILE = "test_item"
-    SUMARY_TABLE_FILE = "summary_table.conf"
     LOG_FILE = "run_test.log"
 
     def __init__(self, sessionId: str) -> None:
@@ -21,48 +20,43 @@ class MoboTerminalAnalyzer(TerminalAnalyzer):
         self.currentLogFullpath = ""
         self._moboFctHostControlDAO = MoboFctHostControlDAO()
 
+    def can_recover(self) -> bool:
+        # TODO
+        # Extraer de archivo de fcthost control Start testing board == (tail -n 1)
+        return False
+
     def is_board_loaded(self) -> bool:
-        testStarted = self._get_test_started()
-        testFinished = self._get_test_finished()
-        latest = self._get_latest([testStarted, testFinished])
-        return testStarted[0] != self.ERROR_ID and testStarted == latest
+        # TODO
+        return False
 
-    def initialize_files(self) -> str:
-        subprocess.Popen(
-            f'echo "" > {self.currentLogFullpath}/{self.RUN_STATUS_FILE} ; echo "" > {self.currentLogFullpath}/{self.SUMARY_TABLE_FILE}',
-            stdout=subprocess.DEVNULL,
-            shell=True,
-        )
+    def initialize_files(self) -> bool:
+        # TODO
+        return False
 
-    def is_power_on(self) -> bool:
-        testStarted = self._get_test_started()
-        testPowered = self._get_test_powered_on()
-        testFinished = self._get_test_finished()
-        latest = self._get_latest([testStarted, testPowered, testFinished])
-        return testPowered[0] != self.ERROR_ID and testPowered == latest
-
-    def refresh_serial_number(self) -> Tuple[int, str]:
+    def refresh_serial_number(self) -> str:
         self.serialNumber = self.buffer_extract("Serial Number\s*:\s*<*\K.*?(?=>)")[1]
         self.currentLogFullpath = (
             f"{self._moboFctHostControlDAO.get_script_out_path()}/{self.serialNumber}"
         )
 
     def is_testing(self) -> bool:
+        # TODO
         return not self.is_finished() and self._is_popen_ok(
             f"cat {self.currentLogFullpath}/{self.TEST_ITEM_FILE} | sed '/^\\s*$/d' | wc -w | xargs test 0 -ne"
         )
 
+    def is_pretest_failed(self) -> str:
+        # TODO
+        return False
+
     def is_finished(self) -> bool:
-        runStaus = self._is_popen_ok(
-            f'cat {self.currentLogFullpath}/{self.RUN_STATUS_FILE} | grep -Poi "^PASS|^FAIL"'
+        # TODO
+        return self._is_popen_ok(
+            f'cat {self.currentLogFullpath}/{self.RUN_STATUS_FILE} | grep -Poi "PASS|FAIL"'
         )
-        sumaryTable = self._is_popen_ok(
-            f'cat {self.currentLogFullpath}/{self.SUMARY_TABLE_FILE} | grep -Poi "chk_log\s*PASS|FAILED$"'
-        )
-        return runStaus and sumaryTable
 
     def _is_popen_ok(self, cmd: str):
-        popen = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, shell=True)
+        popen = subprocess.Popen(cmd, stdout=None, shell=True)
         popen.communicate()
         return popen.returncode == 0
 
@@ -71,24 +65,31 @@ class MoboTerminalAnalyzer(TerminalAnalyzer):
             f"cat {self.currentLogFullpath}/test_item | awk '{{print $1}}'"
         )
 
-    def get_finished_terminalAnalysis(self) -> TerminalAnalysis:
-        terminalStatus = TerminalStatus.PASS
+    def is_board_released(self) -> bool:
+        # TODO
+        return False
+
+    def is_pass(self) -> TestAnalysis:
+        # TODO
+        return False
+
+    def is_failed(self) -> TestAnalysis:
+        # TODO
+        return False
+
+    def get_released_test_analysis(self) -> TestAnalysis:
+        # TODO
+        terminalStatus = TestStatus.Pass
         stepLabel = ""
         if re.match(".*FAIL.*", self._get_run_status()):
-            terminalStatus = TerminalStatus.FAIL
+            terminalStatus = TestStatus.Failed
             stepLabel = self.get_test_item()
-        return TerminalAnalysis(
+        return TestAnalysis(
             terminalStatus,
             logfile=self._get_logfile(),
             serialNumber=self.serialNumber,
             stepLabel=stepLabel,
         )
-
-    def is_fixture_released(self) -> bool:
-        testStarted = self._get_test_started()
-        testFinished = self._get_test_finished()
-        latest = self._get_latest([testStarted, testFinished])
-        return testFinished[0] != self.ERROR_ID and testFinished == latest
 
     def _get_logfile(self):
         path = f"{self._moboFctHostControlDAO.get_script_out_path()}/{self.serialNumber}/{self.LOG_FILE}"
@@ -103,13 +104,13 @@ class MoboTerminalAnalyzer(TerminalAnalyzer):
 
     def is_stopped(self) -> bool:
         popen = subprocess.Popen(
-            f"tmux has-session -t {self.sessionId}", stdout=subprocess.DEVNULL, shell=True
+            f"tmux has-session -t {self.sessionId}", stdout=None, shell=True
         )
         popen.communicate()
         return popen.returncode != 0
 
     def _get_test_started(self) -> Tuple[int, str]:
-        return self.buffer_extract("Fixture status is.*\(.*UUT_powering")
+        return self.buffer_extract(".*Checking.*SN.*MAC.*")
 
     def _get_test_powered_on(self) -> Tuple[int, str]:
         return self.buffer_extract("Fixture status is.*\(.*UUT_powered")

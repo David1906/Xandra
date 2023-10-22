@@ -41,5 +41,9 @@ class TerminalThread(QtCore.QThread):
         # self._sm.stop()
         self.quit()
 
+    def reset(self):
+        # TODO
+        pass
+
     def _terminal_updated(self, testAnalysis: TestAnalysis):
         self.updated.emit(testAnalysis)

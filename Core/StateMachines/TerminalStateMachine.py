@@ -69,3 +69,9 @@ class TerminalStateMachine(StateMachine):
 
     def is_board_released(self):
         return self.testAnalyzer.is_board_released()
+
+    def is_pass(self):
+        return self.testAnalyzer.is_pass()
+
+    def is_failed(self):
+        return self.testAnalyzer.is_failed()

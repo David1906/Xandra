@@ -92,7 +92,7 @@ class Terminal(QtWidgets.QFrame):
 
     def on_finished(self, exitCode, exitStatus):
         print("Finished ", self.sessionId, exitCode, exitStatus)
-        self.terminalThread.stop()
+        self.terminalThread.abort()
         self.finished.emit(exitCode)
 
     def Stop(self):

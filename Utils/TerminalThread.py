@@ -1,6 +1,6 @@
 import debugpy
-from Core.StateMachines.TeminalObserver import TemrinalObserver
-from Core.StateMachines.TerminalStateMachine import TerminalStateMachine
+from Core.StateMachines.TestStateMachineObserver import TestStateMachineObserver
+from Core.StateMachines.TestStateMachine import TestStateMachine
 from Models.TestAnalysis import TestAnalysis
 from Products.TestAnalyzerBuilder import TestAnalyzerBuilder
 from PyQt5 import QtCore
@@ -27,9 +27,9 @@ class TerminalThread(QtCore.QThread):
             testAnalyzer = TestAnalyzerBuilder().build_based_on_main_config(
                 self._sessionId
             )
-            self._terminalObserver = TemrinalObserver(None, testAnalyzer)
+            self._terminalObserver = TestStateMachineObserver(None, testAnalyzer)
             self._terminalObserver.update.connect(self._terminal_updated)
-            self._sm = TerminalStateMachine(testAnalyzer=testAnalyzer)
+            self._sm = TestStateMachine(testAnalyzer=testAnalyzer)
             self._sm.add_observer(self._terminalObserver)
             while True:
                 time.sleep(self._analysisInterval)

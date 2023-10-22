@@ -6,7 +6,7 @@ from statemachine.states import States
 from typing import Any
 
 
-class TerminalStateMachine(StateMachine):
+class TestStateMachine(StateMachine):
     states = States.from_enum(TestStatus, initial=TestStatus.Initial)
     cycle = (
         states.Initial.to(states.Recovered, cond="can_recover")

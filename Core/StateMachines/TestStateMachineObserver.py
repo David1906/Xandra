@@ -6,7 +6,7 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import QObject
 
 
-class TemrinalObserver(QtCore.QObject):
+class TestStateMachineObserver(QtCore.QObject):
     update = QtCore.pyqtSignal(TestAnalysis)
 
     def __init__(

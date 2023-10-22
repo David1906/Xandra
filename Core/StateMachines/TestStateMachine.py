@@ -11,9 +11,9 @@ class TestStateMachine(StateMachine):
     cycle = (
         states.Initial.to(states.Recovered, cond="can_recover")
         | states.Initial.to(states.Idle)
-        | states.Recovered.to(states.PreTested, cond="is_board_loaded")
         | states.Recovered.to(states.Tested, cond="is_testing")
         | states.Recovered.to(states.Finished, cond="is_finished")
+        | states.Recovered.to(states.PreTested, cond="is_board_loaded")
         | states.Recovered.to(states.Idle)
         | states.Idle.to(states.Initialized, cond="is_board_loaded")
         | states.Idle.to.itself()

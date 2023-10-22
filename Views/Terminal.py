@@ -19,6 +19,7 @@ class Terminal(QtWidgets.QFrame):
         self.process.finished.connect(self.on_finished)
 
         self.automaticProductSelection = automaticProductSelection
+        self.id = id
         self.sessionId = f"console_{id}"
         self.terminal = QtWidgets.QFrame()
         self.lastAnalysis = NullTestAnalysis()
@@ -30,7 +31,7 @@ class Terminal(QtWidgets.QFrame):
             """
         )
 
-        self.terminalThread = TerminalThread(self.sessionId)
+        self.terminalThread = TerminalThread(self.id, self.sessionId)
         self.terminalThread.updated.connect(self._terminal_updated)
         self.terminalThread.start(priority=QtCore.QThread.Priority.HighPriority)
 
@@ -70,7 +71,9 @@ class Terminal(QtWidgets.QFrame):
             self.automatic_product_selection()
 
     def has_tmux_session(self) -> bool:
-        tmuxSession = run(["tmux", "has-session", "-t", self.sessionId])
+        tmuxSession = run(
+            ["tmux", "has-session", "-t", self.sessionId], stdout=subprocess.DEVNULL
+        )
         return tmuxSession.returncode == 0
 
     def set_tmux_option(self, option: str, value: str):

@@ -126,6 +126,11 @@ class MoboFctHostControlDAO:
             self.configIdx
         )
 
+    def get_fct_host_log_data_fullpath(self, fixtureId: str) -> str:
+        return self._mainConfigDAO.get_fct_host_log_data_fullpath(
+            fixtureId, self.configIdx
+        )
+
     def get_upload_sfc_script_fullpath(self) -> str:
         return self._mainConfigDAO.get_upload_sfc_script(self.configIdx)
 

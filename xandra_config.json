@@ -9,7 +9,8 @@
         {
             "path": "/usr/local/Foxconn/automation/DA194/Bahubali_Sparrow_C3",
             "executable": "FCTHostControl",
-            "config": "FCTHostControl.config"
+            "config": "FCTHostControl.config",
+            "logData": "/log_data"
         }
     ],
     "fctHostControl_description":"Configuración de ruta completa a la carpeta que contiene los archivos FCTHostControl y FCTHostControl.config",

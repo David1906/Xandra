@@ -69,6 +69,14 @@ class MainConfigDAO:
             + self.get_host_control()[index]["config"]
         )
 
+    def get_fct_host_log_data_fullpath(self, fixtureId: int, index: int = 0) -> str:
+        return (
+            self.get_fct_host_control_path(index)
+            + "/"
+            + self.get_host_control()[index]["logData"]
+            + f"fixture_{fixtureId}"
+        )
+
     def get_yield_error_threshold(self) -> float:
         value = self._get_value("yieldErrorThreshold")
         return self.YIELD_ERROR_THRESHOLD_INTERVAL.normalize(value)

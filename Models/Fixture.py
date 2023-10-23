@@ -73,7 +73,6 @@ class Fixture(QtCore.QObject):
 
         self._preTestTimeout = QtCore.QTimer()
         self._preTestTimeout.timeout.connect(self._on_pre_test_timeout)
-        self._preTestTimeout.start(Fixture.PRE_TEST_TIMEOUT.total_seconds() * 1000)
 
     def _on_tick(self):
         elapsed = self.get_elapsed_time()
@@ -315,7 +314,7 @@ class Fixture(QtCore.QObject):
         self._isPreTesting = value
         if self._isPreTesting:
             self.isTesting = True
-            self._preTestTimeout.start()
+            self._preTestTimeout.start(Fixture.PRE_TEST_TIMEOUT.total_seconds() * 1000)
         else:
             self._preTestTimeout.stop()
         self._property_changed()

@@ -331,7 +331,7 @@ class FixtureView(QGroupBox):
         self.lastAnalysis = NullTestAnalysis()
 
     def on_terminal_change(self, testAnalysis: TestAnalysis):
-        if self.lastAnalysis.equals(testAnalysis) and self.fixture.isTesting:
+        if self.lastAnalysis.equals(testAnalysis):
             return
         self.lastAnalysis = testAnalysis
         if self.fixture.isTesting and testAnalysis.has_finished():

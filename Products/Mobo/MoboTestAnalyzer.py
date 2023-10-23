@@ -101,6 +101,8 @@ class MoboTestAnalyzer(TestAnalyzer):
         return popen.returncode == 0
 
     def get_test_item(self) -> str:
+        if not os.path.isfile(self._testItemPath):
+            return ""
         return subprocess.getoutput(
             f"cat {self._testItemPath} | awk '{{print $1}}'",
         )

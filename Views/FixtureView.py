@@ -162,7 +162,8 @@ class FixtureView(QGroupBox):
         self.terminal.finished.connect(self._on_terminal_finished)
         self.terminal.change.connect(self.on_terminal_change)
         if self.terminal.has_tmux_session():
-            self.start()
+            # TODO fix terminal size self.start()
+            pass
         gridLayout.addWidget(self.terminal, 0, 0, 1, 1)
 
         self.maintenanceView = MaintenanceView(

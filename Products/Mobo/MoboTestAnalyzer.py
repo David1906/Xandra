@@ -14,7 +14,7 @@ class MoboTestAnalyzer(TestAnalyzer):
     RUN_STATUS_FILE = "run_status"
     TEST_ITEM_FILE = "test_item"
     LOG_FILE = "run_test.log"
-    BOARD_LOADED = "Check Status (ToTCCS): 2"
+    BOARD_LOADED = "Get SN"
     BOARD_LOADED_REGEX = normalizeToRegex(BOARD_LOADED)
     BOARD_TESTING = "Start testing board"
     BOARD_TESTING_REGEX = normalizeToRegex(BOARD_TESTING)

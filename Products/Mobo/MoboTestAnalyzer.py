@@ -1,12 +1,12 @@
-import os
 from Core.Enums.TestStatus import TestStatus
 from DataAccess.TestAnalyzer import TestAnalyzer
+from datetime import date, datetime
 from Models.TestAnalysis import TestAnalysis
 from Products.Mobo.MoboFctHostControlDAO import MoboFctHostControlDAO
 from Utils.TextNormalizer import normalizeToRegex
+import os
 import re
 import subprocess
-from datetime import date, datetime
 
 
 class MoboTestAnalyzer(TestAnalyzer):
@@ -20,6 +20,8 @@ class MoboTestAnalyzer(TestAnalyzer):
     BOARD_TESTING_REGEX = normalizeToRegex(BOARD_TESTING)
     BOARD_RELEASED = "Check Status (ToTCCS): 4"
     BOARD_RELEASED_REGEX = normalizeToRegex(BOARD_RELEASED)
+    BOARD_SOCKET_EXCEPTIONS = "ERROR"
+    BOARD_SOCKET_EXCEPTIONS_REGEX = normalizeToRegex(BOARD_SOCKET_EXCEPTIONS)
 
     def __init__(self, fixtureId: str, sessionId: str) -> None:
         super().__init__(sessionId)
@@ -54,7 +56,7 @@ class MoboTestAnalyzer(TestAnalyzer):
     def _get_last_board_status(self, tail: int = 100) -> str:
         return (
             subprocess.getoutput(
-                f'tail -n{tail} {self.fctHostLogDataPath}/"$(ls -1rt {self.fctHostLogDataPath}| tail -n1)" | tac | grep -Poia -m1 "{self.BOARD_LOADED_REGEX}|{self.BOARD_TESTING_REGEX}|{self.BOARD_RELEASED_REGEX}"'
+                f'tail -n{tail} {self.fctHostLogDataPath}/"$(ls -1rt {self.fctHostLogDataPath}| tail -n1)" | tac | grep -Poia -m1 "{self.BOARD_LOADED_REGEX}|{self.BOARD_TESTING_REGEX}|{self.BOARD_RELEASED_REGEX}|{self.BOARD_SOCKET_EXCEPTIONS_REGEX}"'
             )
             .strip()
             .split("\n")[0]
@@ -109,7 +111,11 @@ class MoboTestAnalyzer(TestAnalyzer):
         )
 
     def is_board_released(self) -> bool:
-        return self._get_last_board_status() == self.BOARD_RELEASED
+        self._debug_thread()
+        return self._get_last_board_status() in [
+            self.BOARD_RELEASED,
+            self.BOARD_SOCKET_EXCEPTIONS,
+        ]
 
     def is_pass(self) -> bool:
         return re.match("PASS", self._get_run_status_text(), re.IGNORECASE) != None

@@ -8,11 +8,13 @@ class TestAnalyzerBuilder:
     def __init__(self) -> None:
         self._mainConfigDAO = MainConfigDAO()
 
-    def build_based_on_main_config(self, sessionId: str) -> TestAnalyzer:
-        return self.build(self._mainConfigDAO.get_product(), sessionId)
+    def build_based_on_main_config(
+        self, fixtureId: str, sessionId: str
+    ) -> TestAnalyzer:
+        return self.build(self._mainConfigDAO.get_product(), fixtureId, sessionId)
 
-    def build(self, model: str, sessionId: str) -> TestAnalyzer:
+    def build(self, model: str, fixtureId: str, sessionId: str) -> TestAnalyzer:
         if model == "C4":
-            return C4TestAnalyzer(sessionId)
+            return C4TestAnalyzer(fixtureId, sessionId)
         elif model == "MOBO":
-            return MoboTestAnalyzer(sessionId)
+            return MoboTestAnalyzer(fixtureId, sessionId)

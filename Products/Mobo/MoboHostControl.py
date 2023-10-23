@@ -6,7 +6,6 @@ from Products.Mobo.MoboFctHostControlDAO import MoboFctHostControlDAO
 import os
 
 
-
 class MoboHostControl(HostControl):
     def __init__(self) -> None:
         super().__init__()

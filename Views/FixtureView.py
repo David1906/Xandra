@@ -5,6 +5,7 @@ from datetime import datetime
 from Core.Enums.TestStatus import TestStatus
 from Models.Fixture import Fixture
 from Models.Maintenance import Maintenance
+from Models.NullTestAnalysis import NullTestAnalysis
 from Models.TestAnalysis import TestAnalysis
 from Models.Test import Test
 from PyQt5 import QtCore, QtGui
@@ -46,6 +47,7 @@ class FixtureView(QGroupBox):
         self.overElapsedConnection = None
         self.statusChangeConnection = None
         self.updateMaintenanceConnection = None
+        self.lastAnalysis = NullTestAnalysis()
 
         self._init_ui()
 
@@ -326,17 +328,20 @@ class FixtureView(QGroupBox):
     def _on_terminal_finished(self, exitStatus):
         self.fixture.isStarted = False
         self.fixture.isTesting = False
+        self.lastAnalysis = NullTestAnalysis()
 
     def on_terminal_change(self, testAnalysis: TestAnalysis):
-        if self.fixture.isTesting and testAnalysis.status in [
-            TestStatus.FAIL,
-            TestStatus.PASS,
-        ]:
+        if self.lastAnalysis.equals(testAnalysis) and self.fixture.isTesting:
+            return
+        self.lastAnalysis = testAnalysis
+        if self.fixture.isTesting and testAnalysis.has_finished():
             test = self._fixtureController.parse_test(testAnalysis)
             self.add_test(test)
         else:
             self.fixture.testItem = testAnalysis.stepLabel
         self.fixture.isTesting = testAnalysis.is_testing()
+        if testAnalysis.status == TestStatus.Recovered:
+            self.fixture.testTimer = testAnalysis.startDateTime
 
     def save_status(self):
         self.fixture.emit_status_change(force=True)

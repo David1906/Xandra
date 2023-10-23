@@ -74,7 +74,7 @@ class MainConfigDAO:
             self.get_fct_host_control_path(index)
             + "/"
             + self.get_host_control()[index]["logData"]
-            + f"fixture_{fixtureId}"
+            + f"/fixture_{fixtureId}"
         )
 
     def get_yield_error_threshold(self) -> float:

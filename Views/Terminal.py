@@ -1,4 +1,4 @@
-from subprocess import call, run
+from subprocess import call
 import subprocess
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import pyqtSignal
@@ -8,7 +8,7 @@ from Utils.TerminalThread import TerminalThread
 
 
 class Terminal(QtWidgets.QFrame):
-    AUTOMATIC_SELECTION_DELAY = 5
+    AUTOMATIC_SELECTION_DELAY = 3
     finished = pyqtSignal(int)
     change = pyqtSignal(TestAnalysis)
 
@@ -71,10 +71,13 @@ class Terminal(QtWidgets.QFrame):
             self.automatic_product_selection()
 
     def has_tmux_session(self) -> bool:
-        tmuxSession = run(
-            ["tmux", "has-session", "-t", self.sessionId], stdout=subprocess.DEVNULL
+        returnCode = subprocess.call(
+            f"tmux has-session -t {self.sessionId}",
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            shell=True,
         )
-        return tmuxSession.returncode == 0
+        return returnCode == 0
 
     def set_tmux_option(self, option: str, value: str):
         call(f"tmux set-option -t {self.sessionId} {option} {value}", shell=True)
@@ -85,7 +88,7 @@ class Terminal(QtWidgets.QFrame):
         subprocess.Popen(
             f"""sleep {self.AUTOMATIC_SELECTION_DELAY}; 
             {self._get_tmux_send_keys(f"Down " * self.automaticProductSelection)}; 
-            sleep 1.5; 
+            sleep .5; 
             {self._get_tmux_send_keys("Enter")};""".strip(),
             shell=True,
         )
@@ -95,7 +98,8 @@ class Terminal(QtWidgets.QFrame):
 
     def on_finished(self, exitCode, exitStatus):
         print("Finished ", self.sessionId, exitCode, exitStatus)
-        self.terminalThread.abort()
+        self.lastAnalysis = NullTestAnalysis()
+        self.terminalThread.pause()
         self.finished.emit(exitCode)
 
     def Stop(self):
@@ -106,6 +110,4 @@ class Terminal(QtWidgets.QFrame):
         return str(int(self.winId()))
 
     def _terminal_updated(self, testAnalysis: TestAnalysis):
-        if not self.lastAnalysis.equals(testAnalysis):
-            self.change.emit(testAnalysis)
-        self.lastAnalysis = testAnalysis
+        self.change.emit(testAnalysis)

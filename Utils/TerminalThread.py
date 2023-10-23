@@ -1,4 +1,3 @@
-import debugpy
 from Core.StateMachines.TestStateMachineObserver import TestStateMachineObserver
 from Core.StateMachines.TestStateMachine import TestStateMachine
 from Models.TestAnalysis import TestAnalysis
@@ -22,29 +21,29 @@ class TerminalThread(QtCore.QThread):
         self._sm = None
         self._terminalObserver = None
 
-    def run(self):
-        debugpy.debug_this_thread()
-        try:
-            testAnalyzer = TestAnalyzerBuilder().build_based_on_main_config(
-                self._sessionId
-            )
-            self._terminalObserver = TestStateMachineObserver(None, testAnalyzer)
-            self._terminalObserver.update.connect(self._terminal_updated)
-            self._sm = TestStateMachine(testAnalyzer=testAnalyzer)
-            self._sm.add_observer(self._terminalObserver)
-            while True:
-                time.sleep(self._analysisInterval)
-                self._sm.cycle()
-        except Exception as e:
-            print(str(e))
+        self._testAnalyzer = TestAnalyzerBuilder().build_based_on_main_config(
+            self._fixtureId, self._sessionId
+        )
+        self._terminalObserver = TestStateMachineObserver(None, self._testAnalyzer)
+        self._terminalObserver.update.connect(self._terminal_updated)
 
-    def abort(self):
-        # self._sm.stop()
-        self.quit()
+    def run(self):
+        while True:
+            time.sleep(self._analysisInterval)
+            try:
+                if self._sm != None:
+                    self._sm.cycle()
+            except Exception as e:
+                print("TerminalThread error: ", str(e))
+                logging.error(str(e))
+                self.reset()
+
+    def pause(self):
+        self._sm = None
 
     def reset(self):
-        # TODO
-        pass
+        self._sm = TestStateMachine(testAnalyzer=self._testAnalyzer)
+        self._sm.add_observer(self._terminalObserver)
 
     def _terminal_updated(self, testAnalysis: TestAnalysis):
         self.updated.emit(testAnalysis)

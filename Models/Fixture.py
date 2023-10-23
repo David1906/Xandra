@@ -54,7 +54,7 @@ class Fixture(QtCore.QObject):
         self._wasOverElapsed = False
         self._startDateTime = datetime.now()
         self._startTimer = timer()
-        self._testTimer = timer()
+        self._testStartDateTime = None
         self._maintenance = NullMaintenance()
         self._testItem = ""
 
@@ -192,7 +192,11 @@ class Fixture(QtCore.QObject):
         return f"{_(status.description)}{'' if len(payload) == 0 else ' - '}{payload}"
 
     def get_test_time(self) -> timedelta:
-        return timedelta(seconds=math.floor(timer() - self._testTimer))
+        return timedelta(
+            seconds=math.floor(
+                (datetime.today() - self._testStartDateTime).total_seconds()
+            )
+        )
 
     def get_status(self) -> FixtureStatus:
         if self.isTesting:
@@ -317,6 +321,14 @@ class Fixture(QtCore.QObject):
         self._property_changed()
 
     @property
+    def testTimer(self) -> datetime:
+        return self._testStartDateTime
+
+    @testTimer.setter
+    def testTimer(self, value: datetime):
+        self._testStartDateTime = value
+
+    @property
     def isTesting(self) -> bool:
         return self._isTesting
 
@@ -325,7 +337,10 @@ class Fixture(QtCore.QObject):
         if not self.isTesting and value:
             self._wasOverElapsed = False
             self.lastTest = NullTest()
-            self._testTimer = timer()
+            if self._testStartDateTime == None:
+                self._testStartDateTime = datetime.now()
+        elif not value and self.isTesting:
+            self._testStartDateTime = None
         self._isTesting = value
         self._property_changed()
 

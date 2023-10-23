@@ -16,10 +16,11 @@ class TestStateMachine(StateMachine):
         | states.Recovered.to(states.PreTested, cond="is_board_loaded")
         | states.Recovered.to(states.Idle)
         | states.Idle.to(states.Initialized, cond="is_board_loaded")
+        | states.Idle.to(states.Recovered, cond="is_testing")
         | states.Idle.to.itself()
         | states.Initialized.to(states.PreTested)
         | states.PreTested.to(states.Tested, cond="is_testing")
-        | states.PreTested.to(states.PreTestFailed, cond="is_pretest_failed")
+        | states.PreTested.to(states.PreTestFailed, cond="is_failed")
         | states.PreTested.to.itself()
         | states.PreTestFailed.to(states.Released, cond="is_board_released")
         | states.PreTestFailed.to.itself()
@@ -60,9 +61,6 @@ class TestStateMachine(StateMachine):
 
     def is_testing(self):
         return self.testAnalyzer.is_testing()
-
-    def is_pretest_failed(self):
-        return self.testAnalyzer.is_pretest_failed()
 
     def is_finished(self):
         return self.testAnalyzer.is_finished()

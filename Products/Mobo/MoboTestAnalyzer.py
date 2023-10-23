@@ -63,6 +63,7 @@ class MoboTestAnalyzer(TestAnalyzer):
     def initialize_files(self):
         open(self._runStatusPath, "w").close()
         open(self._startTimePath, "w").close()
+        open(self._testItemPath, "w").close()
 
     def refresh_serial_number(self):
         self._serialNumber = subprocess.getoutput(

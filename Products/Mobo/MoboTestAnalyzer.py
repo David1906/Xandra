@@ -45,7 +45,7 @@ class MoboTestAnalyzer(TestAnalyzer):
             self.BOARD_TESTING,
         ]
 
-    def _debug_thread(self, sessionId: str = "console_4"):
+    def _debug_thread(self, sessionId: str = "console_1"):
         if os.environ.get("ENV") == "testing" and self.sessionId == sessionId:
             import debugpy
 
@@ -139,7 +139,7 @@ class MoboTestAnalyzer(TestAnalyzer):
 
     def get_failed_test_analysis(self) -> TestAnalysis:
         return TestAnalysis(
-            terminalStatus=TestStatus.Failed,
+            status=TestStatus.Failed,
             logfile=self._get_logfile(),
             serialNumber=self._serialNumber,
             stepLabel=self.get_test_item(),

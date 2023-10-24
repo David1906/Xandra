@@ -267,6 +267,27 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#vim" class="md-nav__link">
+    VIM
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#instalar-proxychains-ng" class="md-nav__link">
+    Instalar Proxychains-ng
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#activar-mariadb" class="md-nav__link">
+    Activar Mariadb
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#instalar-xampp" class="md-nav__link">
     Instalar XAMPP
   </a>
@@ -290,6 +311,13 @@
         <li class="md-nav__item">
   <a href="#instalar-dependencias-del-sistema" class="md-nav__link">
     Instalar dependencias del sistema
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configurar-tmux" class="md-nav__link">
+    Configurar tmux
   </a>
   
 </li>
@@ -474,6 +502,27 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#vim" class="md-nav__link">
+    VIM
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#instalar-proxychains-ng" class="md-nav__link">
+    Instalar Proxychains-ng
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#activar-mariadb" class="md-nav__link">
+    Activar Mariadb
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#instalar-xampp" class="md-nav__link">
     Instalar XAMPP
   </a>
@@ -497,6 +546,13 @@
         <li class="md-nav__item">
   <a href="#instalar-dependencias-del-sistema" class="md-nav__link">
     Instalar dependencias del sistema
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configurar-tmux" class="md-nav__link">
+    Configurar tmux
   </a>
   
 </li>
@@ -589,7 +645,81 @@
 <h1 id="instalacion">Instalación</h1>
 <p>El programa Xandra está basado en python3 por ésta razón su interfaz gráfica utiliza como motor PyQt5, la persistencia de datos se realiza mediante MySQL cuyo motor es gestionado por XAMPP.</p>
 <p>Como puede observarse Xandra tiene múltiples dependencias externas por lo que es necesario realizar la instalación de cada una de ellas para poder ejecutar el programa principal.</p>
+<h2 id="vim">VIM</h2>
+<p>Se recomienda el uso vim para la edición de textos, por lo tanto todos los archivos que son editados contienen por defecto el programa VIM (vi) para tal fin, si te sientes más cómodo utilizando otro editor de texto como emacs o vim, sientete libre de utilizarlo.</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Si quieres aprender las bases de vi puedes aprender ingresando el comando 
+<div class="highlight"><pre><span></span><code>vimtutor
+</code></pre></div></p>
+</div>
+<h2 id="instalar-proxychains-ng">Instalar Proxychains-ng</h2>
+<p>Para instalar la mayoría de paquetes es necesario contar con conexión a la web, para lograrlo es posible realizar un <strong>port frowarding</strong> mediante el protocolo ssh, para lograrlo realiza los siguientes pasos:</p>
+<ul>
+<li>
+<p>Clonar proxychains-ng
+    <div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>http://10.12.206.231:3000/david-ascencio/proxychains-ng.git
+</code></pre></div></p>
+</li>
+<li>
+<p>Instalar proxychains-ng:
+    <div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>proxychains-ng<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>./configure<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>make<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>make<span class="w"> </span>install<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>make<span class="w"> </span>install-config
+</code></pre></div></p>
+</li>
+<li>
+<p>Configurar proxychains-ng:
+    <div class="highlight"><pre><span></span><code>vim<span class="w"> </span>/usr/local/etc/proxychains.conf
+</code></pre></div></p>
+</li>
+<li>
+<p>Cambiar el puerto de la última línea al 1080:
+    <div class="highlight"><pre><span></span><code><span class="gd">- socks4  127.0.0.1 9050</span>
+<span class="gi">+ socks4  127.0.0.1 1080</span>
+</code></pre></div></p>
+</li>
+<li>
+<p>Guardar archivo.</p>
+</li>
+</ul>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Por si lo habías olvidado, para salir de vim puedes presionar <strong>esc</strong> después la tecla <strong>:</strong>, una vez realizado esto escribe <strong>wq</strong> si deseas guardar los cambios o <strong>q!</strong> si los deseas ignorar y presiona enter. (☞ﾟヮﾟ)☞</p>
+</div>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Si deseas ejecutar comandos desde proxychain, es necesario ingresar por ssh al PXE deseado y hacer forwarding del puerto 1080 <code>ssh -R 1080 root@10.12.206.220</code></p>
+</div>
+<h2 id="activar-mariadb">Activar Mariadb</h2>
+<p>Xandra hace uso de una base de dator relacional MYSQL, algúnos PXEs ya contienen pre instalada una versión de Maríadb, es estos casos sólo es necesario iniciar su motor y programarlo para que se inicie automaticamente tras un reinicio del PXE.</p>
+<ul>
+<li>
+<p>Validar si ya se encuentra instalado el motor de Mariadb:</p>
+<div class="highlight"><pre><span></span><code>systemctl<span class="w"> </span>start<span class="w"> </span>mariadb<span class="w"> </span><span class="p">|</span><span class="w"> </span>systemctl<span class="w"> </span>status<span class="w"> </span>mariadb
+</code></pre></div>
+<p>Si maría db está instalado se mostrará un mensaje similar al siguiente
+<div class="highlight"><pre><span></span><code>●<span class="w"> </span>mariadb.service<span class="w"> </span>-<span class="w"> </span>MariaDB<span class="w"> </span>database<span class="w"> </span>server
+Loaded:<span class="w"> </span>loaded<span class="w"> </span><span class="o">(</span>/usr/lib/systemd/system/mariadb.service<span class="p">;</span><span class="w"> </span>enabled<span class="p">;</span><span class="w"> </span>vendor<span class="w"> </span>preset:<span class="w"> </span>disabled<span class="o">)</span>
+Active:<span class="w"> </span>active<span class="w"> </span><span class="o">(</span>running<span class="o">)</span><span class="w"> </span>since<span class="w"> </span>Wed<span class="w"> </span><span class="m">2023</span>-10-18<span class="w"> </span><span class="m">11</span>:25:41<span class="w"> </span>CDT<span class="p">;</span><span class="w"> </span><span class="m">5</span><span class="w"> </span>days<span class="w"> </span>ago
+Main<span class="w"> </span>PID:<span class="w"> </span><span class="m">13753</span><span class="w"> </span><span class="o">(</span>mysqld_safe<span class="o">)</span>
+<span class="w">    </span>Tasks:<span class="w"> </span><span class="m">22</span>
+CGroup:<span class="w"> </span>/system.slice/mariadb.service
+<span class="w">       </span>├─13753<span class="w"> </span>/bin/sh<span class="w"> </span>/usr/bin/mysqld_safe<span class="w"> </span>--basedir<span class="o">=</span>/usr
+<span class="w">       </span>└─13935<span class="w"> </span>/usr/libexec/mysqld<span class="w"> </span>--basedir<span class="o">=</span>/usr<span class="w"> </span>--datadir<span class="o">=</span>/var/lib/mysql<span class="w"> </span>--plugin-dir<span class="o">=</span>/usr/lib64/mysql/plugin<span class="w"> </span>-...
+</code></pre></div></p>
+</li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Si la salida es diferente a lo mostrado anteriormente saltarse la sección <strong>Instalar XAMPP</strong> y <strong>Crear servicio de XAMPP</strong></p>
+</div>
+<ul>
+<li>
+<p>Activar el arranque automático de Mariadb:</p>
+<div class="highlight"><pre><span></span><code>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>mariadb
+</code></pre></div>
 <h2 id="instalar-xampp">Instalar XAMPP</h2>
+</li>
+</ul>
 <p>XAMPP es una distribución de Apache completamente gratuita y fácil de instalar que contiene MariaDB, PHP y Apache Server. Se decidió utilizar el paquete de instalación de XAMPP debido a que ha sido diseñado para ser increíblemente fácil de instalar y utilizar.</p>
 <p>Para instalar ésta distribución realice los siguientes pasos:</p>
 <ul>
@@ -626,7 +756,7 @@
 </li>
 <li>
 <p>Abrir el archivo con un editor de texto gráfico:
-    <div class="highlight"><pre><span></span><code>gedit<span class="w"> </span>xampp.service
+    <div class="highlight"><pre><span></span><code>vim<span class="w"> </span>xampp.service
 </code></pre></div></p>
 </li>
 <li>
@@ -686,8 +816,18 @@ ok.
 <ul>
 <li>
 <p>Escriba en la terminal el comando para ejecutar el motor de la base de datos:</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Si se activó Maríadb
+<div class="highlight"><pre><span></span><code>mysql<span class="w"> </span>-u<span class="w"> </span>root
+</code></pre></div></p>
+</div>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Si se instaló XAMPP
 <div class="highlight"><pre><span></span><code>/opt/lampp/bin/mysql<span class="w"> </span>-u<span class="w"> </span>root
-</code></pre></div>
+</code></pre></div></p>
+</div>
 </li>
 <li>
 <p>Se iniciara la consola de <code>MariaDB</code> y mostrara una información similar a la siguiente:</p>
@@ -731,13 +871,35 @@ MariaDB [(none)]&gt;
 </code></pre></div>
 </li>
 </ul>
+<h2 id="configurar-tmux">Configurar tmux</h2>
+<ul>
+<li>
+<p>Modificar archivo <code>~/.tmux.config</code>:
+    <div class="highlight"><pre><span></span><code>vim<span class="w"> </span>~/.tmux.config
+</code></pre></div></p>
+</li>
+<li>
+<p>Copiar y pegar el siguiente texto:
+    <div class="highlight"><pre><span></span><code><span class="c1"># List of plugins</span>
+<span class="nb">set</span><span class="w"> </span>-g<span class="w"> </span>status<span class="w"> </span>off
+<span class="nb">set</span><span class="w"> </span>-g<span class="w"> </span>history-limit<span class="w"> </span><span class="m">5000</span>
+<span class="nb">set</span><span class="w"> </span>-g<span class="w"> </span>mode-keys<span class="w"> </span>vi
+<span class="nb">set</span><span class="w"> </span>-g<span class="w"> </span>mouse<span class="w"> </span>on
+<span class="nb">set</span><span class="w"> </span>-g<span class="w"> </span>window-style<span class="w"> </span><span class="s1">&#39;fg=colour247,bg=colour236&#39;</span>
+<span class="nb">set</span><span class="w"> </span>-g<span class="w"> </span>window-active-style<span class="w"> </span><span class="s1">&#39;fg=colour250,bg=black&#39;</span>
+</code></pre></div></p>
+</li>
+<li>
+<p>Guardar los cambios.</p>
+</li>
+</ul>
 <h2 id="agregar-comandos-alias-al-sistema">Agregar comandos alias al sistema</h2>
 <p>Los alias son similares, salvando las distancias, a los accesos directos de Windows. Permiten representar un comando o conjunto de comandos asociándolos con una palabra clave dentro de la terminal. Su uso principal es el de abreviar órdenes o añadir argumentos de forma predeterminada a una orden que se usa con mucha frecuencia.</p>
 <p>Para agregar los alias de Xandra realice los siguientes pasos:</p>
 <ul>
 <li>
 <p>Modificar archivo <code>~/.bashrc</code>:</p>
-<div class="highlight"><pre><span></span><code>gedit<span class="w"> </span>~/.bashrc
+<div class="highlight"><pre><span></span><code>vim<span class="w"> </span>~/.bashrc
 </code></pre></div>
 </li>
 <li>
@@ -756,8 +918,8 @@ MariaDB [(none)]&gt;
 </code></pre></div>
 </li>
 <li>
-<p>Abrir en el editor de texto gráfico al archivo <code>~/.bash_aliases</code>:</p>
-<div class="highlight"><pre><span></span><code>gedit<span class="w"> </span>~/.bash_aliases
+<p>Abrir en el editor de texto al archivo <code>~/.bash_aliases</code>:</p>
+<div class="highlight"><pre><span></span><code>vim<span class="w"> </span>~/.bash_aliases
 </code></pre></div>
 </li>
 <li>
@@ -774,13 +936,13 @@ alias xandra-pyenv-activate=&#39;cd $XANDRA_BASE_PATH &amp;&amp; pyenv activate 
 alias xandra-pyenv-deactivate=&#39;pyenv deactivate&#39;
 
 # Alias to open Xandra
-alias xandra=&#39;systemctl start xampp.service &amp;&amp; tmux new -d &quot;source $HOME/.bashrc &amp;&amp; cd $XANDRA_BASE_PATH &amp;&amp; pyenv activate xandra &amp;&amp; python3 $XANDRA_MAIN_SCRIPT&quot;&#39;
+alias xandra=&#39;tmux new -d &quot;source $HOME/.bashrc &amp;&amp; cd $XANDRA_BASE_PATH &amp;&amp; pyenv activate xandra &amp;&amp; python3 $XANDRA_MAIN_SCRIPT&quot;&#39;
 
 # Alias to open Xandra in testing mode
 alias xandra-testing=&#39;ENV=testing &amp;&amp; xandra&#39;
 
 # Alias to open Xandra config
-alias xandra-config=&#39;tmux new -d &quot;gedit $XANDRA_BASE_PATH/xandra_config.json&quot;&#39;
+alias xandra-config=&#39;tmux new -d &quot;vim $XANDRA_BASE_PATH/xandra_config.json&quot;&#39;
 
 # Alias to cd Xandra path
 alias xandra-path=&#39;cd $XANDRA_BASE_PATH&#39;
@@ -813,8 +975,8 @@ alias xandra-docs=&#39;gio open $XANDRA_BASE_PATH/docs/index.html&#39;
 <p>La lista completa de comandos se puede consultar en la sección <a href="commands.html">comandos</a>.</p>
 </div>
 <h2 id="clonar-repositorio-de-github">Clonar repositorio de Github</h2>
-<p>El proyecto Xandra se encuentra alojado en el servidor Github.com para facilitar la gestión de versiones y su distribución.</p>
-<p>Al clonar un repositorio se extrae una copia integral de todos los datos del repositorio que GitHub.com tiene en ese momento, incluidas todas las versiones de cada archivo y carpeta del proyecto.</p>
+<p>El proyecto Xandra se encuentra alojado en el servidor local <strong>Gitea</strong> para facilitar la gestión de versiones y su distribución.</p>
+<p>Al clonar un repositorio se extrae una copia integral de todos los datos del repositorio que Gitea tiene en ese momento, incluidas todas las versiones de cada archivo y carpeta del proyecto.</p>
 <ul>
 <li>
 <p>Para clonar el programa Xandra a la computadora local ejecute los siguientes comandos:</p>
@@ -822,7 +984,7 @@ alias xandra-docs=&#39;gio open $XANDRA_BASE_PATH/docs/index.html&#39;
 </code></pre></div>
 <div class="highlight"><pre><span></span><code>cd /usr/local/Foxconn/automation
 </code></pre></div>
-<div class="highlight"><pre><span></span><code>git clone https://github.com/David1906/Xandra.git
+<div class="highlight"><pre><span></span><code>git clone http://10.12.206.231:3000/david-ascencio/Xandra.git
 </code></pre></div></p>
 </li>
 </ul>
@@ -832,24 +994,24 @@ alias xandra-docs=&#39;gio open $XANDRA_BASE_PATH/docs/index.html&#39;
 <ul>
 <li>Instalar dependencias de <code>pyenv</code>:</li>
 <li>
-<div class="highlight"><pre><span></span><code>yum<span class="w"> </span>install<span class="w"> </span>gcc<span class="w"> </span>zlib-devel<span class="w"> </span>bzip2<span class="w"> </span>bzip2-devel<span class="w"> </span>readline<span class="w"> </span>readline-devel<span class="w"> </span>sqlite<span class="w"> </span>sqlite-devel<span class="w"> </span>openssl<span class="w"> </span>openssl-devel<span class="w"> </span>git<span class="w"> </span>libffi-devel
+<div class="highlight"><pre><span></span><code>proxychains4<span class="w"> </span>yum<span class="w"> </span>install<span class="w"> </span>gcc<span class="w"> </span>zlib-devel<span class="w"> </span>bzip2<span class="w"> </span>bzip2-devel<span class="w"> </span>readline<span class="w"> </span>readline-devel<span class="w"> </span>sqlite<span class="w"> </span>sqlite-devel<span class="w"> </span>openssl<span class="w"> </span>openssl-devel<span class="w"> </span>git<span class="w"> </span>libffi-devel
 </code></pre></div>
 </li>
 <li>
 <p>Clonar código fuente del repositorio de <code>pyenv</code>:</p>
 </li>
 <li>
-<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/pyenv/pyenv.git<span class="w"> </span>~/.pyenv
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>http://10.12.206.231:3000/david-ascencio/pyenv.git<span class="w"> </span>~/.pyenv
 </code></pre></div>
 </li>
 <li>
 <p>Instalar <code>virtualenv</code> para poder aislar la instalación de dependencias:
-    <div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/pyenv/pyenv-virtualenv.git<span class="w"> </span>~/.pyenv/plugins/pyenv-virtualenv
+    <div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>http://10.12.206.231:3000/david-ascencio/pyenv-virtualenv.git<span class="w"> </span>~/.pyenv/plugins/pyenv-virtualenv
 </code></pre></div></p>
 </li>
 <li>
-<p>Abrir en el editor de texto gráfico al archivo <code>~/.bashrc</code>:</p>
-<div class="highlight"><pre><span></span><code>gedit<span class="w"> </span>~/.bashrc
+<p>Abrir en el editor de texto al archivo <code>~/.bashrc</code>:</p>
+<div class="highlight"><pre><span></span><code>vim<span class="w"> </span>~/.bashrc
 </code></pre></div>
 </li>
 <li>
@@ -870,8 +1032,8 @@ alias xandra-docs=&#39;gio open $XANDRA_BASE_PATH/docs/index.html&#39;
 <p>Guardar los cambios del archivo <code>~/.bashrc</code>.</p>
 </li>
 <li>
-<p>Abrir en el editor de texto gráfico al archivo <code>~/.bash_profile</code>:</p>
-<div class="highlight"><pre><span></span><code>gedit<span class="w"> </span>~/.bash_profile
+<p>Abrir en el editor de texto al archivo <code>~/.bash_profile</code>:</p>
+<div class="highlight"><pre><span></span><code>vim<span class="w"> </span>~/.bash_profile
 </code></pre></div>
 </li>
 <li>
@@ -894,22 +1056,22 @@ alias xandra-docs=&#39;gio open $XANDRA_BASE_PATH/docs/index.html&#39;
 </li>
 <li>
 <p>Instalar versión <strong>3.8.2</strong> en entorno virtual:
-    <div class="highlight"><pre><span></span><code>pyenv<span class="w"> </span>install<span class="w"> </span><span class="m">3</span>.8.2
+    <div class="highlight"><pre><span></span><code>proxychains4<span class="w"> </span>pyenv<span class="w"> </span>install<span class="w"> </span><span class="m">3</span>.8.2
 </code></pre></div></p>
 </li>
 <li>
 <p>Crear entorno virtual
-    <div class="highlight"><pre><span></span><code>pyenv virtualenv 3.8.2 xandra
+    <div class="highlight"><pre><span></span><code>proxychains4 pyenv virtualenv 3.8.2 xandra
 </code></pre></div></p>
 </li>
 <li>
 <p>Instalar versión <strong>2.7</strong> en entorno virtual:
-    <div class="highlight"><pre><span></span><code>pyenv<span class="w"> </span>install<span class="w"> </span><span class="m">2</span>.7
+    <div class="highlight"><pre><span></span><code>proxychains4<span class="w"> </span>pyenv<span class="w"> </span>install<span class="w"> </span><span class="m">2</span>.7
 </code></pre></div></p>
 </li>
 <li>
 <p>Crear entorno virtual
-    <div class="highlight"><pre><span></span><code>pyenv virtualenv 2.7 fctHostControl
+    <div class="highlight"><pre><span></span><code>proxychains4 pyenv virtualenv 2.7 fctHostControl
 </code></pre></div></p>
 </li>
 </ul>
@@ -922,17 +1084,22 @@ alias xandra-docs=&#39;gio open $XANDRA_BASE_PATH/docs/index.html&#39;
 <ul>
 <li>
 <p>Actualizar gestor de paquetes <code>pip</code>:
-    <div class="highlight"><pre><span></span><code>python3 -m pip install --upgrade pip
+    <div class="highlight"><pre><span></span><code>proxychains4 python3 -m pip install --upgrade pip
 </code></pre></div></p>
 </li>
 <li>
 <p>Instalar alembic (encargado de las migraciones en base de datos):
-    <div class="highlight"><pre><span></span><code>python3 -m pip install alembic --user
+    <div class="highlight"><pre><span></span><code>proxychains4 python3 -m pip install alembic --user
 </code></pre></div></p>
 </li>
 <li>
 <p>Instalar pymysql (conector mysql para python):
-    <div class="highlight"><pre><span></span><code>python3 -m pip install pymysql
+    <div class="highlight"><pre><span></span><code>proxychains4 python3 -m pip install pymysql
+</code></pre></div></p>
+</li>
+<li>
+<p>Instalar requests (librería HTTP):
+    <div class="highlight"><pre><span></span><code>proxychains4 python3 -m pip install requests
 </code></pre></div></p>
 </li>
 </ul>
@@ -945,12 +1112,12 @@ alias xandra-docs=&#39;gio open $XANDRA_BASE_PATH/docs/index.html&#39;
 </li>
 <li>
 <p>Actualizar gestor de paquetes <code>pip</code> en virtualenv:
-    <div class="highlight"><pre><span></span><code>python3 -m pip install --upgrade pip
+    <div class="highlight"><pre><span></span><code>proxychains4 python3 -m pip install --upgrade pip
 </code></pre></div></p>
 </li>
 <li>
 <p>Instalar dependencias de Xandra:
-    <div class="highlight"><pre><span></span><code>python3 -m pip install -r requirements.txt
+    <div class="highlight"><pre><span></span><code>proxychains4 python3 -m pip install -r requirements.txt
 </code></pre></div></p>
 </li>
 </ul>
@@ -963,12 +1130,12 @@ alias xandra-docs=&#39;gio open $XANDRA_BASE_PATH/docs/index.html&#39;
 </li>
 <li>
 <p>Actualizar gestor de paquetes <code>pip</code> en virtualenv:
-    <div class="highlight"><pre><span></span><code>pip install --upgrade pip
+    <div class="highlight"><pre><span></span><code>proxychains4 pip install --upgrade pip
 </code></pre></div></p>
 </li>
 <li>
-<p>Instalar dependencias de Xandra:
-    <div class="highlight"><pre><span></span><code>pip install pyserial
+<p>Instalar dependencias de FCTHostControl:
+    <div class="highlight"><pre><span></span><code>proxychains4 pip install pyserial
 </code></pre></div></p>
 </li>
 </ul>
@@ -982,8 +1149,8 @@ alias xandra-docs=&#39;gio open $XANDRA_BASE_PATH/docs/index.html&#39;
 </code></pre></div>
 </li>
 <li>
-<p>Abrir en el editor de texto gráfico al archivo <code>xandra.desktop</code>:
-    <div class="highlight"><pre><span></span><code>gedit /root/Desktop/xandra.desktop
+<p>Abrir en el editor de texto al archivo <code>xandra.desktop</code>:
+    <div class="highlight"><pre><span></span><code>vim /root/Desktop/xandra.desktop
 </code></pre></div></p>
 </li>
 <li>

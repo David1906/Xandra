@@ -4,6 +4,80 @@ El programa Xandra está basado en python3 por ésta razón su interfaz gráfica
 
 Como puede observarse Xandra tiene múltiples dependencias externas por lo que es necesario realizar la instalación de cada una de ellas para poder ejecutar el programa principal.
 
+
+## VIM
+
+Se recomienda el uso vim para la edición de textos, por lo tanto todos los archivos que son editados contienen por defecto el programa VIM (vi) para tal fin, si te sientes más cómodo utilizando otro editor de texto como emacs o vim, sientete libre de utilizarlo.
+
+!!! info
+    Si quieres aprender las bases de vi puedes aprender ingresando el comando 
+    ``` shell 
+    vimtutor
+    ```
+
+## Instalar Proxychains-ng
+
+Para instalar la mayoría de paquetes es necesario contar con conexión a la web, para lograrlo es posible realizar un **port frowarding** mediante el protocolo ssh, para lograrlo realiza los siguientes pasos:
+
+* Clonar proxychains-ng
+    ``` shell
+    git clone http://10.12.206.231:3000/david-ascencio/proxychains-ng.git
+    ```
+
+* Instalar proxychains-ng:
+    ``` shell
+    cd proxychains-ng && ./configure && make && make install && make install-config
+    ```
+
+* Configurar proxychains-ng:
+    ``` shell
+    vim /usr/local/etc/proxychains.conf
+    ```
+
+* Cambiar el puerto de la última línea al 1080:
+    ``` diff
+    - socks4  127.0.0.1 9050
+    + socks4  127.0.0.1 1080
+    ```
+
+* Guardar archivo.
+
+!!! info
+    Por si lo habías olvidado, para salir de vim puedes presionar **esc** después la tecla **:**, una vez realizado esto escribe **wq** si deseas guardar los cambios o **q!** si los deseas ignorar y presiona enter. (☞ﾟヮﾟ)☞
+
+!!! info
+    Si deseas ejecutar comandos desde proxychain, es necesario ingresar por ssh al PXE deseado y hacer forwarding del puerto 1080 ```ssh -R 1080 root@10.12.206.220```
+
+## Activar Mariadb
+
+Xandra hace uso de una base de dator relacional MYSQL, algúnos PXEs ya contienen pre instalada una versión de Maríadb, es estos casos sólo es necesario iniciar su motor y programarlo para que se inicie automaticamente tras un reinicio del PXE.
+
+* Validar si ya se encuentra instalado el motor de Mariadb:
+
+    ``` shell
+    systemctl start mariadb | systemctl status mariadb
+    ```
+
+    Si maría db está instalado se mostrará un mensaje similar al siguiente
+    ``` shell
+    ● mariadb.service - MariaDB database server
+    Loaded: loaded (/usr/lib/systemd/system/mariadb.service; enabled; vendor preset: disabled)
+    Active: active (running) since Wed 2023-10-18 11:25:41 CDT; 5 days ago
+    Main PID: 13753 (mysqld_safe)
+        Tasks: 22
+    CGroup: /system.slice/mariadb.service
+           ├─13753 /bin/sh /usr/bin/mysqld_safe --basedir=/usr
+           └─13935 /usr/libexec/mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/lib64/mysql/plugin -...
+    ```
+
+!!! warning 
+    Si la salida es diferente a lo mostrado anteriormente saltarse la sección **Instalar XAMPP** y **Crear servicio de XAMPP**
+
+* Activar el arranque automático de Mariadb:
+
+    ``` shell
+    systemctl enable mariadb
+    ```
 ## Instalar XAMPP
 
 XAMPP es una distribución de Apache completamente gratuita y fácil de instalar que contiene MariaDB, PHP y Apache Server. Se decidió utilizar el paquete de instalación de XAMPP debido a que ha sido diseñado para ser increíblemente fácil de instalar y utilizar.
@@ -48,7 +122,7 @@ Para crear el servicio del paquete XAMPP es necesario realizar los siguientes pa
 
 * Abrir el archivo con un editor de texto gráfico:
     ``` shell
-    gedit xampp.service
+    vim xampp.service
     ```
 
 * Copiar y pegar el siguiente texto en el archivo `xampp.service`:
@@ -110,9 +184,17 @@ Para crear la base de datos `xandra_dbo` dentro de `MySQL` ejecute los siguiente
 
 * Escriba en la terminal el comando para ejecutar el motor de la base de datos:
 
-    ``` shell
-    /opt/lampp/bin/mysql -u root
-    ```
+    !!! info
+        Si se activó Maríadb
+        ``` shell
+        mysql -u root
+        ```
+
+    !!! info
+        Si se instaló XAMPP
+        ``` shell
+        /opt/lampp/bin/mysql -u root
+        ```
 
 * Se iniciara la consola de `MariaDB` y mostrara una información similar a la siguiente:
 
@@ -158,6 +240,27 @@ Para instalar dichas dependencias es necesario contar con una conexión estable 
     sudo yum install -y tmux xterm python3
     ```
 
+## Configurar tmux
+
+* Modificar archivo `~/.tmux.config`:
+    ``` shell
+    vim ~/.tmux.config
+    ```
+
+* Copiar y pegar el siguiente texto:
+    ``` shell
+    # List of plugins
+    set -g status off
+    set -g history-limit 5000
+    set -g mode-keys vi
+    set -g mouse on
+    set -g window-style 'fg=colour247,bg=colour236'
+    set -g window-active-style 'fg=colour250,bg=black'
+    ```
+
+* Guardar los cambios.
+
+
 ## Agregar comandos alias al sistema
 
 Los alias son similares, salvando las distancias, a los accesos directos de Windows. Permiten representar un comando o conjunto de comandos asociándolos con una palabra clave dentro de la terminal. Su uso principal es el de abreviar órdenes o añadir argumentos de forma predeterminada a una orden que se usa con mucha frecuencia.
@@ -167,7 +270,7 @@ Para agregar los alias de Xandra realice los siguientes pasos:
 * Modificar archivo `~/.bashrc`:
 
     ``` shell
-    gedit ~/.bashrc
+    vim ~/.bashrc
     ```
 
 * Copiar y pegar el siguiente texto al final del archivo `~/.bashrc`:
@@ -186,10 +289,10 @@ Para agregar los alias de Xandra realice los siguientes pasos:
     touch ~/.bash_aliases
     ```
 
-* Abrir en el editor de texto gráfico al archivo `~/.bash_aliases`:
+* Abrir en el editor de texto al archivo `~/.bash_aliases`:
    
     ``` shell
-    gedit ~/.bash_aliases
+    vim ~/.bash_aliases
     ```
 
 * Copiar y pegar el siguiente texto en el archivo `~/.bash_aliases`:
@@ -207,13 +310,13 @@ Para agregar los alias de Xandra realice los siguientes pasos:
     alias xandra-pyenv-deactivate='pyenv deactivate'
 
     # Alias to open Xandra
-    alias xandra='systemctl start xampp.service && tmux new -d "source $HOME/.bashrc && cd $XANDRA_BASE_PATH && pyenv activate xandra && python3 $XANDRA_MAIN_SCRIPT"'
+    alias xandra='tmux new -d "source $HOME/.bashrc && cd $XANDRA_BASE_PATH && pyenv activate xandra && python3 $XANDRA_MAIN_SCRIPT"'
 
     # Alias to open Xandra in testing mode
     alias xandra-testing='ENV=testing && xandra'
 
     # Alias to open Xandra config
-    alias xandra-config='tmux new -d "gedit $XANDRA_BASE_PATH/xandra_config.json"'
+    alias xandra-config='tmux new -d "vim $XANDRA_BASE_PATH/xandra_config.json"'
 
     # Alias to cd Xandra path
     alias xandra-path='cd $XANDRA_BASE_PATH'
@@ -244,9 +347,9 @@ Para agregar los alias de Xandra realice los siguientes pasos:
 
 ## Clonar repositorio de Github
 
-El proyecto Xandra se encuentra alojado en el servidor Github.com para facilitar la gestión de versiones y su distribución.
+El proyecto Xandra se encuentra alojado en el servidor local **Gitea** para facilitar la gestión de versiones y su distribución.
 
-Al clonar un repositorio se extrae una copia integral de todos los datos del repositorio que GitHub.com tiene en ese momento, incluidas todas las versiones de cada archivo y carpeta del proyecto.
+Al clonar un repositorio se extrae una copia integral de todos los datos del repositorio que Gitea tiene en ese momento, incluidas todas las versiones de cada archivo y carpeta del proyecto.
 
 * Para clonar el programa Xandra a la computadora local ejecute los siguientes comandos:
 
@@ -257,7 +360,7 @@ Al clonar un repositorio se extrae una copia integral de todos los datos del rep
     cd /usr/local/Foxconn/automation
     ```
     ```
-    git clone https://github.com/David1906/Xandra.git
+    git clone http://10.12.206.231:3000/david-ascencio/Xandra.git
     ```
 
 ## Instalar entorno virtual de Python
@@ -269,24 +372,24 @@ Para instalar pyenv ejecute los siguientes comandos:
 * Instalar dependencias de `pyenv`:
 * 
     ``` shell
-    yum install gcc zlib-devel bzip2 bzip2-devel readline readline-devel sqlite sqlite-devel openssl openssl-devel git libffi-devel
+    proxychains4 yum install gcc zlib-devel bzip2 bzip2-devel readline readline-devel sqlite sqlite-devel openssl openssl-devel git libffi-devel
     ```
 
 * Clonar código fuente del repositorio de `pyenv`:
 * 
     ``` shell
-    git clone https://github.com/pyenv/pyenv.git ~/.pyenv
+    git clone http://10.12.206.231:3000/david-ascencio/pyenv.git ~/.pyenv
     ```
 
 * Instalar `virtualenv` para poder aislar la instalación de dependencias:
     ``` shell
-    git clone https://github.com/pyenv/pyenv-virtualenv.git ~/.pyenv/plugins/pyenv-virtualenv
+    git clone http://10.12.206.231:3000/david-ascencio/pyenv-virtualenv.git ~/.pyenv/plugins/pyenv-virtualenv
     ```
 
-* Abrir en el editor de texto gráfico al archivo `~/.bashrc`:
+* Abrir en el editor de texto al archivo `~/.bashrc`:
    
     ``` shell
-    gedit ~/.bashrc
+    vim ~/.bashrc
     ```
 
 * Copiar y pegar el siguiente texto en el archivo `~/.bashrc`:
@@ -304,10 +407,10 @@ Para instalar pyenv ejecute los siguientes comandos:
     ```
 * Guardar los cambios del archivo `~/.bashrc`.
   
-* Abrir en el editor de texto gráfico al archivo `~/.bash_profile`:
+* Abrir en el editor de texto al archivo `~/.bash_profile`:
    
     ``` shell
-    gedit ~/.bash_profile
+    vim ~/.bash_profile
     ```
 
 * Copiar y pegar el siguiente texto en el archivo `~/.bash_profile`:
@@ -329,22 +432,22 @@ Para instalar pyenv ejecute los siguientes comandos:
 
 * Instalar versión **3.8.2** en entorno virtual:
     ``` shell
-    pyenv install 3.8.2
+    proxychains4 pyenv install 3.8.2
     ```
 
 * Crear entorno virtual
     ```
-    pyenv virtualenv 3.8.2 xandra
+    proxychains4 pyenv virtualenv 3.8.2 xandra
     ```
 
 * Instalar versión **2.7** en entorno virtual:
     ``` shell
-    pyenv install 2.7
+    proxychains4 pyenv install 2.7
     ```
 
 * Crear entorno virtual
     ```
-    pyenv virtualenv 2.7 fctHostControl
+    proxychains4 pyenv virtualenv 2.7 fctHostControl
     ```
 
 ## Instalar dependencias python
@@ -358,17 +461,22 @@ Pip es un sistema de gestión de paquetes utilizado para instalar y administrar 
 
 * Actualizar gestor de paquetes `pip`:
     ```
-    python3 -m pip install --upgrade pip
+    proxychains4 python3 -m pip install --upgrade pip
     ```
 
 * Instalar alembic (encargado de las migraciones en base de datos):
     ```
-    python3 -m pip install alembic --user
+    proxychains4 python3 -m pip install alembic --user
     ```
 
 * Instalar pymysql (conector mysql para python):
     ```
-    python3 -m pip install pymysql
+    proxychains4 python3 -m pip install pymysql
+    ```
+
+* Instalar requests (librería HTTP):
+    ```
+    proxychains4 python3 -m pip install requests
     ```
 
 ## Instalar dependencias de Xandra
@@ -380,12 +488,12 @@ Pip es un sistema de gestión de paquetes utilizado para instalar y administrar 
 
 * Actualizar gestor de paquetes `pip` en virtualenv:
     ```
-    python3 -m pip install --upgrade pip
+    proxychains4 python3 -m pip install --upgrade pip
     ```
 
 * Instalar dependencias de Xandra:
     ```
-    python3 -m pip install -r requirements.txt
+    proxychains4 python3 -m pip install -r requirements.txt
     ```
 
 ## Instalar dependencias de FCTHostControl
@@ -397,12 +505,12 @@ Pip es un sistema de gestión de paquetes utilizado para instalar y administrar 
 
 * Actualizar gestor de paquetes `pip` en virtualenv:
     ```
-    pip install --upgrade pip
+    proxychains4 pip install --upgrade pip
     ```
 
-* Instalar dependencias de Xandra:
+* Instalar dependencias de FCTHostControl:
     ```
-    pip install pyserial
+    proxychains4 pip install pyserial
     ```
 
 ## Crear acceso directo
@@ -417,9 +525,9 @@ En el caso de Xandra dicho acceso directo se crea en la carpeta Desktop del usua
     touch /root/Desktop/xandra.desktop
     ```
 
-* Abrir en el editor de texto gráfico al archivo `xandra.desktop`:
+* Abrir en el editor de texto al archivo `xandra.desktop`:
     ```
-    gedit /root/Desktop/xandra.desktop
+    vim /root/Desktop/xandra.desktop
     ```
 
 * Copiar y pegar el siguiente texto en el archivo `xandra.desktop`:

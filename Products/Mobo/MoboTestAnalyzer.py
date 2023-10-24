@@ -55,7 +55,7 @@ class MoboTestAnalyzer(TestAnalyzer):
         return self._get_last_board_status() == self.BOARD_LOADED
 
     def _get_last_board_status(self, tail: int = 100) -> str:
-        regex = f"{self.BOARD_LOADED_REGEX}|{self.BOARD_TESTING_REGEX}|{self.BOARD_RELEASED_REGEX}|{self.BOARD_SOCKET_EXCEPTIONS_REGEX}|{self.BOARD_TEST_INITIALIZING}"
+        regex = f"{self.BOARD_LOADED_REGEX}|{self.BOARD_TESTING_REGEX}|{self.BOARD_RELEASED_REGEX}|{self.BOARD_SOCKET_EXCEPTIONS_REGEX}"
         return (
             subprocess.getoutput(
                 f'tail -n{tail} {self.fctHostLogDataPath}/"$(ls -1rt {self.fctHostLogDataPath}| tail -n1)" | tac | grep -Poia -m1 "{regex}"'
@@ -101,7 +101,9 @@ class MoboTestAnalyzer(TestAnalyzer):
         return self._is_popen_ok(f'cat "{self._runStatusPath}" | grep -Poi "PASS|FAIL"')
 
     def _is_popen_ok(self, cmd: str):
-        popen = subprocess.Popen(cmd, stdout=None, shell=True)
+        popen = subprocess.Popen(
+            cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True
+        )
         popen.communicate()
         return popen.returncode == 0
 
@@ -126,9 +128,7 @@ class MoboTestAnalyzer(TestAnalyzer):
         return re.match("FAILED", self._get_run_status_text(), re.IGNORECASE) != None
 
     def _get_run_status_text(self) -> str:
-        return subprocess.getoutput(
-            f"cat {self._currentLogPath}/{self.RUN_STATUS_FILE} | awk '{{print $1}}'"
-        )
+        return subprocess.getoutput(f"cat {self._runStatusPath} | awk '{{print $1}}'")
 
     def get_pass_test_analysis(self) -> TestAnalysis:
         return TestAnalysis(

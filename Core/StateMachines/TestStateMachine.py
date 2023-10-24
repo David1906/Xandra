@@ -31,7 +31,7 @@ class TestStateMachine(StateMachine):
         | states.Finished.to.itself()
         | states.Released.to(states.Pass, cond="is_pass")
         | states.Released.to(states.Failed, cond="is_failed")
-        | states.Released.to(states.Idle)
+        | states.Released.to(states.Idle, cond="is_board_loaded")
         | states.Pass.to(states.Idle)
         | states.Failed.to(states.Idle)
     )

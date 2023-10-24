@@ -14,7 +14,7 @@ class MoboTestAnalyzer(TestAnalyzer):
     RUN_STATUS_FILE = "run_status"
     TEST_ITEM_FILE = "test_item"
     LOG_FILE = "run_test.log"
-    BOARD_LOADED = "Get SN"
+    BOARD_LOADED = "Get SN:"
     BOARD_LOADED_REGEX = normalizeToRegex(BOARD_LOADED)
     BOARD_TESTING = "Start testing board"
     BOARD_TESTING_REGEX = normalizeToRegex(BOARD_TESTING)
@@ -22,6 +22,7 @@ class MoboTestAnalyzer(TestAnalyzer):
     BOARD_RELEASED_REGEX = normalizeToRegex(BOARD_RELEASED)
     BOARD_SOCKET_EXCEPTIONS = "ERROR"
     BOARD_SOCKET_EXCEPTIONS_REGEX = normalizeToRegex(BOARD_SOCKET_EXCEPTIONS)
+    BOARD_TEST_INITIALIZING = "Testing initializing"
 
     def __init__(self, fixtureId: str, sessionId: str) -> None:
         super().__init__(sessionId)
@@ -54,9 +55,10 @@ class MoboTestAnalyzer(TestAnalyzer):
         return self._get_last_board_status() == self.BOARD_LOADED
 
     def _get_last_board_status(self, tail: int = 100) -> str:
+        regex = f"{self.BOARD_LOADED_REGEX}|{self.BOARD_TESTING_REGEX}|{self.BOARD_RELEASED_REGEX}|{self.BOARD_SOCKET_EXCEPTIONS_REGEX}|{self.BOARD_TEST_INITIALIZING}"
         return (
             subprocess.getoutput(
-                f'tail -n{tail} {self.fctHostLogDataPath}/"$(ls -1rt {self.fctHostLogDataPath}| tail -n1)" | tac | grep -Poia -m1 "{self.BOARD_LOADED_REGEX}|{self.BOARD_TESTING_REGEX}|{self.BOARD_RELEASED_REGEX}|{self.BOARD_SOCKET_EXCEPTIONS_REGEX}"'
+                f'tail -n{tail} {self.fctHostLogDataPath}/"$(ls -1rt {self.fctHostLogDataPath}| tail -n1)" | tac | grep -Poia -m1 "{regex}"'
             )
             .strip()
             .split("\n")[0]

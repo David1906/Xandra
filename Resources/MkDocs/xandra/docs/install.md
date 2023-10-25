@@ -310,13 +310,13 @@ Para agregar los alias de Xandra realice los siguientes pasos:
     alias xandra-pyenv-deactivate='pyenv deactivate'
 
     # Alias to open Xandra
-    alias xandra='tmux new -d "source $HOME/.bashrc && cd $XANDRA_BASE_PATH && pyenv activate xandra && python3 $XANDRA_MAIN_SCRIPT"'
+    alias xandra='systemctl start mariadb && tmux new -d "source $HOME/.bashrc && cd $XANDRA_BASE_PATH && pyenv activate xandra && python3 $XANDRA_MAIN_SCRIPT"'
 
     # Alias to open Xandra in testing mode
     alias xandra-testing='ENV=testing && xandra'
 
     # Alias to open Xandra config
-    alias xandra-config='tmux new -d "vim $XANDRA_BASE_PATH/xandra_config.json"'
+    alias xandra-config='tmux new -d "gedit $XANDRA_BASE_PATH/xandra_config.json"'
 
     # Alias to cd Xandra path
     alias xandra-path='cd $XANDRA_BASE_PATH'

@@ -8,7 +8,7 @@ from Utils.TerminalThread import TerminalThread
 
 
 class Terminal(QtWidgets.QFrame):
-    AUTOMATIC_SELECTION_DELAY = 3
+    AUTOMATIC_SELECTION_DELAY = 5
     finished = pyqtSignal(int)
     change = pyqtSignal(TestAnalysis)
 

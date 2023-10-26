@@ -878,13 +878,12 @@ MariaDB [(none)]&gt;
 <ul>
 <li>
 <p>Modificar archivo <code>~/.tmux.conf</code>:
-    <div class="highlight"><pre><span></span><code>vim<span class="w"> </span>~/.tmux.config
+    <div class="highlight"><pre><span></span><code>vim<span class="w"> </span>~/.tmux.conf
 </code></pre></div></p>
 </li>
 <li>
 <p>Copiar y pegar el siguiente texto:
     <div class="highlight"><pre><span></span><code><span class="c1"># List of plugins</span>
-<span class="nb">set</span><span class="w"> </span>-g<span class="w"> </span>status<span class="w"> </span>off
 <span class="nb">set</span><span class="w"> </span>-g<span class="w"> </span>history-limit<span class="w"> </span><span class="m">5000</span>
 <span class="nb">set</span><span class="w"> </span>-g<span class="w"> </span>mode-keys<span class="w"> </span>vi
 <span class="nb">set</span><span class="w"> </span>-g<span class="w"> </span>mouse<span class="w"> </span>on
@@ -997,7 +996,7 @@ alias xandra-docs=&#39;gio open $XANDRA_BASE_PATH/docs/index.html&#39;
 <ul>
 <li>Instalar dependencias de <code>pyenv</code>:</li>
 <li>
-<div class="highlight"><pre><span></span><code>proxychains4<span class="w"> </span>yum<span class="w"> </span>install<span class="w"> </span>gcc<span class="w"> </span>zlib-devel<span class="w"> </span>bzip2<span class="w"> </span>bzip2-devel<span class="w"> </span>readline<span class="w"> </span>readline-devel<span class="w"> </span>sqlite<span class="w"> </span>sqlite-devel<span class="w"> </span>openssl<span class="w"> </span>openssl-devel<span class="w"> </span>git<span class="w"> </span>libffi-devel
+<div class="highlight"><pre><span></span><code>yum<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>gcc<span class="w"> </span>zlib-devel<span class="w"> </span>bzip2<span class="w"> </span>bzip2-devel<span class="w"> </span>readline<span class="w"> </span>readline-devel<span class="w"> </span>sqlite<span class="w"> </span>sqlite-devel<span class="w"> </span>openssl<span class="w"> </span>openssl-devel<span class="w"> </span>git<span class="w"> </span>libffi-devel
 </code></pre></div>
 </li>
 <li>
@@ -1116,6 +1115,11 @@ alias xandra-docs=&#39;gio open $XANDRA_BASE_PATH/docs/index.html&#39;
 <li>
 <p>Actualizar gestor de paquetes <code>pip</code> en virtualenv:
     <div class="highlight"><pre><span></span><code>proxychains4 python3 -m pip install --upgrade pip
+</code></pre></div></p>
+</li>
+<li>
+<p>Actualizar paquete <code>python-statemachine</code> en virtualenv:
+    <div class="highlight"><pre><span></span><code>proxychains4 pip install python-statemachine
 </code></pre></div></p>
 </li>
 <li>

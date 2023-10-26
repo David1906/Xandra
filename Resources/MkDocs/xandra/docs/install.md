@@ -245,13 +245,12 @@ Para instalar dichas dependencias es necesario contar con una conexión estable 
 
 * Modificar archivo `~/.tmux.conf`:
     ``` shell
-    vim ~/.tmux.config
+    vim ~/.tmux.conf
     ```
 
 * Copiar y pegar el siguiente texto:
     ``` shell
     # List of plugins
-    set -g status off
     set -g history-limit 5000
     set -g mode-keys vi
     set -g mouse on
@@ -373,7 +372,7 @@ Para instalar pyenv ejecute los siguientes comandos:
 * Instalar dependencias de `pyenv`:
 * 
     ``` shell
-    proxychains4 yum install gcc zlib-devel bzip2 bzip2-devel readline readline-devel sqlite sqlite-devel openssl openssl-devel git libffi-devel
+    yum install -y gcc zlib-devel bzip2 bzip2-devel readline readline-devel sqlite sqlite-devel openssl openssl-devel git libffi-devel
     ```
 
 * Clonar código fuente del repositorio de `pyenv`:
@@ -490,6 +489,11 @@ Pip es un sistema de gestión de paquetes utilizado para instalar y administrar 
 * Actualizar gestor de paquetes `pip` en virtualenv:
     ```
     proxychains4 python3 -m pip install --upgrade pip
+    ```
+
+* Actualizar paquete `python-statemachine` en virtualenv:
+    ```
+    proxychains4 pip install python-statemachine
     ```
 
 * Instalar dependencias de Xandra:

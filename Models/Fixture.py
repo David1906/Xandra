@@ -158,6 +158,10 @@ class Fixture(QtCore.QObject):
     def _are_last_tests_fail(self) -> bool:
         if self._lockFailQty == 0 or len(self.tests) < self._lockFailQty:
             return False
+
+        return self._get_last_consecutive_fail_qty() >= self.lockFailQty
+
+    def _get_last_consecutive_fail_qty(self) -> int:
         total = 0
         maxTotal = 0
         for test in self.tests[: self.get_min_tests_qty()]:
@@ -166,7 +170,7 @@ class Fixture(QtCore.QObject):
             else:
                 total = 0
             maxTotal = maxTotal if maxTotal > total else total
-        return maxTotal >= self.lockFailQty
+        return maxTotal
 
     def is_over_elapsed(self, elapsed: timedelta = None) -> bool:
         if not self.isTesting:
@@ -208,7 +212,7 @@ class Fixture(QtCore.QObject):
         return self.mode.is_upload_to_sfc(test.status)
 
     def get_color(self) -> bool:
-        if self.should_abort_test():
+        if self.is_locked():
             return "lightcoral"
         if self.mode == FixtureMode.OFFLINE:
             return "#B8B8B8"
@@ -219,7 +223,7 @@ class Fixture(QtCore.QObject):
         return ""
 
     def _is_warning(self) -> bool:
-        return self.get_yield() <= self._yieldWarningThreshold
+        return self._get_last_consecutive_fail_qty() >= self._lockFailQty - 1
 
     def equals(self, fixture: Fixture) -> bool:
         return fixture.ip == self.ip

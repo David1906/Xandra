@@ -198,17 +198,18 @@ Para crear la base de datos `xandra_dbo` dentro de `MySQL` ejecute los siguiente
 
 * Se iniciara la consola de `MariaDB` y mostrara una información similar a la siguiente:
 
-    ```
-    Welcome to the MariaDB monitor.  Commands end with ; or \g.
-    Your MariaDB connection id is 9
-    Server version: 10.4.27-MariaDB Source distribution
+    !!! success
+        ```
+        Welcome to the MariaDB monitor.  Commands end with ; or \g.
+        Your MariaDB connection id is 9
+        Server version: 10.4.27-MariaDB Source distribution
 
-    Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+        Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
 
-    Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+        Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
 
-    MariaDB [(none)]> 
-    ```
+        MariaDB [(none)]> 
+        ```
 
 * Introduzca el siguiente comando para crear el esquema `xandra_dbo`:
 
@@ -242,7 +243,7 @@ Para instalar dichas dependencias es necesario contar con una conexión estable 
 
 ## Configurar tmux
 
-* Modificar archivo `~/.tmux.config`:
+* Modificar archivo `~/.tmux.conf`:
     ``` shell
     vim ~/.tmux.config
     ```

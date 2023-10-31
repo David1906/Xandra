@@ -1,6 +1,6 @@
 from Core.Enums.TestStatus import TestStatus
 from DataAccess.TestAnalyzer import TestAnalyzer
-from datetime import date, datetime
+from datetime import datetime
 from Models.TestAnalysis import TestAnalysis
 from Products.Mobo.MoboFctHostControlDAO import MoboFctHostControlDAO
 from Utils.TextNormalizer import normalizeToRegex
@@ -23,6 +23,7 @@ class MoboTestAnalyzer(TestAnalyzer):
     BOARD_SOCKET_EXCEPTIONS = "ERROR"
     BOARD_SOCKET_EXCEPTIONS_REGEX = normalizeToRegex(BOARD_SOCKET_EXCEPTIONS)
     BOARD_TEST_INITIALIZING = "Testing initializing"
+    BOARD_TEST_INITIALIZING_REGEX = normalizeToRegex(BOARD_TEST_INITIALIZING)
 
     def __init__(self, fixtureId: str, sessionId: str) -> None:
         super().__init__(sessionId)
@@ -54,8 +55,12 @@ class MoboTestAnalyzer(TestAnalyzer):
     def is_board_loaded(self) -> bool:
         return self._get_last_board_status() == self.BOARD_LOADED
 
-    def _get_last_board_status(self, tail: int = 100) -> str:
+    def _get_last_board_status(
+        self, tail: int = 100, includeInitializing: bool = False
+    ) -> str:
         regex = f"{self.BOARD_LOADED_REGEX}|{self.BOARD_TESTING_REGEX}|{self.BOARD_RELEASED_REGEX}|{self.BOARD_SOCKET_EXCEPTIONS_REGEX}"
+        if includeInitializing:
+            regex += f"|{self.BOARD_TEST_INITIALIZING_REGEX}"
         return (
             subprocess.getoutput(
                 f'tail -n{tail} {self.fctHostLogDataPath}/"$(ls -1rt {self.fctHostLogDataPath}| tail -n1)" | tac | grep -Poia -m1 "{regex}"'
@@ -116,9 +121,10 @@ class MoboTestAnalyzer(TestAnalyzer):
 
     def is_board_released(self) -> bool:
         self._debug_thread()
-        return self._get_last_board_status() in [
+        return self._get_last_board_status(includeInitializing=True) in [
             self.BOARD_RELEASED,
             self.BOARD_SOCKET_EXCEPTIONS,
+            self.BOARD_TEST_INITIALIZING,
         ]
 
     def is_pass(self) -> bool:

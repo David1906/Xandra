@@ -1,5 +1,7 @@
 from subprocess import call
 import subprocess
+from threading import Thread
+from time import sleep
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import pyqtSignal
 from Models.NullTestAnalysis import NullTestAnalysis
@@ -68,7 +70,7 @@ class Terminal(QtWidgets.QFrame):
             self.set_tmux_option("history-limit", "3000")
             self.set_tmux_option("mouse", "on")
             self.set_tmux_option("mode-keys", "vi")
-            self.automatic_product_selection()
+            Thread(target=self.automatic_product_selection).start()
 
     def has_tmux_session(self) -> bool:
         returnCode = subprocess.call(
@@ -85,13 +87,29 @@ class Terminal(QtWidgets.QFrame):
     def automatic_product_selection(self):
         if self.automaticProductSelection == -1:
             return
+        while not self._is_ready_to_select_product():
+            sleep(0.5)
         subprocess.Popen(
-            f"""sleep {self.AUTOMATIC_SELECTION_DELAY}; 
-            {self._get_tmux_send_keys(f"Down " * self.automaticProductSelection)}; 
+            f"""{self._get_tmux_send_keys(f"Down " * self.automaticProductSelection)}; 
             sleep .5; 
             {self._get_tmux_send_keys("Enter")};""".strip(),
             shell=True,
         )
+
+    def _is_ready_to_select_product(self) -> bool:
+        return self._buffer_contains("What's your product model?")
+
+    def _buffer_contains(self, regex: str) -> bool:
+        p1 = subprocess.Popen(
+            ["tmux", "capture-pane", "-t", self.sessionId, "-pS", "-"],
+            stdout=subprocess.PIPE,
+        )
+        p2 = subprocess.Popen(
+            ["grep", "-Poi", regex], stdin=p1.stdout, stdout=subprocess.PIPE
+        )
+        p1.stdout.close()
+        p2.communicate()
+        return p2.returncode == 0
 
     def _get_tmux_send_keys(self, keys: str) -> str:
         return f"tmux send-keys -t {self.sessionId} {keys}"

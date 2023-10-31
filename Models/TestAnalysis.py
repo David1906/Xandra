@@ -19,6 +19,7 @@ class TestAnalysis:
         serialNumber: str = "",
         startDateTime: datetime = None,
         outLog: str = "",
+        scriptVersion: str = "",
     ) -> None:
         self.status = status
         self.stepLabel = stepLabel
@@ -26,6 +27,7 @@ class TestAnalysis:
         self.serialNumber = serialNumber
         self.startDateTime = startDateTime
         self.outLog = outLog
+        self.scriptVersion = scriptVersion
 
     def is_testing(self) -> bool:
         return self.status == TestStatus.Tested

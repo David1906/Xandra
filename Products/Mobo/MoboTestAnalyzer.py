@@ -143,6 +143,7 @@ class MoboTestAnalyzer(TestAnalyzer):
             serialNumber=self._serialNumber,
             startDateTime=self.get_start_time(),
             outLog=self._currentLogPath,
+            scriptVersion=self._moboFctHostControlDAO.get_script_version(),
         )
 
     def get_failed_test_analysis(self) -> TestAnalysis:
@@ -153,6 +154,7 @@ class MoboTestAnalyzer(TestAnalyzer):
             stepLabel=self.get_test_item(),
             startDateTime=self.get_start_time(),
             outLog=self._currentLogPath,
+            scriptVersion=self._moboFctHostControlDAO.get_script_version(),
         )
 
     def _get_logfile(self):

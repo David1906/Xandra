@@ -143,7 +143,7 @@ class LastLogsWindow(QtWidgets.QWidget):
                     continue
                 if keys[column] == "status":
                     item = "PASS" if item == 1 else "FAILED"
-                if keys[column] == "fullPath":
+                if keys[column] == "fullPath" and item != "":
                     btn = LogButton(item)
                     btn.setToolTip(item)
                     self.table.setCellWidget(row, column, btn)
@@ -161,7 +161,7 @@ class LastLogsWindow(QtWidgets.QWidget):
 
     def _extractKeys(self, tests: "list[Test]") -> "list[str]":
         keys = list(tests[0].__dict__.keys())
-        for rmKey in ["isNull"]:
+        for rmKey in ["isNull", "project", "operator"]:
             if rmKey in keys:
                 keys.remove(rmKey)
         return keys

@@ -46,6 +46,7 @@ class MoboTestParser(TestParser):
             description=""
             if testAnalysis.is_pass()
             else self._testDescriptionParser.parse(testAnalysis),
+            codeVersion=testAnalysis.scriptVersion,
         )
 
     def _parse_log(self, fullPath: str) -> Test:

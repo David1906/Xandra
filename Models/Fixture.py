@@ -223,7 +223,12 @@ class Fixture(QtCore.QObject):
         return ""
 
     def _is_warning(self) -> bool:
-        return self._get_last_consecutive_fail_qty() >= self._lockFailQty - 1
+        willLockQty = self.lockFailQty - 1
+        failedQty = 0
+        for test in self.tests[:willLockQty]:
+            if not test.status:
+                failedQty += 1
+        return failedQty == willLockQty
 
     def equals(self, fixture: Fixture) -> bool:
         return fixture.ip == self.ip

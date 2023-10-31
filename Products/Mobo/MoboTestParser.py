@@ -33,9 +33,9 @@ class MoboTestParser(TestParser):
             and pathlib.Path(testAnalysis.logfile).suffix in Test.ALLOWED_EXTENSIONS
         ):
             return self._parse_log(testAnalysis.logfile)
-        return self._default_test(testAnalysis)
+        return self._get_default_test(testAnalysis)
 
-    def _default_test(self, testAnalysis: TestAnalysis) -> Test:
+    def _get_default_test(self, testAnalysis: TestAnalysis) -> Test:
         return Test(
             serialNumber=testAnalysis.serialNumber,
             stepLabel="" if testAnalysis.is_pass() else testAnalysis.stepLabel,
@@ -43,7 +43,7 @@ class MoboTestParser(TestParser):
             endTime=datetime.today(),
             status=testAnalysis.is_pass(),
             fullPath=testAnalysis.logfile,
-            description=""
+            description=self._testDescriptionParser.parse()
             if testAnalysis.is_pass()
             else f"{testAnalysis.stepLabel} Failed",
         )

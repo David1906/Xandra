@@ -1,4 +1,5 @@
 from __future__ import annotations
+import re
 from Core.Enums.TestStatus import TestStatus
 from datetime import datetime
 
@@ -17,12 +18,14 @@ class TestAnalysis:
         stepLabel: str = "",
         serialNumber: str = "",
         startDateTime: datetime = None,
+        outLog: str = "",
     ) -> None:
         self.status = status
         self.stepLabel = stepLabel
         self.logfile = logfile
         self.serialNumber = serialNumber
         self.startDateTime = startDateTime
+        self.outLog = outLog
 
     def is_testing(self) -> bool:
         return self.status == TestStatus.Tested
@@ -38,3 +41,13 @@ class TestAnalysis:
             TestStatus.Pass,
             TestStatus.Failed,
         ]
+
+    def is_l6_initial_error(self) -> bool:
+        return self._step_label_contains("l6_initial_status")
+
+    def _step_label_contains(self, regex: str) -> bool:
+        match = re.search(regex, self.stepLabel, re.IGNORECASE)
+        return match != None
+
+    def get_out_log_path(self):
+        return f"{self.outLog}/{self.serialNumber}"

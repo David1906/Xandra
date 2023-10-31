@@ -60,11 +60,16 @@ class Test:
             return f"FAIL - {self.stepLabel}{shortDescription}"
 
     def is_dimm_error(self) -> bool:
-        match = re.search("chk_sel|apos_chk_k2|apos_vr_volt", self.stepLabel, re.IGNORECASE)
-        return match != None
+        return self._step_label_contains("chk_sel|apos_chk_k2|apos_vr_volt")
 
     def is_chk_serialuart_error(self) -> bool:
-        match = re.search("chk_serialuart", self.stepLabel, re.IGNORECASE)
+        return self._step_label_contains("chk_serialuart")
+
+    def is_l6_initial_error(self) -> bool:
+        return self._step_label_contains("l6_initial_status")
+
+    def _step_label_contains(self, regex: str) -> bool:
+        match = re.search(regex, self.stepLabel, re.IGNORECASE)
         return match != None
 
     def get_short_description(self):

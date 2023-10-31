@@ -25,7 +25,11 @@ class C4TestAnalyzer(TestAnalyzer):
             if outLog[0] < testing[0]:
                 logfile = ""
             analysis = TestAnalysis(
-                self._get_pass_or_fail_status(), logfile, testing[1], self.serialNumber
+                self._get_pass_or_fail_status(),
+                logfile,
+                testing[1],
+                self.serialNumber,
+                outLog,
             )
             self.serialNumber = ""
         return analysis

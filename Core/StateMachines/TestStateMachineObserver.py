@@ -22,9 +22,11 @@ class TestStateMachineObserver(QtCore.QObject):
             if testAnalyzer != None
             else TestAnalyzerBuilder().build_based_on_main_config()
         )
+        self._isTransition = False
 
     def before_cycle(self, event: str, source: State, target: State, message: str = ""):
-        if os.environ.get("ENV") == "testing" and source.id != target.id:
+        self._isTransition = source.id != target.id
+        if os.environ.get("ENV") == "testing" and self._isTransition:
             print(
                 "\n",
                 self._testAnalyzer.sessionId,
@@ -66,10 +68,12 @@ class TestStateMachineObserver(QtCore.QObject):
         self._emit_testAnalysis("Waiting for release")
 
     def on_enter_Pass(self):
-        self.update.emit(self._testAnalyzer.get_pass_test_analysis())
+        if self._isTransition:
+            self.update.emit(self._testAnalyzer.get_pass_test_analysis())
 
     def on_enter_Failed(self):
-        self.update.emit(self._testAnalyzer.get_failed_test_analysis())
+        if self._isTransition:
+            self.update.emit(self._testAnalyzer.get_failed_test_analysis())
 
     def _emit_testAnalysis(self, stepLabel: str):
         self.update.emit(TestAnalysis(TestStatus.Tested, stepLabel=stepLabel))

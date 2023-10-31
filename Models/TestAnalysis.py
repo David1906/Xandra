@@ -49,5 +49,7 @@ class TestAnalysis:
         match = re.search(regex, self.stepLabel, re.IGNORECASE)
         return match != None
 
-    def get_out_log_path(self):
-        return f"{self.outLog}/{self.serialNumber}"
+    def get_out_log_path(self, fileName: str = ""):
+        if fileName != "":
+            return f"{self.outLog}/{fileName}"
+        return self.outLog

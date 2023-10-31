@@ -24,17 +24,16 @@ class MoboTestDescriptionParser:
             return ""
 
     def l6_initial_error(self, testAnalysis: TestAnalysis) -> str:
-        if not os.path.isfile(testAnalysis.get_out_log_path()):
+        l6InitialFile = testAnalysis.get_out_log_path(self.CHK_L6_INITIAL_STATUS_FILE)
+        if not os.path.isfile(l6InitialFile):
             return ""
-        popen = subprocess.Popen(
-            f'grep -Poi ".+ERROR$" {testAnalysis.get_out_log_path()}/{self.CHK_L6_INITIAL_STATUS_FILE} | tr "\n" ","',
-            stderr=subprocess.DEVNULL,
-            shell=True,
-        )
-        popen.communicate()
-        return (
-            self._remove_trailing_comma(popen.stdout) if popen.returncode == 0 else ""
-        )
+        try:
+            errors = subprocess.getoutput(
+                f'grep -Poi ".+ERROR$" {l6InitialFile} | tr "\n" ","'
+            )
+            return self._remove_trailing_comma(errors)
+        except Exception as e:
+            return ""
 
     def _remove_trailing_comma(self, text: str) -> str:
         if text.endswith(","):

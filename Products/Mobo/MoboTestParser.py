@@ -39,13 +39,13 @@ class MoboTestParser(TestParser):
         return Test(
             serialNumber=testAnalysis.serialNumber,
             stepLabel="" if testAnalysis.is_pass() else testAnalysis.stepLabel,
-            startTime=datetime.today(),
+            startTime=testAnalysis.startDateTime,
             endTime=datetime.today(),
             status=testAnalysis.is_pass(),
             fullPath=testAnalysis.logfile,
-            description=self._testDescriptionParser.parse(testAnalysis)
+            description=""
             if testAnalysis.is_pass()
-            else f"{testAnalysis.stepLabel} Failed",
+            else self._testDescriptionParser.parse(testAnalysis),
         )
 
     def _parse_log(self, fullPath: str) -> Test:

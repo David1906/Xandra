@@ -141,6 +141,8 @@ class MoboTestAnalyzer(TestAnalyzer):
             TestStatus.Pass,
             logfile=self._get_logfile(),
             serialNumber=self._serialNumber,
+            startDateTime=self.get_start_time(),
+            outLog=self._currentLogPath,
         )
 
     def get_failed_test_analysis(self) -> TestAnalysis:
@@ -149,6 +151,8 @@ class MoboTestAnalyzer(TestAnalyzer):
             logfile=self._get_logfile(),
             serialNumber=self._serialNumber,
             stepLabel=self.get_test_item(),
+            startDateTime=self.get_start_time(),
+            outLog=self._currentLogPath,
         )
 
     def _get_logfile(self):

@@ -54,7 +54,7 @@ class MaintenanceView(QWidget):
         self.setLayout(layout)
 
         self.lblInstruction = QLabel()
-        layout.addWidget(self.lblInstruction, 0, 0, 1, 3, QtCore.Qt.AlignCenter)
+        # layout.addWidget(self.lblInstruction, 0, 0, 1, 3, QtCore.Qt.AlignCenter)
 
         self.lblPart = QLabel()
         layout.addWidget(self.lblPart, 1, 0)
@@ -87,7 +87,7 @@ class MaintenanceView(QWidget):
         self.lblDescription = QLabel()
         layout.addWidget(self.lblDescription, 5, 0)
         self.txtDescription = QTextEdit()
-        self.txtDescription.setMaximumHeight(50)
+        self.txtDescription.setMaximumHeight(30)
         self.txtDescription.textChanged.connect(self.on_txt_description_changed)
         layout.addWidget(self.txtDescription, 6, 0, 1, 3)
         self.lblDescriptionLen = QLabel(f"0/{MaintenanceView.MAX_DESCRIPTION_LEN}")

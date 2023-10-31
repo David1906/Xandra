@@ -4,7 +4,7 @@ import pathlib
 from DataAccess.TestParser import TestParser
 from Models.TestAnalysis import TestAnalysis
 from Models.Test import Test
-from Products.C4.C4TestDescriptionParser import C4TestDescriptionParser
+from Products.Mobo.MoboTestDescriptionParser import MoboTestDescriptionParser
 import logging
 import re
 
@@ -24,7 +24,7 @@ class MoboTestParser(TestParser):
         else:
             self.initialized = True
 
-        self._testDescriptionParser = C4TestDescriptionParser()
+        self._testDescriptionParser = MoboTestDescriptionParser()
 
     def parse(self, testAnalysis: TestAnalysis) -> Test:
         if (
@@ -43,7 +43,7 @@ class MoboTestParser(TestParser):
             endTime=datetime.today(),
             status=testAnalysis.is_pass(),
             fullPath=testAnalysis.logfile,
-            description=self._testDescriptionParser.parse()
+            description=self._testDescriptionParser.parse(testAnalysis)
             if testAnalysis.is_pass()
             else f"{testAnalysis.stepLabel} Failed",
         )

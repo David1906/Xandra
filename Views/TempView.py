@@ -54,10 +54,10 @@ class TempView(QtWidgets.QWidget):
     def _update_color(self, currentTemp: float):
         color = "gray"
         if currentTemp <= 50:
-            color = "#4AA3BA"
-        elif 50 < currentTemp and currentTemp < 70:
+            color = "#DA5C53"
+        elif 50 < currentTemp and currentTemp < 76:
             color = "#5DAE8B"
-        elif currentTemp >= 70:
+        elif currentTemp >= 76:
             color = "#FF7676"
         self.lblTemp.setStyleSheet(
             f"background-color: {color};border-top-left-radius: 5px; border-bottom-left-radius: 5px;"

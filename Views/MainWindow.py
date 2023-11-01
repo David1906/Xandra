@@ -233,6 +233,6 @@ class MainWindow(QMainWindow):
             QtWidgets.QApplication.closeAllWindows()
             self._httpServer.stop()
             event.accept()
-            sys.exit(0)
+            os._exit()
         else:
             event.ignore()

@@ -68,11 +68,14 @@ class TempView(QtWidgets.QWidget):
 
     def _read_temp(self) -> float:
         try:
-            return float(
-                os.popen(
-                    "sh %s/Nitro/nitro-bmc -i %s sensors list |grep DTS|awk '{print $9}'"
-                    % (self._toolPath, self._bmcIp)
-                ).read()
+            return (
+                float(
+                    os.popen(
+                        "sh %s/Nitro/nitro-bmc -i %s sensors list |grep DTS|awk '{print $9}'"
+                        % (self._toolPath, self._bmcIp)
+                    ).read()
+                )
+                / 1000
             )
         except:
             return 0.0

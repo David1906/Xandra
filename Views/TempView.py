@@ -84,11 +84,13 @@ class TempView(QtWidgets.QWidget):
         self._toolPath = toolPath
         self._bmcIp = bmcIp
         self.lblTemp.setText("--.- °")
+        self.lblTemp.show()
         self.lblIcon.show()
         self._threadEvent.set()
 
     def pause(self):
         self.lblTemp.setText("")
+        self.lblTemp.hide()
         self.lblIcon.hide()
         self._threadEvent.clear()
 

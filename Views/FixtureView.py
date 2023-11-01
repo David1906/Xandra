@@ -356,6 +356,7 @@ class FixtureView(QGroupBox):
         if self.fixture.isTesting and testAnalysis.has_finished():
             test = self._fixtureController.parse_test(testAnalysis)
             self.add_test(test)
+            self.tempView.pause()
         elif self.fixture.isTesting:
             self.fixture.testItem = testAnalysis.stepLabel
         self.fixture.isTesting = testAnalysis.is_testing()

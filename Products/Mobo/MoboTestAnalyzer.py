@@ -59,12 +59,15 @@ class MoboTestAnalyzer(TestAnalyzer):
     def is_board_loaded(self) -> bool:
         return self._get_last_board_status() == self.BOARD_LOADED
 
-    def _get_last_board_status(
-        self, tail: int = 100, includeResul: bool = False
-    ) -> str:
-        regex = f"{self.BOARD_LOADED_REGEX}|{self.BOARD_TESTING_REGEX}|{self.BOARD_RELEASED_REGEX}|{self.BOARD_SOCKET_EXCEPTIONS_REGEX}"
-        if includeResul:
+    def _get_last_board_status(self, tail: int = 100, findResults: bool = False) -> str:
+        regex = f"{self.BOARD_LOADED_REGEX}|{self.BOARD_TESTING_REGEX}"
+        if findResults:
             regex += f"|{self.RUN_TEST_PASS_REGEX}|{self.RUN_TEST_FAILED_REGEX}"
+        else:
+            regex += (
+                f"|{self.BOARD_RELEASED_REGEX}|{self.BOARD_SOCKET_EXCEPTIONS_REGEX}"
+            )
+
         return (
             subprocess.getoutput(
                 f'tail -n{tail} {self.fctHostLogDataPath}/"$(ls -1rt {self.fctHostLogDataPath}| tail -n1)" | tac | grep -Poia -m1 "{regex}"'
@@ -135,21 +138,23 @@ class MoboTestAnalyzer(TestAnalyzer):
 
     def is_board_released(self) -> bool:
         self._debug_thread()
-        return self._get_last_board_status() in [
+        return self._get_last_board_status(findResults=True) in [
             self.BOARD_RELEASED,
             self.BOARD_SOCKET_EXCEPTIONS,
+            self.RUN_TEST_PASS,
+            self.RUN_TEST_FAILED,
         ]
 
     def is_pass(self) -> bool:
         return (
             re.match("PASS", self._get_run_status_text(), re.IGNORECASE) != None
-            or self._get_last_board_status(includeResul=True) == self.RUN_TEST_PASS
+            or self._get_last_board_status(findResults=True) == self.RUN_TEST_PASS
         )
 
     def is_failed(self) -> bool:
         return (
             re.match("FAILED", self._get_run_status_text(), re.IGNORECASE) != None
-            or self._get_last_board_status(includeResul=True) == self.RUN_TEST_FAILED
+            or self._get_last_board_status(findResults=True) == self.RUN_TEST_FAILED
         )
 
     def _get_run_status_text(self) -> str:

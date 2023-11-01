@@ -23,8 +23,10 @@ class MoboTestAnalyzer(TestAnalyzer):
     BOARD_RELEASED_REGEX = normalizeToRegex(BOARD_RELEASED)
     BOARD_SOCKET_EXCEPTIONS = "ERROR"
     BOARD_SOCKET_EXCEPTIONS_REGEX = normalizeToRegex(BOARD_SOCKET_EXCEPTIONS)
-    BOARD_TEST_INITIALIZING = "Testing initializing"
-    BOARD_TEST_INITIALIZING_REGEX = normalizeToRegex(BOARD_TEST_INITIALIZING)
+    RUN_TEST_FAILED = "Testing board FAIL"
+    RUN_TEST_FAILED_REGEX = normalizeToRegex(RUN_TEST_FAILED)
+    RUN_TEST_PASS = "Testing board PASS"
+    RUN_TEST_PASS_REGEX = normalizeToRegex(RUN_TEST_PASS)
 
     def __init__(self, fixtureId: str, sessionId: str) -> None:
         super().__init__(sessionId)
@@ -58,10 +60,11 @@ class MoboTestAnalyzer(TestAnalyzer):
         return self._get_last_board_status() == self.BOARD_LOADED
 
     def _get_last_board_status(
-        self,
-        tail: int = 100,
+        self, tail: int = 100, includeResul: bool = False
     ) -> str:
         regex = f"{self.BOARD_LOADED_REGEX}|{self.BOARD_TESTING_REGEX}|{self.BOARD_RELEASED_REGEX}|{self.BOARD_SOCKET_EXCEPTIONS_REGEX}"
+        if includeResul:
+            regex += f"|{self.RUN_TEST_PASS_REGEX}|{self.RUN_TEST_FAILED_REGEX}"
         return (
             subprocess.getoutput(
                 f'tail -n{tail} {self.fctHostLogDataPath}/"$(ls -1rt {self.fctHostLogDataPath}| tail -n1)" | tac | grep -Poia -m1 "{regex}"'
@@ -138,10 +141,16 @@ class MoboTestAnalyzer(TestAnalyzer):
         ]
 
     def is_pass(self) -> bool:
-        return re.match("PASS", self._get_run_status_text(), re.IGNORECASE) != None
+        return (
+            re.match("PASS", self._get_run_status_text(), re.IGNORECASE) != None
+            or self._get_last_board_status(includeResul=True) == self.RUN_TEST_PASS
+        )
 
     def is_failed(self) -> bool:
-        return re.match("FAILED", self._get_run_status_text(), re.IGNORECASE) != None
+        return (
+            re.match("FAILED", self._get_run_status_text(), re.IGNORECASE) != None
+            or self._get_last_board_status(includeResul=True) == self.RUN_TEST_FAILED
+        )
 
     def _get_run_status_text(self) -> str:
         return subprocess.getoutput(f"cat {self._runStatusPath} | awk '{{print $1}}'")

@@ -1,3 +1,4 @@
+import sys
 from DataAccess.MainConfigDAO import MainConfigDAO
 from DataAccess.Strapi.StrapiDAO import StrapiDAO
 from datetime import datetime
@@ -94,7 +95,9 @@ class MainWindow(QMainWindow):
         self.lblScriptVersion.setText(
             _("Script Version: {0}").format(self._hostControl.get_script_version())
         )
-        self.lblXandraVersion.setToolTip(_("Developed by David Ascencio and Omar Ascencio @Foxconn"))
+        self.lblXandraVersion.setToolTip(
+            _("Developed by David Ascencio and Omar Ascencio @Foxconn")
+        )
 
     def _add_actions(self):
         self.addAction(self.toggleRetestAction)
@@ -230,5 +233,6 @@ class MainWindow(QMainWindow):
             QtWidgets.QApplication.closeAllWindows()
             self._httpServer.stop()
             event.accept()
+            sys.exit(0)
         else:
             event.ignore()

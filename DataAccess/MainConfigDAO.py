@@ -55,6 +55,9 @@ class MainConfigDAO:
     def get_fct_host_control_path(self, index: int = 0) -> str:
         return self.get_host_control()[index]["path"]
 
+    def get_fct_host_control_tool_path(self, index: int = 0) -> str:
+        return self.get_host_control()[index]["path"] + "/tool"
+
     def get_fct_host_control_executable_fullpath(self, index: int = 0) -> str:
         return (
             self.get_fct_host_control_path(index)

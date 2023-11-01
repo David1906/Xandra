@@ -10,6 +10,7 @@ from Models.TestAnalysis import TestAnalysis
 from Models.Test import Test
 from PyQt5 import QtCore, QtGui
 from Utils.PathHelper import PathHelper
+from Views.TempView import TempView
 from Views.Terminal import Terminal
 from Views.LastFailuresWindow import LastFailuresWindow
 from Views.LastTestsWindow import LastTestsWindow
@@ -33,7 +34,7 @@ ngettext = Translator().ngettext
 
 
 class FixtureView(QGroupBox):
-    LABEL_STYLE = "font-size: 12px; font-weight: bold; margin: 5px;"
+    LABEL_STYLE = "font-size: 12px; font-weight: bold; margin: 5px"
 
     def __init__(self, fixture: Fixture):
         super().__init__()
@@ -164,7 +165,7 @@ class FixtureView(QGroupBox):
         if self.terminal.has_tmux_session():
             # TODO fix terminal size self.start()
             pass
-        gridLayout.addWidget(self.terminal, 0, 0, 1, 1)
+        gridLayout.addWidget(self.terminal, 0, 0, 2, 1)
 
         self.maintenanceView = MaintenanceView(
             self,
@@ -179,8 +180,14 @@ class FixtureView(QGroupBox):
         self.lblResult = QLabel(_("Status: IDLE"))
         self.lblResult.setStyleSheet(FixtureView.LABEL_STYLE)
         gridLayout.addWidget(
-            self.lblResult, 2, 0, 1, 3, alignment=QtCore.Qt.AlignCenter
+            self.lblResult, 2, 0, 1, 1, alignment=QtCore.Qt.AlignCenter
         )
+
+        self.tempView = TempView()
+        sideFooterLayout = QHBoxLayout()
+        sideFooterLayout.setContentsMargins(0, 0, 0, 0)
+        sideFooterLayout.addWidget(self.tempView)
+        gridLayout.addLayout(sideFooterLayout, 2, 1, 1, 1)
 
     def on_btnLastTests_clicked(self):
         self._lastLogsWindow = LastTestsWindow(
@@ -304,6 +311,7 @@ class FixtureView(QGroupBox):
             )
             if reply == QMessageBox.Yes:
                 self.terminal.Stop()
+                self.tempView.pause()
                 self.fixture.isStarted = False
         else:
             cmd = self._fixtureController.get_fct_host_cmd(
@@ -335,14 +343,22 @@ class FixtureView(QGroupBox):
         if self.lastAnalysis.equals(testAnalysis):
             return
         self.lastAnalysis = testAnalysis
+        if testAnalysis.bmcIp != "" and not self.tempView.is_started():
+            self.tempView.start(
+                self._fixtureController.get_fct_host_control_tool_path(),
+                testAnalysis.bmcIp,
+            )
+        self._update_by_test_analysis(testAnalysis)
+
+    def _update_by_test_analysis(self, testAnalysis: TestAnalysis):
+        if testAnalysis.status == TestStatus.Recovered:
+            self.fixture.testTimer = testAnalysis.startDateTime
         if self.fixture.isTesting and testAnalysis.has_finished():
             test = self._fixtureController.parse_test(testAnalysis)
             self.add_test(test)
-        else:
+        elif self.fixture.isTesting:
             self.fixture.testItem = testAnalysis.stepLabel
         self.fixture.isTesting = testAnalysis.is_testing()
-        if testAnalysis.status == TestStatus.Recovered:
-            self.fixture.testTimer = testAnalysis.startDateTime
 
     def save_status(self):
         self.fixture.emit_status_change(force=True)

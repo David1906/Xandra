@@ -14,6 +14,7 @@ class MoboTestAnalyzer(TestAnalyzer):
     RUN_STATUS_FILE = "run_status"
     TEST_ITEM_FILE = "test_item"
     LOG_FILE = "run_test.log"
+    BMC_IP_FILE = "bmcip.txt"
     BOARD_LOADED = "Get SN:"
     BOARD_LOADED_REGEX = normalizeToRegex(BOARD_LOADED)
     BOARD_TESTING = "Start testing board"
@@ -34,6 +35,7 @@ class MoboTestAnalyzer(TestAnalyzer):
         self._testItemPath = ""
         self._logFilePath = ""
         self._startTimePath = ""
+        self._bmcIpPath = ""
         self._moboFctHostControlDAO = MoboFctHostControlDAO()
         self.fctHostLogDataPath = (
             self._moboFctHostControlDAO.get_fct_host_log_data_fullpath(self._fixtureId)
@@ -86,6 +88,7 @@ class MoboTestAnalyzer(TestAnalyzer):
         self._testItemPath = f"{self._currentLogPath}/{self.TEST_ITEM_FILE}"
         self._logFilePath = f"{self._currentLogPath}/{self.LOG_FILE}"
         self._startTimePath = f"{self._currentLogPath}/{self.START_TIME_FILE}"
+        self._bmcIpPath = f"{self._currentLogPath}/{self.BMC_IP_FILE}"
 
     def get_start_time(self) -> datetime:
         startTime = subprocess.getoutput(
@@ -100,6 +103,13 @@ class MoboTestAnalyzer(TestAnalyzer):
 
     def is_testing(self) -> bool:
         return self._get_last_board_status(tail=1) == self.BOARD_TESTING
+
+    def get_bmc_ip(self) -> str:
+        if not os.path.isfile(self._bmcIpPath):
+            return ""
+        return subprocess.getoutput(
+            f"cat {self._bmcIpPath} | awk '{{print $1}}'",
+        )
 
     def is_finished(self) -> bool:
         return self._is_popen_ok(f'cat "{self._runStatusPath}" | grep -Poi "PASS|FAIL"')

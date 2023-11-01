@@ -20,6 +20,7 @@ class TestAnalysis:
         startDateTime: datetime = None,
         outLog: str = "",
         scriptVersion: str = "",
+        bmcIp: str = "",
     ) -> None:
         self.status = status
         self.stepLabel = stepLabel
@@ -28,6 +29,7 @@ class TestAnalysis:
         self.startDateTime = startDateTime
         self.outLog = outLog
         self.scriptVersion = scriptVersion
+        self.bmcIp = bmcIp
 
     def is_testing(self) -> bool:
         return self.status == TestStatus.Tested
@@ -36,7 +38,11 @@ class TestAnalysis:
         return self.status == TestStatus.Pass
 
     def equals(self, other: TestAnalysis) -> bool:
-        return self.status == other.status and self.stepLabel == other.stepLabel
+        return (
+            self.status == other.status
+            and self.stepLabel == other.stepLabel
+            and self.bmcIp == other.bmcIp
+        )
 
     def has_finished(self):
         return self.status in [

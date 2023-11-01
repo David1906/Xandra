@@ -97,3 +97,6 @@ class FixtureController:
 
     def get_automatic_product_selection(self) -> int:
         return self._mainConfigDAO.get_automatic_product_selection()
+
+    def get_fct_host_control_tool_path(self) -> int:
+        return self._hostControl.get_tool_fullpath()

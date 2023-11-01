@@ -134,6 +134,14 @@ class MoboFctHostControlDAO:
     def get_upload_sfc_script_fullpath(self) -> str:
         return self._mainConfigDAO.get_upload_sfc_script(self.configIdx)
 
+    def get_tool_fullpath(self) -> str:
+        scriptPath = self.get_script_fullpath()
+        if scriptPath == "":
+            return ""
+        appPathSplit = scriptPath.split("/")
+        return "/".join(appPathSplit[0:-1]) + "/tool"
+
+
     def get_script_fullpath(self) -> str:
         product = self._extract_product()
         if product == None:

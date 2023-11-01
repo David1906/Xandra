@@ -9,17 +9,15 @@ import os
 class MoboHostControl(HostControl):
     def __init__(self) -> None:
         super().__init__()
-        self._fctHostControlDAO = MoboFctHostControlDAO()
+        self._moboFctHostControlDAO = MoboFctHostControlDAO()
         self._mainConfigDAO = MainConfigDAO()
 
     def initialize(self):
-        self._fctHostControlDAO.write_default_settings()
+        self._moboFctHostControlDAO.write_default_settings()
 
     def get_start_cmd(self, fixture: Fixture, hasTraceability: bool) -> str:
-        fullpathSplit = (
-            self._fctHostControlDAO.get_fct_host_control_executable_fullpath().split(
-                "/"
-            )
+        fullpathSplit = self._moboFctHostControlDAO.get_fct_host_control_executable_fullpath().split(
+            "/"
         )
         fileName = fullpathSplit[-1]
         path = "/".join(fullpathSplit[0:-1])
@@ -32,7 +30,7 @@ class MoboHostControl(HostControl):
 
     def get_all_fixture_configs(self) -> "list[FixtureConfig]":
         fixtures: "list[FixtureConfig]" = []
-        for fixtureConfig in self._fctHostControlDAO.get_all_fixture_configs():
+        for fixtureConfig in self._moboFctHostControlDAO.get_all_fixture_configs():
             fixtures.append(
                 FixtureConfig(
                     id=fixtureConfig[MoboFctHostControlDAO.PLC_ID_KEY],
@@ -42,13 +40,16 @@ class MoboHostControl(HostControl):
         return fixtures[:9]
 
     def get_upload_sfc_script_fullpath(self) -> str:
-        return self._fctHostControlDAO.get_upload_sfc_script_fullpath()
+        return self._moboFctHostControlDAO.get_upload_sfc_script_fullpath()
+
+    def get_tool_fullpath(self) -> str:
+        return self._moboFctHostControlDAO.get_tool_fullpath()
 
     def get_script_fullpath(self) -> str:
-        return self._fctHostControlDAO.get_script_fullpath()
+        return self._moboFctHostControlDAO.get_script_fullpath()
 
     def get_script_version(self) -> str:
-        return "MOBO - " + self._fctHostControlDAO.get_script_version()
+        return "MOBO - " + self._moboFctHostControlDAO.get_script_version()
 
     def get_automatic_product_selection(self) -> int:
-        return self._fctHostControlDAO.AUTOMATIC_PRODUCT_SELECTION
+        return self._moboFctHostControlDAO.AUTOMATIC_PRODUCT_SELECTION

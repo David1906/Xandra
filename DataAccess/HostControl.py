@@ -26,6 +26,10 @@ class HostControl(ABC):
         pass
 
     @abstractmethod
+    def get_tool_fullpath(self) -> str:
+        pass
+
+    @abstractmethod
     def get_all_fixture_configs(self) -> "list[FixtureConfig]":
         pass
 

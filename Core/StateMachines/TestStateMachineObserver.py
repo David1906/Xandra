@@ -62,7 +62,9 @@ class TestStateMachineObserver(QtCore.QObject):
         self._emit_testAnalysis("Pre-Test Failed")
 
     def on_enter_Tested(self):
-        self._emit_testAnalysis(self._testAnalyzer.get_test_item())
+        self._emit_testAnalysis(
+            self._testAnalyzer.get_test_item(), self._testAnalyzer.get_bmc_ip()
+        )
 
     def on_enter_Finished(self):
         self._emit_testAnalysis("Waiting for release")
@@ -75,5 +77,7 @@ class TestStateMachineObserver(QtCore.QObject):
         if self._isTransition:
             self.update.emit(self._testAnalyzer.get_failed_test_analysis())
 
-    def _emit_testAnalysis(self, stepLabel: str):
-        self.update.emit(TestAnalysis(TestStatus.Tested, stepLabel=stepLabel))
+    def _emit_testAnalysis(self, stepLabel: str, bmcIp: str = ""):
+        self.update.emit(
+            TestAnalysis(TestStatus.Tested, stepLabel=stepLabel, bmcIp=bmcIp)
+        )

@@ -42,6 +42,10 @@ class TestAnalyzer(ABC):
         pass
 
     @abstractmethod
+    def get_bmc_ip(self) -> str:
+        pass
+
+    @abstractmethod
     def is_finished(self) -> bool:
         pass
 

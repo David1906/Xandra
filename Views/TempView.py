@@ -1,25 +1,21 @@
-import os
-import random
-import subprocess
-import threading
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtGui import QPixmap
 from threading import *
 from threading import *
-import time
-
 from Utils.PathHelper import PathHelper
+from Utils.TempThread import TempThread
 
 
 class TempView(QtWidgets.QWidget):
+    TEMP_OK = 50
+    TEMP_ERROR = 76
+
     def __init__(self, toolPath: str = "", bmcIp: str = "", parent=None):
         super(TempView, self).__init__(parent)
-        self._toolPath = toolPath
-        self._bmcIp = bmcIp
         self._init_ui()
-        self._threadEvent = threading.Event()
-        self._thread = Thread(target=self.read_temp_loop, args=(self._threadEvent,))
-        self._thread.start()
+        self._tempThread = TempThread(toolPath, bmcIp)
+        self._tempThread.readed.connect(self._on_temp_readed)
+        self._tempThread.start()
 
     def _init_ui(self):
         layout = QtWidgets.QHBoxLayout(self)
@@ -31,7 +27,6 @@ class TempView(QtWidgets.QWidget):
         layout.addWidget(self.lblTemp)
 
         self.lblIcon = QtWidgets.QLabel(self)
-        self.lblIcon.hide()
         self.lblIcon.setAlignment(QtCore.Qt.AlignVCenter)
         pixmap = QPixmap(PathHelper().join_root_path(f"/Static/thermometer.png"))
         self.lblIcon.setPixmap(pixmap.scaled(16, 16))
@@ -40,25 +35,17 @@ class TempView(QtWidgets.QWidget):
 
         layout.addStretch()
         self.setLayout(layout)
+        self.hide()
 
-    def read_temp_loop(self, threadEvent: Event):
-        lastTemp = 0.0
-        while True:
-            threadEvent.wait()
-            currentTemp = self._read_temp()
-            if currentTemp != lastTemp:
-                self.lblTemp.setText(f"{currentTemp:+3.1f}°")
-                self._update_color(currentTemp)
-                lastTemp = currentTemp
-            time.sleep(3)
+    def _on_temp_readed(self, temp: float):
+        self.lblTemp.setText(f"{temp:+.1f}°")
+        self._update_color(temp)
 
     def _update_color(self, currentTemp: float = 0):
-        color = "gray"
-        if currentTemp <= 50:
-            color = "#4AA3BA"
-        elif 50 < currentTemp and currentTemp < 76:
+        color = "#4AA3BA"
+        if self.TEMP_OK < currentTemp and currentTemp < self.TEMP_ERROR:
             color = "#5DAE8B"
-        elif currentTemp >= 76:
+        elif currentTemp >= self.TEMP_ERROR:
             color = "#FF7676"
         self.lblTemp.setStyleSheet(
             f"background-color: {color};border-top-left-radius: 5px; border-bottom-left-radius: 5px;"
@@ -67,30 +54,16 @@ class TempView(QtWidgets.QWidget):
             f"background-color: {color};border-top-right-radius: 5px; border-bottom-right-radius: 5px;"
         )
 
-    def _read_temp(self) -> float:
-        try:
-            currentTemp = subprocess.getoutput(
-                "sh %s/Nitro/nitro-bmc -i %s sensors list |grep DTS|awk '{print $9}'"
-                % (self._toolPath, self._bmcIp)
-            )
-            return float(currentTemp) / 1000
-        except:
-            return 0.0
-
     def start(self, toolPath: str = "", bmcIp: str = ""):
-        self._toolPath = toolPath
-        self._bmcIp = bmcIp
         self.lblTemp.setText("--.- °")
-        self.lblTemp.show()
-        self.lblIcon.show()
         self._update_color(0)
-        self._threadEvent.set()
+        self.show()
+        self._tempThread.resume(toolPath, bmcIp)
 
     def pause(self):
+        self._tempThread.pause()
+        self.hide()
         self.lblTemp.setText("")
-        self.lblTemp.hide()
-        self.lblIcon.hide()
-        self._threadEvent.clear()
 
     def is_started(self) -> bool:
-        self._threadEvent.is_set()
+        return self._tempThread.is_started()

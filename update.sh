@@ -6,6 +6,7 @@ git pull
 
 sudo chmod +x Resources/chk_station_is_locked.py
 sudo chmod +x Resources/up_sfc.sh
+sudo chmod +x Resources/mobo/get_bmcip_onlyip.sh
 sudo chmod +x update.sh
 
 if command -v /root/.local/bin/alembic >/dev/null; then

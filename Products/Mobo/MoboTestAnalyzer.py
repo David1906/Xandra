@@ -3,6 +3,7 @@ from DataAccess.TestAnalyzer import TestAnalyzer
 from datetime import datetime
 from Models.TestAnalysis import TestAnalysis
 from Products.Mobo.MoboFctHostControlDAO import MoboFctHostControlDAO
+from Utils.PathHelper import PathHelper
 from Utils.TextNormalizer import normalizeToRegex
 import os
 import re
@@ -114,6 +115,14 @@ class MoboTestAnalyzer(TestAnalyzer):
 
     def is_testing(self) -> bool:
         return self._get_last_board_status(tail=1) == self.BOARD_TESTING
+
+    def call_get_bmc_ip(self):
+        subprocess.Popen(
+            f"{PathHelper().get_root_path()}/Resources/mobo/get_bmcip_onlyip.sh -s {self._serialNumber}",
+            stdin=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            shell=True,
+        )
 
     def get_bmc_ip(self) -> str:
         if not os.path.isfile(self._bmcIpPath):

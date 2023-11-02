@@ -1,5 +1,6 @@
 import os
 import random
+import subprocess
 import threading
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtGui import QPixmap
@@ -51,7 +52,7 @@ class TempView(QtWidgets.QWidget):
                 lastTemp = currentTemp
             time.sleep(3)
 
-    def _update_color(self, currentTemp: float):
+    def _update_color(self, currentTemp: float = 0):
         color = "gray"
         if currentTemp <= 50:
             color = "#4AA3BA"
@@ -68,15 +69,11 @@ class TempView(QtWidgets.QWidget):
 
     def _read_temp(self) -> float:
         try:
-            return (
-                float(
-                    os.popen(
-                        "sh %s/Nitro/nitro-bmc -i %s sensors list |grep DTS|awk '{print $9}'"
-                        % (self._toolPath, self._bmcIp)
-                    ).read()
-                )
-                / 1000
+            currentTemp = subprocess.getoutput(
+                "sh %s/Nitro/nitro-bmc -i %s sensors list |grep DTS|awk '{print $9}'"
+                % (self._toolPath, self._bmcIp)
             )
+            return float(currentTemp) / 1000
         except:
             return 0.0
 
@@ -86,6 +83,7 @@ class TempView(QtWidgets.QWidget):
         self.lblTemp.setText("--.- °")
         self.lblTemp.show()
         self.lblIcon.show()
+        self._update_color(0)
         self._threadEvent.set()
 
     def pause(self):

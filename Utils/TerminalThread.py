@@ -15,7 +15,7 @@ class TerminalThread(QtCore.QThread):
     def __init__(self, fixtureId: str, sessionId: str):
         super().__init__()
         self._fixtureId = fixtureId
-        self._analysisInterval = randint(700, 1000) / 1000
+        self._analysisInterval = randint(700, 900) / 1000
         self._abort = False
         self._sessionId = sessionId
         self._sm = None

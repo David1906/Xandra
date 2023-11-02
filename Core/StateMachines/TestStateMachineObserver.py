@@ -1,3 +1,4 @@
+from datetime import datetime
 from Core.Enums.TestStatus import TestStatus
 from DataAccess.TestAnalyzer import TestAnalyzer
 from Models.TestAnalysis import TestAnalysis
@@ -29,6 +30,7 @@ class TestStateMachineObserver(QtCore.QObject):
         if os.environ.get("ENV") == "testing" and self._isTransition:
             print(
                 "\n",
+                f"[{datetime.today()}]",
                 self._testAnalyzer.sessionId,
                 "from: ",
                 source.name,
@@ -70,12 +72,10 @@ class TestStateMachineObserver(QtCore.QObject):
         self._emit_testAnalysis("Waiting for release")
 
     def on_enter_Pass(self):
-        if self._isTransition:
-            self.update.emit(self._testAnalyzer.get_pass_test_analysis())
+        self.update.emit(self._testAnalyzer.get_pass_test_analysis())
 
     def on_enter_Failed(self):
-        if self._isTransition:
-            self.update.emit(self._testAnalyzer.get_failed_test_analysis())
+        self.update.emit(self._testAnalyzer.get_failed_test_analysis())
 
     def _emit_testAnalysis(self, stepLabel: str, bmcIp: str = ""):
         self.update.emit(

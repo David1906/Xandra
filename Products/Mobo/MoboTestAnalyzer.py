@@ -59,22 +59,27 @@ class MoboTestAnalyzer(TestAnalyzer):
     def is_board_loaded(self) -> bool:
         return self._get_last_board_status() == self.BOARD_LOADED
 
-    def _get_last_board_status(self, tail: int = 100, findResults: bool = False) -> str:
-        regex = f"{self.BOARD_LOADED_REGEX}|{self.BOARD_TESTING_REGEX}"
-        if findResults:
-            regex += f"|{self.RUN_TEST_PASS_REGEX}|{self.RUN_TEST_FAILED_REGEX}"
-        else:
-            regex += (
-                f"|{self.BOARD_RELEASED_REGEX}|{self.BOARD_SOCKET_EXCEPTIONS_REGEX}"
-            )
+    def _get_last_board_result(self):
+        regex = f"{self.BOARD_LOADED_REGEX}|{self.RUN_TEST_PASS_REGEX}|{self.RUN_TEST_FAILED_REGEX}"
+        return self._get_last_fixture_status(regex)
 
-        return (
-            subprocess.getoutput(
-                f'tail -n{tail} {self.fctHostLogDataPath}/"$(ls -1rt {self.fctHostLogDataPath}| tail -n1)" | tac | grep -Poia -m1 "{regex}"'
+    def _get_last_board_status(self, tail: int = 100) -> str:
+        regex = f"{self.BOARD_LOADED_REGEX}|{self.BOARD_TESTING_REGEX}"
+        regex += f"|{self.RUN_TEST_PASS_REGEX}|{self.RUN_TEST_FAILED_REGEX}"
+        regex += f"|{self.BOARD_RELEASED_REGEX}|{self.BOARD_SOCKET_EXCEPTIONS_REGEX}"
+        return self._get_last_fixture_status(regex, tail)
+
+    def _get_last_fixture_status(self, regex: str, tail: int = 100) -> str:
+        try:
+            return (
+                subprocess.getoutput(
+                    f'tail -n{tail} {self.fctHostLogDataPath}/"$(ls -1rt {self.fctHostLogDataPath}| tail -n1)" | tac | grep -Poia -m1 "{regex}"'
+                )
+                .strip()
+                .split("\n")[0]
             )
-            .strip()
-            .split("\n")[0]
-        )
+        except:
+            return ""
 
     def initialize_files(self):
         open(self._runStatusPath, "w").close()
@@ -118,7 +123,7 @@ class MoboTestAnalyzer(TestAnalyzer):
         )
 
     def is_finished(self) -> bool:
-        return self._is_popen_ok(f'cat "{self._runStatusPath}" | grep -Poi "PASS|FAIL"')
+        return not self.is_testing()
 
     def _is_popen_ok(self, cmd: str):
         try:
@@ -138,7 +143,7 @@ class MoboTestAnalyzer(TestAnalyzer):
 
     def is_board_released(self) -> bool:
         self._debug_thread()
-        return self._get_last_board_status(findResults=True) in [
+        return self._get_last_board_status() in [
             self.BOARD_RELEASED,
             self.BOARD_SOCKET_EXCEPTIONS,
             self.RUN_TEST_PASS,
@@ -148,13 +153,13 @@ class MoboTestAnalyzer(TestAnalyzer):
     def is_pass(self) -> bool:
         return (
             re.match("PASS", self._get_run_status_text(), re.IGNORECASE) != None
-            or self._get_last_board_status(findResults=True) == self.RUN_TEST_PASS
+            or self._get_last_board_result() == self.RUN_TEST_PASS
         )
 
     def is_failed(self) -> bool:
         return (
             re.match("FAILED", self._get_run_status_text(), re.IGNORECASE) != None
-            or self._get_last_board_status(findResults=True) == self.RUN_TEST_FAILED
+            or self._get_last_board_result() == self.RUN_TEST_FAILED
         )
 
     def _get_run_status_text(self) -> str:

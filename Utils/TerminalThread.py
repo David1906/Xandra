@@ -1,3 +1,5 @@
+import threading
+from Core.Enums.TestStatus import TestStatus
 from Core.StateMachines.TestStateMachineObserver import TestStateMachineObserver
 from Core.StateMachines.TestStateMachine import TestStateMachine
 from Models.TestAnalysis import TestAnalysis
@@ -20,6 +22,7 @@ class TerminalThread(QtCore.QThread):
         self._sessionId = sessionId
         self._sm = None
         self._terminalObserver = None
+        self._threadEvent = threading.Event()
 
         self._testAnalyzer = TestAnalyzerBuilder().build_based_on_main_config(
             self._fixtureId, self._sessionId
@@ -29,6 +32,7 @@ class TerminalThread(QtCore.QThread):
 
     def run(self):
         while True:
+            self._threadEvent.wait()
             time.sleep(self._analysisInterval)
             try:
                 if self._sm != None:
@@ -39,11 +43,15 @@ class TerminalThread(QtCore.QThread):
                 self.reset()
 
     def pause(self):
+        self._threadEvent.clear()
+        if self._sm.current_state_value != TestStatus.Idle.value:
+            self._testAnalyzer.pause()
         self._sm = None
 
     def reset(self):
         self._sm = TestStateMachine(testAnalyzer=self._testAnalyzer)
         self._sm.add_observer(self._terminalObserver)
+        self._threadEvent.set()
 
     def _terminal_updated(self, testAnalysis: TestAnalysis):
         self.updated.emit(testAnalysis)

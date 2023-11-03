@@ -76,3 +76,7 @@ class TestAnalyzer(ABC):
     @abstractmethod
     def get_failed_test_analysis(self) -> TestAnalysis:
         pass
+
+    @abstractmethod
+    def pause(self):
+        pass

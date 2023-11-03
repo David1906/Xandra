@@ -198,3 +198,12 @@ class MoboTestAnalyzer(TestAnalyzer):
         if not os.path.isfile(self._logFilePath):
             return ""
         return self._logFilePath
+
+    def pause(self):
+        subprocess.Popen(
+            f'echo "{datetime.today()}|ERROR|Xandra terminal stopped|" >> {self.fctHostLogDataPath}/"$(ls -1rt {self.fctHostLogDataPath}| tail -n1)"',
+            stdin=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            shell=True,
+        )
+        self.initialize_files()

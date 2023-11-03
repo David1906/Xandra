@@ -35,11 +35,14 @@ class TestStateMachine(StateMachine):
 
         | states.Finished.to(states.Pass, cond="is_pass")
         | states.Finished.to(states.Failed, cond="is_failed")
-        | states.Finished.to(states.Idle, cond="is_board_loaded")
-        | states.Finished.to(states.Idle, cond="is_board_released")
         | states.Finished.to.itself(internal=True)
-        | states.Pass.to(states.Idle)
-        | states.Failed.to(states.Idle)
+
+        | states.Pass.to(states.Released)
+        | states.Failed.to(states.Released)
+
+        | states.Released.to(states.Idle, cond="is_board_loaded")
+        | states.Released.to(states.Idle, cond="is_board_released")
+        | states.Released.to.itself(internal=True)
     )
     # fmt: on
 

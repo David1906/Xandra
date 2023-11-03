@@ -87,9 +87,12 @@ class MoboTestAnalyzer(TestAnalyzer):
         open(self._testItemPath, "w").close()
 
     def refresh_serial_number(self):
-        self._serialNumber = subprocess.getoutput(
-            f'tac {self.fctHostLogDataPath}/"$(ls -1rt {self.fctHostLogDataPath}| tail -n1)" | grep -Poia -m1 "Get SN\s*:\s*\K.*?(?=\|)" | tail -n1'
-        ).strip()
+        try:
+            self._serialNumber = subprocess.getoutput(
+                f'tac {self.fctHostLogDataPath}/"$(ls -1rt {self.fctHostLogDataPath}| tail -n1)" | grep -Poia -m1 "Get SN\s*:\s*\K.*?(?=\|)" | tail -n1'
+            ).strip()
+        except:
+            return ""
 
     def refresh_test_paths(self):
         self._currentLogPath = (
@@ -116,20 +119,26 @@ class MoboTestAnalyzer(TestAnalyzer):
         return self._is_popen_ok(f'cat "{self._runStatusPath}" | grep -Poi "testing"')
 
     def call_get_bmc_ip(self):
-        subprocess.Popen(
-            f"{PathHelper().get_root_path()}/Resources/mobo/get_bmcip_onlyip.sh -s {self._serialNumber}",
-            stdin=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            shell=True,
-            cwd=self._moboFctHostControlDAO.get_script_fullpath(),
-        )
+        try:
+            subprocess.Popen(
+                f"{PathHelper().get_root_path()}/Resources/mobo/get_bmcip_onlyip.sh -s {self._serialNumber}",
+                stdin=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                shell=True,
+                cwd=self._moboFctHostControlDAO.get_script_fullpath(),
+            )
+        except:
+            pass
 
     def get_bmc_ip(self) -> str:
         if not os.path.isfile(self._bmcIpPath):
             return ""
-        return subprocess.getoutput(
-            f"cat {self._bmcIpPath} | tail -1",
-        ).strip()
+        try:
+            return subprocess.getoutput(
+                f"cat {self._bmcIpPath} | tail -1",
+            ).strip()
+        except:
+            return ""
 
     def is_finished(self) -> bool:
         return self._is_popen_ok(f'cat "{self._runStatusPath}" | grep -Poi "PASS|FAIL"')
@@ -146,9 +155,12 @@ class MoboTestAnalyzer(TestAnalyzer):
     def get_test_item(self) -> str:
         if not os.path.isfile(self._testItemPath):
             return ""
-        return subprocess.getoutput(
-            f"cat {self._testItemPath} | awk '{{print $1}}'",
-        )
+        try:
+            return subprocess.getoutput(
+                f"cat {self._testItemPath} | awk '{{print $1}}'",
+            )
+        except:
+            return ""
 
     def is_board_released(self) -> bool:
         return self._get_last_board_status() in [
@@ -171,7 +183,12 @@ class MoboTestAnalyzer(TestAnalyzer):
         )
 
     def _get_run_status_text(self) -> str:
-        return subprocess.getoutput(f"cat {self._runStatusPath} | awk '{{print $1}}'")
+        try:
+            return subprocess.getoutput(
+                f"cat {self._runStatusPath} | awk '{{print $1}}'"
+            )
+        except:
+            return ""
 
     def get_pass_test_analysis(self) -> TestAnalysis:
         return TestAnalysis(

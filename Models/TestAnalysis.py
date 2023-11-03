@@ -32,7 +32,7 @@ class TestAnalysis:
         self.bmcIp = bmcIp
 
     def is_testing(self) -> bool:
-        return self.status == TestStatus.Tested
+        return self.status in [TestStatus.PreTested, TestStatus.Tested]
 
     def is_pass(self) -> bool:
         return self.status == TestStatus.Pass
@@ -44,7 +44,10 @@ class TestAnalysis:
             and self.bmcIp == other.bmcIp
         )
 
-    def has_finished(self):
+    def has_bmc_ip(self) -> bool:
+        return self.bmcIp != ""
+
+    def is_finished(self):
         return self.status in [
             TestStatus.Pass,
             TestStatus.Failed,

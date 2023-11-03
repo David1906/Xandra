@@ -21,4 +21,3 @@ class TestStatus(enum.Enum):
     Finished = "Finished"
     Pass = "Pass"
     Failed = "Failed"
-    Released = "Released"

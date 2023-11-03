@@ -114,7 +114,7 @@ class MoboTestAnalyzer(TestAnalyzer):
         return dt
 
     def is_testing(self) -> bool:
-        return self._get_last_board_status(tail=1) == self.BOARD_TESTING
+        return self._is_popen_ok(f'cat "{self._runStatusPath}" | grep -Poi "testing"')
 
     def call_get_bmc_ip(self):
         subprocess.Popen(
@@ -132,7 +132,7 @@ class MoboTestAnalyzer(TestAnalyzer):
         )
 
     def is_finished(self) -> bool:
-        return not self.is_testing()
+        return self._is_popen_ok(f'cat "{self._runStatusPath}" | grep -Poi "PASS|FAIL"')
 
     def _is_popen_ok(self, cmd: str):
         try:
@@ -151,7 +151,6 @@ class MoboTestAnalyzer(TestAnalyzer):
         )
 
     def is_board_released(self) -> bool:
-        self._debug_thread()
         return self._get_last_board_status() in [
             self.BOARD_RELEASED,
             self.BOARD_SOCKET_EXCEPTIONS,

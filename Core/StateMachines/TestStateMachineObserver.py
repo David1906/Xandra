@@ -70,7 +70,7 @@ class TestStateMachineObserver(QtCore.QObject):
         )
 
     def on_enter_Finished(self):
-        self._emit_testAnalysis("Waiting for release")
+        self._emit_testAnalysis("Finished")
 
     def on_enter_Pass(self):
         self.update.emit(self._testAnalyzer.get_pass_test_analysis())

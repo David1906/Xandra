@@ -343,7 +343,7 @@ class FixtureView(QGroupBox):
         if self.lastAnalysis.equals(testAnalysis):
             return
         self.lastAnalysis = testAnalysis
-        if testAnalysis.bmcIp != "" and not self.tempView.is_started():
+        if testAnalysis.has_bmc_ip() and not self.tempView.is_started():
             self.tempView.start(
                 self._fixtureController.get_fct_host_control_tool_path(),
                 testAnalysis.bmcIp,
@@ -353,11 +353,11 @@ class FixtureView(QGroupBox):
     def _update_by_test_analysis(self, testAnalysis: TestAnalysis):
         if testAnalysis.status == TestStatus.Recovered:
             self.fixture.testTimer = testAnalysis.startDateTime
-        if self.fixture.isTesting and testAnalysis.has_finished():
+        if testAnalysis.is_finished():
             test = self._fixtureController.parse_test(testAnalysis)
             self.add_test(test)
             self.tempView.pause()
-        elif self.fixture.isTesting:
+        elif testAnalysis.is_testing():
             self.fixture.testItem = testAnalysis.stepLabel
         self.fixture.isTesting = testAnalysis.is_testing()
 

@@ -121,6 +121,7 @@ class MoboTestAnalyzer(TestAnalyzer):
             stdin=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
             shell=True,
+            cwd=self._moboFctHostControlDAO.get_script_fullpath()
         )
 
     def get_bmc_ip(self) -> str:

@@ -63,7 +63,7 @@ class Terminal(QtWidgets.QFrame):
                 f"TMUX='' tmux new-session -A -s {self.sessionId} \; detach", shell=True
             )
             call(
-                self._get_tmux_send_keys(f'"{command} || exit"') + " Enter",
+                self._get_tmux_send_keys(f'"{command} ; exit"') + " Enter",
                 shell=True,
             )
             self.set_tmux_option("status", "off")

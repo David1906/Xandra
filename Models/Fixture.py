@@ -57,6 +57,7 @@ class Fixture(QtCore.QObject):
         self._testStartDateTime = None
         self._maintenance = NullMaintenance()
         self._testItem = ""
+        self._serialNumber = ""
 
         self._shouldUpdateRemainingToUnlock = True
         self._lastRemainingToUnlock = 0
@@ -186,7 +187,7 @@ class Fixture(QtCore.QObject):
         payload = ""
         status = self.get_status()
         if self.isTesting:
-            payload = f"[{self.testItem}] " if self.testItem != "" else ""
+            payload = f" {self.serialNumber} [{self.testItem}] " if self.testItem != "" else ""
             payload += f"({str(self.get_test_time())})"
         elif not self.lastTest.isNull:
             payload = _("SN: {0}    Result: {1}").format(
@@ -408,4 +409,13 @@ class Fixture(QtCore.QObject):
     @testItem.setter
     def testItem(self, value: str):
         self._testItem = value
+        self._property_changed()
+
+    @property
+    def serialNumber(self) -> str:
+        return self._serialNumber
+
+    @serialNumber.setter
+    def serialNumber(self, value: str):
+        self._serialNumber = value
         self._property_changed()

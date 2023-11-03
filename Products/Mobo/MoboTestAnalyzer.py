@@ -15,7 +15,7 @@ class MoboTestAnalyzer(TestAnalyzer):
     RUN_STATUS_FILE = "run_status"
     TEST_ITEM_FILE = "test_item"
     LOG_FILE = "run_test.log"
-    BMC_IP_FILE = "bmcip.txt"
+    BMC_IP_FILE = "get_bmcip_onlyip.log"
     BOARD_LOADED = "Get SN:"
     BOARD_LOADED_REGEX = normalizeToRegex(BOARD_LOADED)
     BOARD_TESTING = "Start testing board"

@@ -58,7 +58,7 @@ class MoboTestAnalyzer(TestAnalyzer):
             debugpy.debug_this_thread()
 
     def is_board_loaded(self) -> bool:
-        return self._get_last_board_status() == self.BOARD_LOADED
+        return self._get_last_board_status() in [self.BOARD_LOADED, self.BOARD_TESTING]
 
     def _get_last_board_result(self):
         regex = f"{self.BOARD_LOADED_REGEX}|{self.RUN_TEST_PASS_REGEX}|{self.RUN_TEST_FAILED_REGEX}"
@@ -121,7 +121,7 @@ class MoboTestAnalyzer(TestAnalyzer):
             stdin=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
             shell=True,
-            cwd=self._moboFctHostControlDAO.get_script_fullpath()
+            cwd=self._moboFctHostControlDAO.get_script_fullpath(),
         )
 
     def get_bmc_ip(self) -> str:

@@ -359,7 +359,7 @@ class FixtureView(QGroupBox):
             self.tempView.pause()
         elif testAnalysis.is_testing():
             self.fixture.testItem = testAnalysis.stepLabel
-            self.fixture.serialNumber = testAnalysis.stepLabel
+            self.fixture.serialNumber = testAnalysis.serialNumber
         self.fixture.isTesting = testAnalysis.is_testing()
 
     def save_status(self):

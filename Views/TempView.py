@@ -7,7 +7,7 @@ from Utils.TempThread import TempThread
 
 
 class TempView(QtWidgets.QWidget):
-    TEMP_OK = 50
+    TEMP_OK = 40
     TEMP_ERROR = 76
 
     def __init__(self, toolPath: str = "", bmcIp: str = "", parent=None):

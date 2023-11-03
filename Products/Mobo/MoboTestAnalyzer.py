@@ -128,8 +128,8 @@ class MoboTestAnalyzer(TestAnalyzer):
         if not os.path.isfile(self._bmcIpPath):
             return ""
         return subprocess.getoutput(
-            f"cat {self._bmcIpPath} | awk '{{print $1}}'",
-        )
+            f"cat {self._bmcIpPath} | tail -1",
+        ).strip()
 
     def is_finished(self) -> bool:
         return self._is_popen_ok(f'cat "{self._runStatusPath}" | grep -Poi "PASS|FAIL"')

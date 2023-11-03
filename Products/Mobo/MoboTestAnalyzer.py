@@ -224,3 +224,6 @@ class MoboTestAnalyzer(TestAnalyzer):
             shell=True,
         )
         self.initialize_files()
+
+    def get_serial_number(self) -> str:
+        return self._serialNumber

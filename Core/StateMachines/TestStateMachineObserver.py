@@ -80,5 +80,10 @@ class TestStateMachineObserver(QtCore.QObject):
 
     def _emit_testAnalysis(self, stepLabel: str, bmcIp: str = ""):
         self.update.emit(
-            TestAnalysis(TestStatus.Tested, stepLabel=stepLabel, bmcIp=bmcIp)
+            TestAnalysis(
+                TestStatus.Tested,
+                stepLabel=stepLabel,
+                bmcIp=bmcIp,
+                serialNumber=self._testAnalyzer.get_serial_number(),
+            )
         )

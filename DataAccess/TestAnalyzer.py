@@ -80,3 +80,7 @@ class TestAnalyzer(ABC):
     @abstractmethod
     def pause(self):
         pass
+
+    @abstractmethod
+    def get_serial_number(self) -> str:
+        pass

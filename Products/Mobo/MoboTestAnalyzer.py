@@ -61,7 +61,7 @@ class MoboTestAnalyzer(TestAnalyzer):
         return self._get_last_board_status() in [self.BOARD_LOADED, self.BOARD_TESTING]
 
     def _get_last_board_result(self):
-        regex = f"{self.BOARD_LOADED_REGEX}|{self.RUN_TEST_PASS_REGEX}|{self.RUN_TEST_FAILED_REGEX}"
+        regex = f"{self.RUN_TEST_PASS_REGEX}|{self.RUN_TEST_FAILED_REGEX}"
         return self._get_last_fixture_status(regex)
 
     def _get_last_board_status(self, tail: int = 100) -> str:

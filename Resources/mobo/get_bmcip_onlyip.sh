@@ -101,7 +101,7 @@ get_ip_from_dhcp(){
     echo ${bmcip}
     export bmcip
     echo ${bmcip} > ${LOGPATH}/${SN}/bmcip.txt
-    echo ${bmcip} >> ${LOGFILE}
+    echo ${bmcip} > ${LOGFILE}
 }
 
 get_bmcip(){

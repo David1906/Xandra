@@ -25,7 +25,7 @@ class TestStateMachine(StateMachine):
         | states.PreTested.to(states.Tested, cond="is_testing")
         | states.PreTested.to(states.PreTestFailed, cond="is_failed")
         | states.PreTested.to(states.PreTestFailed, cond="is_board_released")
-        | states.PreTested.to.itself(internal=True)
+        | states.PreTested.to.itself()
 
         | states.PreTestFailed.to(states.Idle, cond="is_board_released")
         | states.PreTestFailed.to.itself(internal=True)

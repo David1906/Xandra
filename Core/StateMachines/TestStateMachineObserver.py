@@ -54,7 +54,7 @@ class TestStateMachineObserver(QtCore.QObject):
         self._testAnalyzer.initialize_files()
 
     def on_enter_PreTested(self):
-        self._emit_testAnalysis("Pre-Test")
+        self._emit_testAnalysis("Pre-Test", self._testAnalyzer.get_bmc_ip())
 
     def _refresh_testAnalyzer(self):
         self._testAnalyzer.refresh_serial_number()

@@ -40,7 +40,6 @@ class TestStateMachine(StateMachine):
         | states.Pass.to(states.Released)
         | states.Failed.to(states.Released)
 
-        | states.Released.to(states.Idle, cond="is_board_loaded")
         | states.Released.to(states.Idle, cond="is_board_released")
         | states.Released.to.itself(internal=True)
     )

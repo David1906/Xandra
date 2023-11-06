@@ -8,8 +8,10 @@ from Models.Maintenance import Maintenance
 from Models.NullTestAnalysis import NullTestAnalysis
 from Models.TestAnalysis import TestAnalysis
 from Models.Test import Test
-from PyQt5 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 from Utils.PathHelper import PathHelper
+from Views.BadgeView import BadgeView
+from Views.FrameLayout import FrameLayout
 from Views.TempView import TempView
 from Views.Terminal import Terminal
 from Views.LastFailuresWindow import LastFailuresWindow
@@ -59,16 +61,22 @@ class FixtureView(QGroupBox):
         gridLayout = QGridLayout()
         gridLayout.setColumnStretch(0, 1)
         gridLayout.setColumnStretch(1, 0)
-        gridLayout.setColumnMinimumWidth(1, 130)
         gridLayout.setRowStretch(0, 1)
         gridLayout.setRowStretch(1, 0)
+        gridLayout.setContentsMargins(5, 5, 5, 5)
         self.setLayout(gridLayout)
 
         sideGridLayout = QGridLayout()
         sideGridLayout.setRowStretch(0, 0)
         sideGridLayout.setRowStretch(1, 1)
         sideGridLayout.setRowStretch(2, 0)
-        gridLayout.addLayout(sideGridLayout, 0, 1, 1, 1)
+
+        self.sideFrameLayout = FrameLayout(self, tooltip=_("Fixture configurations"))
+        sideFrame = QtWidgets.QFrame(self)
+        sideFrame.setContentsMargins(0, 0, 0, 0)
+        sideFrame.setLayout(sideGridLayout)
+        self.sideFrameLayout.addWidget(sideFrame)
+        gridLayout.addWidget(self.sideFrameLayout, 0, 1, 1, 1)
 
         infoLayout = QVBoxLayout()
         sideGridLayout.addLayout(infoLayout, 0, 0)
@@ -163,9 +171,9 @@ class FixtureView(QGroupBox):
         self.terminal.finished.connect(self._on_terminal_finished)
         self.terminal.change.connect(self.on_terminal_change)
         if self.terminal.has_tmux_session():
-            # TODO fix terminal size self.start()
+            # FIXME terminal size self.start()
             pass
-        gridLayout.addWidget(self.terminal, 0, 0, 2, 1)
+        gridLayout.addWidget(self.terminal, 0, 0, 1, 1)
 
         self.maintenanceView = MaintenanceView(
             self,
@@ -177,17 +185,28 @@ class FixtureView(QGroupBox):
         self.maintenanceView.selected.connect(self._on_maintenance_selected)
         gridLayout.addWidget(self.maintenanceView, 0, 0, 1, 1)
 
-        self.lblResult = QLabel(_("Status: IDLE"))
-        self.lblResult.setStyleSheet(FixtureView.LABEL_STYLE)
-        gridLayout.addWidget(
-            self.lblResult, 2, 0, 1, 1, alignment=QtCore.Qt.AlignCenter
-        )
+        #########################
+        # Footer
+        #########################
+
+        footerLayout = QHBoxLayout()
+        gridLayout.addLayout(footerLayout, 1, 0, 1, 2, alignment=QtCore.Qt.AlignLeft)
+
+        self.bdgResult = BadgeView(_("Status: IDLE"), self, isBold=True)
+        footerLayout.addWidget(self.bdgResult, 0)
+
+        footerLayout.addStretch()
 
         self.tempView = TempView()
-        sideFooterLayout = QHBoxLayout()
-        sideFooterLayout.setContentsMargins(0, 0, 0, 0)
-        sideFooterLayout.addWidget(self.tempView)
-        gridLayout.addLayout(sideFooterLayout, 2, 1, 1, 1)
+        self.tempView.hide()
+        footerLayout.addWidget(self.tempView, 0)
+
+        self.bdgSerialNumber = BadgeView(_("Serial Number"), self, prefix="SN: ")
+        footerLayout.addWidget(self.bdgSerialNumber, 0)
+
+        self.bdgMac = BadgeView(_("Mac"), self, prefix="MAC: ")
+        footerLayout.addWidget(self.bdgMac, 0)
+        self._set_badges_visible(False)
 
     def on_btnLastTests_clicked(self):
         self._lastLogsWindow = LastTestsWindow(
@@ -240,13 +259,12 @@ class FixtureView(QGroupBox):
         self.setStyleSheet(
             f"""
             QGroupBox#fixture{{
-                border-radius: 5px;
-                border: 1px solid #cccccc;
+                border-radius: 3px;
+                border: 1px solid #c0c2ce;
                 background-color: {self.fixture.get_color()};
             }}
             """
         )
-        self.lblResult.setStyleSheet(FixtureView.LABEL_STYLE)
         self._fixtureController.update(self.fixture)
 
     def _update_texts(self):
@@ -266,13 +284,21 @@ class FixtureView(QGroupBox):
         self.maintenanceView._update_texts()
 
     def _update_status(self):
-        self.lblResult.setText(self.fixture.get_status_message())
-        self.lblResult.setToolTip(
-            "" if self.fixture.isTesting else self.lblResult.text()
-        )
+        status = self.fixture.get_status_message()
+        self.bdgResult.setText(status)
+        self.bdgResult.setToolTip("" if self.fixture.isTesting else status)
+        self.bdgResult.set_color(self._get_status_color(status))
+
+    def _get_status_color(self, status: str):
+        color = "#D2D4DC"
+        if "PASS" in status:
+            color = "#5EAC24"
+        elif "FAIL" in status:
+            color = "#D11912"
+        return color
 
     def _on_over_elapsed(self):
-        self.lblResult.setStyleSheet(FixtureView.LABEL_STYLE + "color: #c71704;")
+        self.bdgResult.setStyleSheet(FixtureView.LABEL_STYLE + "color: #c71704;")
 
     def _update_lock_indicator(self):
         self.lblLock.setText(self.fixture.get_lock_description())
@@ -311,13 +337,14 @@ class FixtureView(QGroupBox):
             )
             if reply == QMessageBox.Yes:
                 self.terminal.Stop()
-                self.tempView.pause()
-                self.fixture.isStarted = False
+
         else:
             cmd = self._fixtureController.get_fct_host_cmd(
                 self.fixture, self.swTraceability.getChecked()
             )
             print(cmd)
+            self.sideFrameLayout.collapse()
+            self.repaint()
             self.terminal.start([cmd])
             self.fixture.isStarted = True
 
@@ -338,6 +365,9 @@ class FixtureView(QGroupBox):
         self.fixture.isStarted = False
         self.fixture.isTesting = False
         self.lastAnalysis = NullTestAnalysis()
+        self.tempView.pause()
+        self.fixture.isStarted = False
+        self._set_badges_visible(False)
 
     def on_terminal_change(self, testAnalysis: TestAnalysis):
         if self.lastAnalysis.equals(testAnalysis):
@@ -353,14 +383,21 @@ class FixtureView(QGroupBox):
     def _update_by_test_analysis(self, testAnalysis: TestAnalysis):
         if testAnalysis.status == TestStatus.Recovered:
             self.fixture.testTimer = testAnalysis.startDateTime
+        if testAnalysis.status == TestStatus.PreTested:
+            self._set_badges_visible(True)
         if testAnalysis.is_finished():
             test = self._fixtureController.parse_test(testAnalysis)
             self.add_test(test)
             self.tempView.pause()
         elif testAnalysis.is_testing():
             self.fixture.testItem = testAnalysis.stepLabel
-            self.fixture.serialNumber = testAnalysis.serialNumber
+            self.bdgSerialNumber.setText(testAnalysis.serialNumber)
+            self.bdgMac.setText(testAnalysis.mac)
         self.fixture.isTesting = testAnalysis.is_testing()
+
+    def _set_badges_visible(self, visibility: bool):
+        self.bdgSerialNumber.setVisible(visibility)
+        self.bdgMac.setVisible(visibility)
 
     def save_status(self):
         self.fixture.emit_status_change(force=True)

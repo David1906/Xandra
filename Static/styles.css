@@ -21,9 +21,9 @@
 
 QFrame#FixtureView {
     padding: 1rem;
-    background-color: lightgray;
+    background-color: white;
     color: black;
-    border-radius: 5px;
+    border-radius: 3px;
 }
 
 QFrame#FixtureViewError {
@@ -37,3 +37,11 @@ QFrame#FixtureViewWarning {
 .FixtureGridView{
     padding: 1rem;
 }
+
+/*
+#d2d4dc	(210,212,220)
+#afafaf	(175,175,175)
+#f8f8fa	(248,248,250)
+#e5e6eb	(229,230,235)
+#c0c2ce	(192,194,206)
+*/

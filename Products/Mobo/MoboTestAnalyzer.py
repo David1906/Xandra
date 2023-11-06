@@ -33,6 +33,7 @@ class MoboTestAnalyzer(TestAnalyzer):
         super().__init__(sessionId)
         self._fixtureId = fixtureId
         self._serialNumber = ""
+        self._mac = ""
         self._currentLogPath = ""
         self._runStatusPath = ""
         self._testItemPath = ""
@@ -92,7 +93,15 @@ class MoboTestAnalyzer(TestAnalyzer):
                 f'tac {self.fctHostLogDataPath}/"$(ls -1rt {self.fctHostLogDataPath}| tail -n1)" | grep -Poia -m1 "Get SN\s*:\s*\K.*?(?=\|)" | tail -n1'
             ).strip()
         except:
-            return ""
+            self._serialNumber = ""
+
+    def refresh_mac(self):
+        try:
+            self._mac = subprocess.getoutput(
+                f'tac {self.fctHostLogDataPath}/"$(ls -1rt {self.fctHostLogDataPath}| tail -n1)" | grep -Poia -m1 "Get MAC\s*:\s*\K.*?(?=\|)" | tail -n1'
+            ).strip()
+        except:
+            self._mac = ""
 
     def refresh_test_paths(self):
         self._currentLogPath = (
@@ -227,3 +236,6 @@ class MoboTestAnalyzer(TestAnalyzer):
 
     def get_serial_number(self) -> str:
         return self._serialNumber
+
+    def get_mac(self) -> str:
+        return self._mac

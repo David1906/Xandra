@@ -69,12 +69,15 @@ class MainWindow(QMainWindow):
         self.footer.setContentsMargins(15, 0, 15, 15)
         self.footer.setSizeConstraint(QtWidgets.QLayout.SetFixedSize)
         self.lblXandraVersion = QLabel()
+        self.lblXandraVersion.setStyleSheet("color: #AFAFAF")
         self.footer.addWidget(self.lblXandraVersion, alignment=QtCore.Qt.AlignLeft)
 
         self.lblStatus = QLabel()
+        self.lblStatus.setStyleSheet("color: #AFAFAF")
         self.footer.addWidget(self.lblStatus, alignment=QtCore.Qt.AlignCenter)
 
         self.lblScriptVersion = QLabel()
+        self.lblScriptVersion.setStyleSheet("color: #AFAFAF")
         self.footer.addWidget(self.lblScriptVersion, alignment=QtCore.Qt.AlignRight)
         gridLayout.addLayout(self.footer, 100, 0, alignment=QtCore.Qt.AlignBottom)
 
@@ -82,6 +85,7 @@ class MainWindow(QMainWindow):
         widget.setContentsMargins(0, 0, 0, 0)
         widget.setLayout(gridLayout)
         self.setCentralWidget(widget)
+        self.setStyleSheet("background-color: #f8f8fa;")
 
     def _update_texts(self):
         self._update_ui_texts()
@@ -116,7 +120,7 @@ class MainWindow(QMainWindow):
         self.stopAllAction.triggered.connect(self.fixtureGridView.stop_all_fixtures)
 
         self.toggleRetestAction = QAction(_("Toggle &Retest Mode"), self)
-        self.toggleRetestAction.setShortcut("Ctrl+Shift+G")
+        self.toggleRetestAction.setShortcut("Ctrl+Shift+R")
         self.toggleRetestAction.triggered.connect(
             self.fixtureGridView.toggle_retest_mode
         )

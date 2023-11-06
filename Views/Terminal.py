@@ -27,9 +27,9 @@ class Terminal(QtWidgets.QFrame):
         self.lastAnalysis = NullTestAnalysis()
         self.setStyleSheet(
             """
-            border-radius: 5px;
-            border: 1px solid #cccccc; 
-            background-color: #e6ebe7;
+            border-radius: 3px;
+            border: 1px solid #c0c2ce; 
+            background-color: #e5e6eb;
             """
         )
 

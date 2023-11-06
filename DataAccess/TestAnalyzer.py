@@ -34,6 +34,10 @@ class TestAnalyzer(ABC):
         pass
 
     @abstractmethod
+    def refresh_mac(self) -> bool:
+        pass
+
+    @abstractmethod
     def refresh_test_paths(self) -> bool:
         pass
 
@@ -83,4 +87,8 @@ class TestAnalyzer(ABC):
 
     @abstractmethod
     def get_serial_number(self) -> str:
+        pass
+
+    @abstractmethod
+    def get_mac(self) -> str:
         pass

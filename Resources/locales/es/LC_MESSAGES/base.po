@@ -388,3 +388,6 @@ msgstr "Sincronizando empleados..."
 
 msgid "Syncing lists..."
 msgstr "Sincronizando listas de opciones..."
+
+msgid "Fixture configurations"
+msgstr "Configuraciones de fixtura"

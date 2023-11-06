@@ -23,6 +23,7 @@ class TempView(QtWidgets.QWidget):
         layout.setSpacing(0)
 
         self.lblTemp = QtWidgets.QLabel(self)
+        self.lblTemp.setMargin(3)
         self.lblTemp.setAlignment(QtCore.Qt.AlignCenter)
         layout.addWidget(self.lblTemp)
 
@@ -35,10 +36,9 @@ class TempView(QtWidgets.QWidget):
 
         layout.addStretch()
         self.setLayout(layout)
-        self.hide()
 
     def _on_temp_readed(self, temp: float):
-        self.lblTemp.setText(f"{temp:+.1f}°")
+        self.lblTemp.setText(f"{temp:+.1f}°C")
         self._update_color(temp)
 
     def _update_color(self, currentTemp: float = 0):
@@ -55,7 +55,7 @@ class TempView(QtWidgets.QWidget):
         )
 
     def start(self, toolPath: str = "", bmcIp: str = ""):
-        self.lblTemp.setText("--.- °")
+        self.lblTemp.setText("--.-°C")
         self._update_color(0)
         self.show()
         self._tempThread.resume(toolPath, bmcIp)

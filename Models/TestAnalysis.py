@@ -21,6 +21,7 @@ class TestAnalysis:
         outLog: str = "",
         scriptVersion: str = "",
         bmcIp: str = "",
+        mac: str = "",
     ) -> None:
         self.status = status
         self.stepLabel = stepLabel
@@ -30,6 +31,7 @@ class TestAnalysis:
         self.outLog = outLog
         self.scriptVersion = scriptVersion
         self.bmcIp = bmcIp
+        self.mac = mac
 
     def is_testing(self) -> bool:
         return self.status in [TestStatus.PreTested, TestStatus.Tested]

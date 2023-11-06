@@ -59,9 +59,9 @@ class Switch(QWidget):
 
     def _setStyle(self):
         self.__circle.setFixedSize(self.__circle_diameter, self.__circle_diameter)
-        color = "#36A355" if self.isEnabled() else "#A2B0A6"
+        color = "#5EAC24" if self.isEnabled() else "#99AE89"
         if not self.__checked:
-            color = "#A34646" if self.isEnabled() else "#A88585"
+            color = "#C00000" if self.isEnabled() else "#A88585"
         self.setStyleSheet(
             f"QWidget {{ border: {self.__circle_diameter // 20}px solid #AAAAAA; "
             f"border-radius: {self.__circle_diameter // 2}px;"
@@ -90,7 +90,6 @@ class Switch(QWidget):
 
     def mousePressEvent(self, e):
         self.__circle.toggle()
-        return super().mousePressEvent(e)
 
     def _toggled(self, f, emitEvent=True):
         self.__checked = f

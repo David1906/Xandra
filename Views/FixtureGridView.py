@@ -23,7 +23,7 @@ class FixtureGridView(QWidget):
         )
         self._showRetestMode = False
         self._isLockEnabled = False
-        self.setStyleSheet("QLabel {font: 8pt Open Sans}")
+        self.setStyleSheet("QLabel {font: 8pt Open Sans}") 
 
         self.hBox = QHBoxLayout()
         self.setLayout(self.hBox)

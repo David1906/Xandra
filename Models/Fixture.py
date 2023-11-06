@@ -187,12 +187,10 @@ class Fixture(QtCore.QObject):
         payload = ""
         status = self.get_status()
         if self.isTesting:
-            payload = f" {self.serialNumber} [{self.testItem}] " if self.testItem != "" else ""
+            payload = f" [{self.testItem}] " if self.testItem != "" else ""
             payload += f"({str(self.get_test_time())})"
         elif not self.lastTest.isNull:
-            payload = _("SN: {0}    Result: {1}").format(
-                self.lastTest.serialNumber, self.lastTest.get_result_string()
-            )
+            payload = self.lastTest.get_result_string()
         return f"{_(status.description)}{'' if len(payload) == 0 else ' - '}{payload}"
 
     def get_test_time(self) -> timedelta:
@@ -214,14 +212,14 @@ class Fixture(QtCore.QObject):
 
     def get_color(self) -> bool:
         if self.is_locked():
-            return "lightcoral"
+            return "#FF9478"
         if self.mode == FixtureMode.OFFLINE:
-            return "#B8B8B8"
+            return "#AFAFAF"
         if self.mode == FixtureMode.RETEST:
-            return "orange"
+            return "#D5B8FF"
         elif self._is_warning():
-            return "#DED851"
-        return ""
+            return "#FFEC8B"
+        return "#F8F8FA"
 
     def _is_warning(self) -> bool:
         willLockQty = self.lockFailQty - 1

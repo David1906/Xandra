@@ -54,10 +54,13 @@ class TestStateMachineObserver(QtCore.QObject):
         self._testAnalyzer.initialize_files()
 
     def on_enter_PreTested(self):
-        self._emit_testAnalysis("Pre-Test", self._testAnalyzer.get_bmc_ip())
+        self._emit_testAnalysis(
+            "Pre-Test", TestStatus.PreTested, self._testAnalyzer.get_bmc_ip()
+        )
 
     def _refresh_testAnalyzer(self):
         self._testAnalyzer.refresh_serial_number()
+        self._testAnalyzer.refresh_mac()
         self._testAnalyzer.refresh_test_paths()
         self._testAnalyzer.call_get_bmc_ip()
 
@@ -66,7 +69,7 @@ class TestStateMachineObserver(QtCore.QObject):
 
     def on_enter_Tested(self):
         self._emit_testAnalysis(
-            self._testAnalyzer.get_test_item(), self._testAnalyzer.get_bmc_ip()
+            self._testAnalyzer.get_test_item(), bmcIp=self._testAnalyzer.get_bmc_ip()
         )
 
     def on_enter_Finished(self):
@@ -78,12 +81,15 @@ class TestStateMachineObserver(QtCore.QObject):
     def on_enter_Failed(self):
         self.update.emit(self._testAnalyzer.get_failed_test_analysis())
 
-    def _emit_testAnalysis(self, stepLabel: str, bmcIp: str = ""):
+    def _emit_testAnalysis(
+        self, stepLabel: str, status: TestStatus = TestStatus.Tested, bmcIp: str = ""
+    ):
         self.update.emit(
             TestAnalysis(
-                TestStatus.Tested,
+                status,
                 stepLabel=stepLabel,
                 bmcIp=bmcIp,
                 serialNumber=self._testAnalyzer.get_serial_number(),
+                mac=self._testAnalyzer.get_mac(),
             )
         )

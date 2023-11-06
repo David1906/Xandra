@@ -13,7 +13,7 @@ class LedIndicator(QAbstractButton):
         self.setCheckable(True)
 
         # Green
-        self.on_color_1 = QColor(0, 255, 0)
+        self.on_color_1 = QColor(94, 172, 36)
         self.on_color_2 = QColor(0, 192, 0)
         self.off_color_1 = QColor(0, 28, 0)
         self.off_color_2 = QColor(0, 128, 0)

@@ -57,7 +57,7 @@ class Test:
             shortDescription = ""
             if self.is_dimm_error() or self.is_chk_serialuart_error():
                 shortDescription = " - " + self.get_short_description()
-            return f"FAIL - {self.stepLabel}{shortDescription}"
+            return f"FAILED - {self.stepLabel}{shortDescription}"
 
     def is_dimm_error(self) -> bool:
         return self._step_label_contains("chk_sel|apos_chk_k2|apos_vr_volt")

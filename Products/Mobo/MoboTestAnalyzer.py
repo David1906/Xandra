@@ -180,16 +180,10 @@ class MoboTestAnalyzer(TestAnalyzer):
         ]
 
     def is_pass(self) -> bool:
-        return (
-            re.match("PASS", self._get_run_status_text(), re.IGNORECASE) != None
-            or self._get_last_board_result() == self.RUN_TEST_PASS
-        )
+        return re.match("PASS", self._get_run_status_text(), re.IGNORECASE) != None
 
     def is_failed(self) -> bool:
-        return (
-            re.match("FAILED", self._get_run_status_text(), re.IGNORECASE) != None
-            or self._get_last_board_result() == self.RUN_TEST_FAILED
-        )
+        return re.match("FAILED", self._get_run_status_text(), re.IGNORECASE) != None
 
     def _get_run_status_text(self) -> str:
         try:

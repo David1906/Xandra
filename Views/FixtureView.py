@@ -307,7 +307,7 @@ class FixtureView(QGroupBox):
         if "PASS" in status:
             color = "#5EAC24"
         elif "FAIL" in status:
-            color = "#D11912"
+            color = "#C44D56"
         return color
 
     def _on_over_elapsed(self):
@@ -520,3 +520,9 @@ class FixtureView(QGroupBox):
     def update_catalogs(self):
         self.maintenanceView.items = self._fixtureController.get_maintenance_parts()
         self.maintenanceView.actions = self._fixtureController.get_maintenance_actions()
+
+    def expand_config_panel(self):
+        self.sideFrameLayout.expand()
+
+    def collapse_config_panel(self):
+        self.sideFrameLayout.collapse()

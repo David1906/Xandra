@@ -391,3 +391,9 @@ msgstr "Sincronizando listas de opciones..."
 
 msgid "Fixture configurations"
 msgstr "Configuraciones de fixtura"
+
+msgid "&Collapse all fixture configs"
+msgstr "&Contraer todas las configuraciones de fixtura"
+
+msgid "E&xpand all fixture configs"
+msgstr "E&xpandir todas las configuraciones de fixtura"

@@ -147,6 +147,18 @@ class MainWindow(QMainWindow):
         self.syncAction.setShortcut("Ctrl+Shift+I")
         self.syncAction.triggered.connect(self._sync_all_async)
 
+        self.expandAction = QAction(_("E&xpand all fixture configs"), self)
+        self.expandAction.setShortcut("Ctrl+Shift+X")
+        self.expandAction.triggered.connect(
+            self.fixtureGridView.expand_all_config_panels
+        )
+
+        self.collapseAction = QAction(_("&Collapse all fixture configs"), self)
+        self.collapseAction.setShortcut("Ctrl+Shift+C")
+        self.collapseAction.triggered.connect(
+            self.fixtureGridView.collapse_all_config_panels
+        )
+
     def _update_actions_texts(self):
         self.exitAction.setText(_("&Exit"))
         self.startAllAction.setText(_("Start &All Fixtures"))
@@ -155,6 +167,8 @@ class MainWindow(QMainWindow):
         self.toggleEnabledTracebilityAction.setText(_("Toggle &Traceablity Enabled"))
         self.toggleLockAction.setText(_("Toggle &Lock Enabled"))
         self.openDocsAction.setText(_("Open &Docs"))
+        self.expandAction.setText(_("E&xpand all fixture configs"))
+        self.collapseAction.setText(_("&Collapse all fixture configs"))
 
     def _create_menus(self):
         menuBar = self.menuBar()
@@ -167,6 +181,8 @@ class MainWindow(QMainWindow):
         self.editMenu.addAction(self.startAllAction)
         self.editMenu.addAction(self.stopAllAction)
         self.editMenu.addAction(self.toggleLockAction)
+        self.editMenu.addAction(self.collapseAction)
+        self.editMenu.addAction(self.expandAction)
 
         self.helpMenu = menuBar.addMenu(_("&Help"))
         self.helpMenu.addAction(self.openDocsAction)

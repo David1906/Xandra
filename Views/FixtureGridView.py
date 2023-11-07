@@ -23,7 +23,7 @@ class FixtureGridView(QWidget):
         )
         self._showRetestMode = False
         self._isLockEnabled = False
-        self.setStyleSheet("QLabel {font: 8pt Open Sans}") 
+        self.setStyleSheet("QLabel {font: 8pt Open Sans}")
 
         self.hBox = QHBoxLayout()
         self.setLayout(self.hBox)
@@ -72,6 +72,14 @@ class FixtureGridView(QWidget):
         fixtureView = self._find_fixture_view(fixtureIp)
         if fixtureView != None:
             fixtureView.set_fixture_isTesting(isTesting)
+
+    def expand_all_config_panels(self):
+        for fixtureView in self._fixtureViews:
+            fixtureView.expand_config_panel()
+
+    def collapse_all_config_panels(self):
+        for fixtureView in self._fixtureViews:
+            fixtureView.collapse_config_panel()
 
     def start_all_fixtures(self):
         for fixtureView in self._fixtureViews:

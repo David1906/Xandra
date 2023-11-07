@@ -81,6 +81,9 @@ class TestStateMachineObserver(QtCore.QObject):
     def on_enter_Failed(self):
         self.update.emit(self._testAnalyzer.get_failed_test_analysis())
 
+    def on_exit_Released(self):
+        self.update.emit(TestAnalysis(TestStatus.Released))
+
     def _emit_testAnalysis(
         self, stepLabel: str, status: TestStatus = TestStatus.Tested, bmcIp: str = ""
     ):

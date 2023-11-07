@@ -21,6 +21,9 @@
     "automaticProductSelection": 2,
     "automaticProductSelection_description": "[0-10; -1 = deshabilitado] Producto que se seleccionará de forma automática en la terminal",
 
+    "automaticUnlock": true,
+    "automaticUnlock_description" : "[true = habilitado, false = deshabilitado] - Automáticamente activar el flujo al desbloquearse una fixtura",
+
     "uploadSfcScript":  "/usr/local/Foxconn/automation/Xandra/Resources/up_sfc.sh",
     "uploadSfcScript_description" : "Ruta completa al script encargado de subir la trazabilidad al sistema SFC",
 

@@ -100,3 +100,6 @@ class FixtureController:
 
     def get_fct_host_control_tool_path(self) -> int:
         return self._hostControl.get_tool_fullpath()
+
+    def get_automatic_unlock(self) -> int:
+        return self._mainConfigDAO.get_automatic_unlock()

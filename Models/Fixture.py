@@ -21,6 +21,7 @@ class Fixture(QtCore.QObject):
     SEND_STATUS_CHANGE_THRESHOLD = timedelta(minutes=20)
     status_change = QtCore.pyqtSignal(FixtureStatus, datetime, timedelta, FixtureStatus)
     update = QtCore.pyqtSignal()
+    unlocked = QtCore.pyqtSignal()
     update_maintenance = QtCore.pyqtSignal(Maintenance)
     over_elapsed = QtCore.pyqtSignal()
     testing_tick = QtCore.pyqtSignal(timedelta)
@@ -389,6 +390,8 @@ class Fixture(QtCore.QObject):
 
     @lastTest.setter
     def lastTest(self, value: Test):
+        if self.is_locked() and value.is_pass():
+            self.unlocked.emit()
         self._lastTest = value
         if not self._lastTest.isNull and not self.maintenance.isNull:
             self.maintenance.testId = value.id

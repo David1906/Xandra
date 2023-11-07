@@ -50,6 +50,9 @@ class Test:
             and self.operator != None
         )
 
+    def is_pass(self) -> bool:
+        return self.status == True
+
     def get_result_string(self) -> str:
         if self.status:
             return "PASS"

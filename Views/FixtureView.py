@@ -45,11 +45,13 @@ class FixtureView(QGroupBox):
         self._lastLogsWindow = None
         self._fixtureController = FixtureController()
         self.forceTraceabilityEnabled = False
+        self.unlocked = None
         self.updateConnection = None
         self.testingTickConnection = None
         self.overElapsedConnection = None
         self.statusChangeConnection = None
         self.updateMaintenanceConnection = None
+        self.canBeUnlockedAtRelease = False
         self.lastAnalysis = NullTestAnalysis()
 
         self._init_ui()
@@ -247,6 +249,17 @@ class FixtureView(QGroupBox):
         self.fixture.lastTest = test
         self.fixture.tests = self._fixtureController.find_last_tests(self.fixture)
 
+    def _unlock(self):
+        if self.canBeUnlockedAtRelease:
+            self.canBeUnlockedAtRelease = False
+            self.stop(True)
+            self.swTraceability.setChecked(True)
+            QtWidgets.QApplication.processEvents()
+            self.start()
+
+    def _on_unlocked(self):
+        self.canBeUnlockedAtRelease = self._fixtureController.get_automatic_unlock()
+
     def _update(self):
         self.btnStart.setEnabled(self.fixture.can_start() or self.fixture.isStarted)
         self.swRetestMode.setEnabled(self.fixture.can_change_retest())
@@ -326,16 +339,19 @@ class FixtureView(QGroupBox):
         self.led.setHidden(not isVisible)
         self.led.setChecked(isLedOn)
 
-    def on_btnStart_clicked(self):
+    def on_btnStart_clicked(self, force: bool = False):
         if self.fixture.isStarted:
-            reply = QMessageBox.question(
-                self,
-                _("Stop Fixture"),
-                _("Are you sure to stop fixture {0}?").format(self.fixture.ip),
-                QMessageBox.Yes | QMessageBox.No,
-                QMessageBox.No,
-            )
-            if reply == QMessageBox.Yes:
+            reply = True
+            if not force:
+                reply = QMessageBox.question(
+                    self,
+                    _("Stop Fixture"),
+                    _("Are you sure to stop fixture {0}?").format(self.fixture.ip),
+                    QMessageBox.Yes | QMessageBox.No,
+                    QMessageBox.No,
+                )
+                reply == QMessageBox.Yes
+            if reply:
                 self.terminal.Stop()
 
         else:
@@ -345,6 +361,7 @@ class FixtureView(QGroupBox):
             print(cmd)
             self.sideFrameLayout.collapse()
             self.repaint()
+            QtWidgets.QApplication.processEvents()
             self.terminal.start([cmd])
             self.fixture.isStarted = True
 
@@ -385,10 +402,12 @@ class FixtureView(QGroupBox):
             self.fixture.testTimer = testAnalysis.startDateTime
         if testAnalysis.status == TestStatus.PreTested:
             self._set_badges_visible(True)
+        elif testAnalysis.status == TestStatus.Released:
+            self._unlock()
         if testAnalysis.is_finished():
+            self.tempView.pause()
             test = self._fixtureController.parse_test(testAnalysis)
             self.add_test(test)
-            self.tempView.pause()
         elif testAnalysis.is_testing():
             self.fixture.testItem = testAnalysis.stepLabel
             self.bdgSerialNumber.setText(testAnalysis.serialNumber)
@@ -442,9 +461,9 @@ class FixtureView(QGroupBox):
         if not self.fixture.isStarted and not self.fixture.is_locked():
             self.on_btnStart_clicked()
 
-    def stop(self):
+    def stop(self, force: bool = False):
         if self.fixture.isStarted:
-            self.on_btnStart_clicked()
+            self.on_btnStart_clicked(force)
 
     def set_retest_mode_visibility(self, value):
         if value:
@@ -472,6 +491,8 @@ class FixtureView(QGroupBox):
 
     @fixture.setter
     def fixture(self, fixture: Fixture):
+        if self.unlocked:
+            self.fixture.unlocked.disconnect(self.unlocked)
         if self.updateConnection:
             self.fixture.update.disconnect(self.updateConnection)
         if self.testingTickConnection:
@@ -482,6 +503,7 @@ class FixtureView(QGroupBox):
             self.fixture.status_change.disconnect(self.statusChangeConnection)
         if self.updateMaintenanceConnection:
             self.fixture.update_maintenance.disconnect(self.updateMaintenanceConnection)
+        self.unlocked = fixture.unlocked.connect(self._on_unlocked)
         self.updateConnection = fixture.update.connect(self._update)
         self.testingTickConnection = fixture.testing_tick.connect(self._update_status)
         self.overElapsedConnection = fixture.over_elapsed.connect(self._on_over_elapsed)

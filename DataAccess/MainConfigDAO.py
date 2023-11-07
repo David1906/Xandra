@@ -46,6 +46,9 @@ class MainConfigDAO:
     def get_fixture_ip_env_name(self) -> str:
         return self._get_value("fixtureIpEnvironmentName")
 
+    def get_automatic_unlock(self) -> str:
+        return self._get_value("automaticUnlock")
+
     def get_host_control(self) -> str:
         return self._get_value("hostControl")
 

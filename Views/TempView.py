@@ -34,7 +34,6 @@ class TempView(QtWidgets.QWidget):
         self.lblIcon.setContentsMargins(-10, 0, 0, 0)
         layout.addWidget(self.lblIcon, 0)
 
-        layout.addStretch()
         self.setLayout(layout)
 
     def _on_temp_readed(self, temp: float):

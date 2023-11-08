@@ -37,6 +37,7 @@ testitem=${base%.*}
 filename="${testitem}.log"
 #check_log ${filename}
 LOGFILE=${LOGPATH}/${SN}/${filename}
+LOGFILETXT=${LOGPATH}/${SN}/bmcip.txt
 
 HEX_MAC(){
     DATA=$1
@@ -100,7 +101,7 @@ get_ip_from_dhcp(){
 
     echo ${bmcip}
     export bmcip
-    echo ${bmcip} > ${LOGPATH}/${SN}/bmcip.txt
+    echo ${bmcip} > ${LOGFILETXT}
     echo ${bmcip} > ${LOGFILE}
 }
 

@@ -404,8 +404,8 @@ class FixtureView(QGroupBox):
             self._set_badges_visible(True)
         elif testAnalysis.status == TestStatus.Released:
             self._unlock()
-        if testAnalysis.is_finished():
             self.tempView.pause()
+        if testAnalysis.is_finished():
             test = self._fixtureController.parse_test(testAnalysis)
             self.add_test(test)
         elif testAnalysis.is_testing():

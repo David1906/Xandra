@@ -27,7 +27,7 @@ class TestStateMachine(StateMachine):
         | states.PreTested.to(states.PreTestFailed, cond="is_board_released")
         | states.PreTested.to.itself()
 
-        | states.PreTestFailed.to(states.Idle, cond="is_board_released")
+        | states.PreTestFailed.to(states.Released, cond="is_board_released")
         | states.PreTestFailed.to.itself(internal=True)
 
         | states.Tested.to(states.Finished, cond="is_finished")
@@ -36,7 +36,7 @@ class TestStateMachine(StateMachine):
 
         | states.Finished.to(states.Pass, cond="is_pass")
         | states.Finished.to(states.Failed, cond="is_failed")
-        | states.Finished.to(states.Idle, cond="is_board_released")
+        | states.Finished.to(states.Released, cond="is_board_released")
         | states.Finished.to.itself(internal=True)
 
         | states.Pass.to(states.Released)

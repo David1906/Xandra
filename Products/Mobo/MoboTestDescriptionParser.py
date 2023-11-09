@@ -9,18 +9,33 @@ import re
 
 class MoboTestDescriptionParser:
     CHK_L6_INITIAL_STATUS_FILE = "chk_l6_initial_status.log"
+    SECOND_LAYER_FAIL = "second_layer_fail.txt"
 
     def __init__(self) -> None:
         self._version = 1
 
     def parse(self, testAnalysis: TestAnalysis) -> str:
         try:
+            description = ""
+            secondLayerFail = self.second_layer_fail(testAnalysis)
+            if secondLayerFail != "":
+                description += f"Second Layer: {secondLayerFail}; "
+
             if testAnalysis.is_l6_initial_error():
-                return self.l6_initial_error(testAnalysis)
-            else:
-                return ""
+                description += self.l6_initial_error(testAnalysis)
+
+            return description
         except Exception as e:
             logging.error(str(e))
+            return ""
+
+    def second_layer_fail(self, testAnalysis: TestAnalysis) -> str:
+        secondLayerFail = testAnalysis.get_out_log_path(self.SECOND_LAYER_FAIL)
+        if not os.path.isfile(secondLayerFail):
+            return ""
+        try:
+            return subprocess.getoutput(f"cat {secondLayerFail}")
+        except Exception as e:
             return ""
 
     def l6_initial_error(self, testAnalysis: TestAnalysis) -> str:

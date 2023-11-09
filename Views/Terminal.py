@@ -4,6 +4,7 @@ from threading import Thread
 from time import sleep
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import pyqtSignal
+from Models.Fixture import Fixture
 from Models.NullTestAnalysis import NullTestAnalysis
 from Models.TestAnalysis import TestAnalysis
 from Utils.TerminalThread import TerminalThread
@@ -14,15 +15,15 @@ class Terminal(QtWidgets.QFrame):
     finished = pyqtSignal(int)
     change = pyqtSignal(TestAnalysis)
 
-    def __init__(self, id: str, automaticProductSelection: int = -1):
+    def __init__(self, fixture: Fixture, automaticProductSelection: int = -1):
         super().__init__()
         self.isAnalazyng = False
         self.process = QtCore.QProcess(self)
         self.process.finished.connect(self.on_finished)
 
         self.automaticProductSelection = automaticProductSelection
-        self.id = id
-        self.sessionId = f"console_{id}"
+        self._fixture = fixture
+        self.sessionId = f"console_{fixture.id}"
         self.terminal = QtWidgets.QFrame()
         self.lastAnalysis = NullTestAnalysis()
         self.setStyleSheet(
@@ -33,7 +34,7 @@ class Terminal(QtWidgets.QFrame):
             """
         )
 
-        self.terminalThread = TerminalThread(self.id, self.sessionId)
+        self.terminalThread = TerminalThread(self._fixture, self.sessionId)
         self.terminalThread.updated.connect(self._terminal_updated)
         self.terminalThread.start(priority=QtCore.QThread.Priority.HighPriority)
 

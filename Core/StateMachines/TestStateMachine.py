@@ -24,6 +24,7 @@ class TestStateMachine(StateMachine):
 
         | states.PreTested.to(states.Tested, cond="is_testing")
         | states.PreTested.to(states.PreTestFailed, cond="is_failed")
+        | states.PreTested.to(states.PreTestFailed, cond="is_finished")
         | states.PreTested.to(states.PreTestFailed, cond="is_board_released")
         | states.PreTested.to.itself()
 
@@ -49,21 +50,17 @@ class TestStateMachine(StateMachine):
 
     def __init__(
         self,
+        testAnalyzer: TestAnalyzer,
         model: Any = None,
         state_field: str = "state",
         start_value: Any = None,
         rtc: bool = True,
         allow_event_without_transition: bool = False,
-        testAnalyzer: TestAnalyzer = None,
     ):
         super().__init__(
             model, state_field, start_value, rtc, allow_event_without_transition
         )
-        self.testAnalyzer = (
-            testAnalyzer
-            if testAnalyzer != None
-            else TestAnalyzerBuilder().build_based_on_main_config()
-        )
+        self.testAnalyzer = testAnalyzer
 
     def can_recover(self):
         return self.testAnalyzer.can_recover()

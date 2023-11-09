@@ -15,14 +15,10 @@ class TestStateMachineObserver(QtCore.QObject):
     def __init__(
         self,
         parent: QObject,
-        testAnalyzer: TestAnalyzer = None,
+        testAnalyzer: TestAnalyzer,
     ) -> None:
         super().__init__(parent)
-        self._testAnalyzer = (
-            testAnalyzer
-            if testAnalyzer != None
-            else TestAnalyzerBuilder().build_based_on_main_config()
-        )
+        self._testAnalyzer = testAnalyzer
         self._isTransition = False
 
     def before_cycle(self, event: str, source: State, target: State, message: str = ""):

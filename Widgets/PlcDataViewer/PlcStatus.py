@@ -1,4 +1,6 @@
-from PlcAddress import PlcAdress
+from Core.Enums.FixturePlcStatus import FixturePlcStatus
+from Core.Enums.FixturePlcTestResult import FixturePlcTestResult
+from Widgets.PlcDataViewer.PlcAddress import PlcAdress
 
 
 class PlcStatus:
@@ -77,3 +79,21 @@ class PlcStatus:
 
     def _ascii_to_char(self, ascii: "list(int)"):
         return [chr(character) for character in ascii]
+
+    def is_board_loaded(self) -> bool:
+        return self.fixture_status == FixturePlcStatus.TESTING
+
+    def is_board_out(self) -> bool:
+        return (
+            self.fixture_status == FixturePlcStatus.REQUEST_BOARD_OUT
+            or not self.can_ping
+        )
+
+    def is_testing(self) -> bool:
+        return self.fixture_status == FixturePlcStatus.TESTING
+
+    def is_pass(self) -> bool:
+        return self.test_result == FixturePlcTestResult.PASS
+
+    def is_failed(self) -> bool:
+        return self.test_result == FixturePlcTestResult.FAILED

@@ -168,7 +168,7 @@ class FixtureView(QGroupBox):
         buttonsLayout.addWidget(self.btnMaintenanceLog, 1, 2, 1, 1)
 
         self.terminal = Terminal(
-            self.fixture.id, self._fixtureController.get_automatic_product_selection()
+            self.fixture, self._fixtureController.get_automatic_product_selection()
         )
         self.terminal.finished.connect(self._on_terminal_finished)
         self.terminal.change.connect(self.on_terminal_change)

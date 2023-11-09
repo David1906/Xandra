@@ -1,8 +1,8 @@
 from datetime import datetime
-from PlcDAO import PlcDAO
+from Widgets.PlcDataViewer.PlcDAO import PlcDAO
 import os
-import time
 import re
+import time
 
 
 ip = ""
@@ -13,8 +13,8 @@ while not isValidIP.match(ip):
 plcDAO = PlcDAO(ip, port=502)
 while True:
     try:
-        if plcDAO.ping():
-            plcStatus = plcDAO.get_plc_status()
+        if plcDAO.can_ping():
+            plcStatus = plcDAO.get_status()
             attributes = vars(plcStatus)
             os.system("clear")
             for attribute, value in attributes.items():

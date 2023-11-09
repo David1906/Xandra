@@ -41,6 +41,7 @@ class Fixture(QtCore.QObject):
 
         self._id = id
         self._ip = ip
+        self.port = 502
         self._yieldErrorThreshold = yieldErrorThreshold
         self._yieldWarningThreshold = yieldWarningThreshold
         self._lockFailQty = lockFailQty

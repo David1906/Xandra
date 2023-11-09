@@ -1,12 +1,14 @@
 from Core.Enums.TestStatus import TestStatus
 from DataAccess.TestAnalyzer import TestAnalyzer
 from datetime import datetime
+from Models.Fixture import Fixture
 from Models.TestAnalysis import TestAnalysis
 from Products.Mobo.MoboFctHostControlDAO import MoboFctHostControlDAO
 from Utils.PathHelper import PathHelper
 from Utils.TextNormalizer import normalizeToRegex
+from Widgets.PlcDataViewer.PlcDAO import PlcDAO
+from Widgets.PlcDataViewer.PlcStatus import PlcStatus
 import os
-import re
 import subprocess
 
 
@@ -29,9 +31,9 @@ class MoboTestAnalyzer(TestAnalyzer):
     RUN_TEST_PASS = "Testing board PASS"
     RUN_TEST_PASS_REGEX = normalizeToRegex(RUN_TEST_PASS)
 
-    def __init__(self, fixtureId: str, sessionId: str) -> None:
+    def __init__(self, fixture: Fixture, sessionId: str) -> None:
         super().__init__(sessionId)
-        self._fixtureId = fixtureId
+        self._fixture = fixture
         self._serialNumber = ""
         self._mac = ""
         self._currentLogPath = ""
@@ -41,9 +43,10 @@ class MoboTestAnalyzer(TestAnalyzer):
         self._startTimePath = ""
         self._bmcIpPath = ""
         self._moboFctHostControlDAO = MoboFctHostControlDAO()
-        self.fctHostLogDataPath = (
-            self._moboFctHostControlDAO.get_fct_host_log_data_fullpath(self._fixtureId)
+        self._fctHostLogDataPath = (
+            self._moboFctHostControlDAO.get_fct_host_log_data_fullpath(self._fixture.id)
         )
+        self._plcDAO = PlcDAO(fixture.ip, fixture.port)
 
     def can_recover(self) -> bool:
         self._debug_thread()
@@ -58,8 +61,11 @@ class MoboTestAnalyzer(TestAnalyzer):
 
             debugpy.debug_this_thread()
 
+    def _get_plc_status(self) -> PlcStatus:
+        return self._plcDAO.get_status_debounced()
+
     def is_board_loaded(self) -> bool:
-        return self._get_last_board_status() in [self.BOARD_LOADED, self.BOARD_TESTING]
+        return self._get_plc_status().is_board_loaded()
 
     def _get_last_board_result(self):
         regex = f"{self.BOARD_LOADED_REGEX}|{self.RUN_TEST_PASS_REGEX}|{self.RUN_TEST_FAILED_REGEX}"
@@ -75,7 +81,7 @@ class MoboTestAnalyzer(TestAnalyzer):
         try:
             return (
                 subprocess.getoutput(
-                    f'tail -n{tail} {self.fctHostLogDataPath}/"$(ls -1rt {self.fctHostLogDataPath}| tail -n1)" | tac | grep -Poia -m1 "{regex}"'
+                    f'tail -n{tail} {self._fctHostLogDataPath}/"$(ls -1rt {self._fctHostLogDataPath}| tail -n1)" | tac | grep -Poia -m1 "{regex}"'
                 )
                 .strip()
                 .split("\n")[0]
@@ -88,20 +94,10 @@ class MoboTestAnalyzer(TestAnalyzer):
         open(self._testItemPath, "w").close()
 
     def refresh_serial_number(self):
-        try:
-            self._serialNumber = subprocess.getoutput(
-                f'tac {self.fctHostLogDataPath}/"$(ls -1rt {self.fctHostLogDataPath}| tail -n1)" | grep -Poia -m1 "Get SN\s*:\s*\K.*?(?=\|)" | tail -n1'
-            ).strip()
-        except:
-            self._serialNumber = ""
+        self._serialNumber = self._get_plc_status().sn
 
     def refresh_mac(self):
-        try:
-            self._mac = subprocess.getoutput(
-                f'tac {self.fctHostLogDataPath}/"$(ls -1rt {self.fctHostLogDataPath}| tail -n1)" | grep -Poia -m1 "Get MAC\s*:\s*\K.*?(?=\|)" | tail -n1'
-            ).strip()
-        except:
-            self._mac = ""
+        self._serialNumber = self._get_plc_status().mac
 
     def refresh_test_paths(self):
         self._currentLogPath = (
@@ -150,7 +146,7 @@ class MoboTestAnalyzer(TestAnalyzer):
             return ""
 
     def is_finished(self) -> bool:
-        return self._is_popen_ok(f'cat "{self._runStatusPath}" | grep -Poi "PASS|FAIL"')
+        return not self._get_plc_status().is_testing()
 
     def _is_popen_ok(self, cmd: str):
         try:
@@ -172,18 +168,13 @@ class MoboTestAnalyzer(TestAnalyzer):
             return ""
 
     def is_board_released(self) -> bool:
-        return self._get_last_board_status() in [
-            self.BOARD_RELEASED,
-            self.BOARD_SOCKET_EXCEPTIONS,
-            self.RUN_TEST_PASS,
-            self.RUN_TEST_FAILED,
-        ]
+        return self._get_plc_status().is_board_out()
 
     def is_pass(self) -> bool:
-        return re.match("PASS", self._get_run_status_text(), re.IGNORECASE) != None
+        return self._get_plc_status().is_pass()
 
     def is_failed(self) -> bool:
-        return re.match("FAILED", self._get_run_status_text(), re.IGNORECASE) != None
+        return self._get_plc_status().is_failed()
 
     def _get_run_status_text(self) -> str:
         try:
@@ -221,7 +212,7 @@ class MoboTestAnalyzer(TestAnalyzer):
 
     def pause(self):
         subprocess.Popen(
-            f'echo "{datetime.today()}|ERROR|Xandra terminal stopped|" >> {self.fctHostLogDataPath}/"$(ls -1rt {self.fctHostLogDataPath}| tail -n1)"',
+            f'echo "{datetime.today()}|ERROR|Xandra terminal stopped|" >> {self._fctHostLogDataPath}/"$(ls -1rt {self._fctHostLogDataPath}| tail -n1)"',
             stdin=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
             shell=True,

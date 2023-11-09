@@ -2,6 +2,7 @@ import threading
 from Core.Enums.TestStatus import TestStatus
 from Core.StateMachines.TestStateMachineObserver import TestStateMachineObserver
 from Core.StateMachines.TestStateMachine import TestStateMachine
+from Models.Fixture import Fixture
 from Models.TestAnalysis import TestAnalysis
 from Products.TestAnalyzerBuilder import TestAnalyzerBuilder
 from PyQt5 import QtCore
@@ -14,9 +15,9 @@ import logging
 class TerminalThread(QtCore.QThread):
     updated = pyqtSignal(TestAnalysis)
 
-    def __init__(self, fixtureId: str, sessionId: str):
+    def __init__(self, fixture: Fixture, sessionId: str):
         super().__init__()
-        self._fixtureId = fixtureId
+        self._fixture = fixture
         self._analysisInterval = randint(700, 900) / 1000
         self._abort = False
         self._sessionId = sessionId
@@ -25,7 +26,7 @@ class TerminalThread(QtCore.QThread):
         self._threadEvent = threading.Event()
 
         self._testAnalyzer = TestAnalyzerBuilder().build_based_on_main_config(
-            self._fixtureId, self._sessionId
+            self._fixture, self._sessionId
         )
         self._terminalObserver = TestStateMachineObserver(None, self._testAnalyzer)
         self._terminalObserver.update.connect(self._terminal_updated)

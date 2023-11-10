@@ -1,3 +1,4 @@
+import re
 from Core.Enums.TestStatus import TestStatus
 from DataAccess.TestAnalyzer import TestAnalyzer
 from datetime import datetime
@@ -168,12 +169,13 @@ class MoboTestAnalyzer(TestAnalyzer):
         return self._get_plc_status().is_board_out()
 
     def is_pass(self) -> bool:
-        return self._get_plc_status().is_pass() or "PASS" in self._get_run_status_text()
+        return self._get_plc_status().is_pass() or self._run_status_match("PASS")
 
     def is_failed(self) -> bool:
-        return (
-            self._get_plc_status().is_failed() or "FAIL" in self._get_run_status_text()
-        )
+        return self._get_plc_status().is_failed() or self._run_status_match("FAILED")
+
+    def _run_status_match(self, text: str) -> bool:
+        return re.match(text, self._get_run_status_text(), re.IGNORECASE) != None
 
     def _get_run_status_text(self) -> str:
         try:
@@ -216,7 +218,6 @@ class MoboTestAnalyzer(TestAnalyzer):
             stderr=subprocess.DEVNULL,
             shell=True,
         )
-        self.initialize_files()
 
     def get_serial_number(self) -> str:
         return self._serialNumber

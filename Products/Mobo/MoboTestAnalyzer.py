@@ -50,10 +50,7 @@ class MoboTestAnalyzer(TestAnalyzer):
 
     def can_recover(self) -> bool:
         self._debug_thread()
-        return self._get_last_board_status() in [
-            self.BOARD_LOADED,
-            self.BOARD_TESTING,
-        ]
+        return self._get_plc_status().is_board_loaded()
 
     def _debug_thread(self, sessionId: str = "console_1"):
         if os.environ.get("ENV") == "testing" and self.sessionId == sessionId:
@@ -174,7 +171,9 @@ class MoboTestAnalyzer(TestAnalyzer):
         return self._get_plc_status().is_pass() or "PASS" in self._get_run_status_text()
 
     def is_failed(self) -> bool:
-        return self._get_plc_status().is_failed() or "FAIL" in self._get_run_status_text()
+        return (
+            self._get_plc_status().is_failed() or "FAIL" in self._get_run_status_text()
+        )
 
     def _get_run_status_text(self) -> str:
         try:
@@ -225,5 +224,5 @@ class MoboTestAnalyzer(TestAnalyzer):
     def get_mac(self) -> str:
         return self._mac
 
-    def get_fixture_ip(self)->str:
+    def get_fixture_ip(self) -> str:
         return self._fixture.ip

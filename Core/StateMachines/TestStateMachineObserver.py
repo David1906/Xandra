@@ -24,14 +24,15 @@ class TestStateMachineObserver(QtCore.QObject):
     def before_cycle(self, event: str, source: State, target: State, message: str = ""):
         self._isTransition = source.id != target.id
         if self._isTransition:
-            msg = f"\n[{datetime.today()}] {self._testAnalyzer.sessionId} from: {source.name} to: {target.name}"
-            f = open(
-                f"state_machine_log_{self._testAnalyzer.get_fixture_ip()}.txt", "w"
-            )
-            f.write(msg)
-            f.close()
-            if os.environ.get("ENV") == "testing":
-                print(msg)
+            self._log_transition(source, target)
+
+    def _log_transition(self, source: State, target: State):
+        msg = f"\n[{datetime.today()}] {self._testAnalyzer.sessionId} from: {source.name} to: {target.name}"
+        f = open(f"state_machine_log_{self._testAnalyzer.get_fixture_ip()}.txt", "w")
+        f.write(msg)
+        f.close()
+        if os.environ.get("ENV") == "testing":
+            print(msg)
 
     def on_enter_Idle(self):
         self.update.emit(TestAnalysis(TestStatus.Idle))

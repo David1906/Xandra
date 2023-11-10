@@ -23,12 +23,12 @@ try:
                 for attribute, value in attributes.items():
                     msg += f"{attribute} = {value}\n"
                 msg += str(datetime.today())
-                time.sleep(2)
         except Exception as e:
             msg = "Error: " + str(e)
         finally:
             result = f"{ '*' * 20}\n{msg}\n"
             f.write(result)
             print(result)
+            time.sleep(2)
 except KeyboardInterrupt:
     f.close()

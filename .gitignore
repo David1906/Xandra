@@ -55,3 +55,4 @@ package.nls.*.json
 l10n/
 disabled_fixtures.json
 **/chk_station_is_disabled.result
+state_machine_log*.txt

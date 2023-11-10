@@ -224,3 +224,6 @@ class MoboTestAnalyzer(TestAnalyzer):
 
     def get_mac(self) -> str:
         return self._mac
+
+    def get_fixture_ip(self)->str:
+        return self._fixture.ip

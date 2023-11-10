@@ -92,3 +92,7 @@ class TestAnalyzer(ABC):
     @abstractmethod
     def get_mac(self) -> str:
         pass
+    
+    @abstractmethod
+    def get_fixture_ip(self)->str:
+        pass

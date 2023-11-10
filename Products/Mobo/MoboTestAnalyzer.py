@@ -171,10 +171,10 @@ class MoboTestAnalyzer(TestAnalyzer):
         return self._get_plc_status().is_board_out()
 
     def is_pass(self) -> bool:
-        return self._get_plc_status().is_pass()
+        return self._get_plc_status().is_pass() or "PASS" in self._get_run_status_text()
 
     def is_failed(self) -> bool:
-        return self._get_plc_status().is_failed()
+        return self._get_plc_status().is_failed() or "FAIL" in self._get_run_status_text()
 
     def _get_run_status_text(self) -> str:
         try:

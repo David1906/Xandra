@@ -4,6 +4,8 @@ from Widgets.PlcDataViewer.PlcAddress import PlcAdress
 
 
 class PlcStatus:
+    EMPTY_STR = "Empty"
+
     def __init__(self) -> None:
         self.mac = ""
         self.sn = ""
@@ -66,7 +68,7 @@ class PlcStatus:
         chunk = self._extract_chunk(rawData, startAddr, len)
         asciiChunk = list(filter(lambda x: x != 0, chunk))
         string = "".join(self._ascii_to_char(asciiChunk))
-        return "Empty" if string == "" else string
+        return self.EMPTY_STR if string == "" else string
 
     def _extract_single_address(self, rawData: "list(int)", startAddr: int) -> int:
         return self._extract_chunk(rawData, startAddr)[0]
@@ -81,12 +83,12 @@ class PlcStatus:
         return [chr(character) for character in ascii]
 
     def is_board_loaded(self) -> bool:
-        return self.fixture_status == FixturePlcStatus.TESTING
+        return self.sn != self.EMPTY_STR and self.is_testing()
 
     def is_board_out(self) -> bool:
         return (
-            self.fixture_status == FixturePlcStatus.REQUEST_BOARD_OUT
-            or not self.can_ping
+            self.fixture_status != FixturePlcStatus.REQUEST_BOARD_OUT
+            and not self.is_testing()
         )
 
     def is_testing(self) -> bool:

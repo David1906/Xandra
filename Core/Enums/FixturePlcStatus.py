@@ -11,7 +11,7 @@ class FixturePlcStatus(enum.Enum):
     def __init__(self, description: str):
         self.description = description
 
-    UNKNOWN = "Unknown"
+    RELEASED = "Unknown"
     REQUEST_BOARD_IN = "Request board in"
     TESTING = "Testing"
     TEST_FINISHED = "Test finished"

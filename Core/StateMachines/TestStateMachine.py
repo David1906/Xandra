@@ -1,6 +1,5 @@
 from Core.Enums.TestStatus import TestStatus
 from DataAccess.TestAnalyzer import TestAnalyzer
-from Products.TestAnalyzerBuilder import TestAnalyzerBuilder
 from statemachine import StateMachine
 from statemachine.states import States
 from typing import Any
@@ -32,7 +31,6 @@ class TestStateMachine(StateMachine):
         | states.PreTestFailed.to.itself(internal=True)
 
         | states.Tested.to(states.Finished, cond="is_finished")
-        | states.Tested.to(states.Finished, cond="is_board_released")
         | states.Tested.to.itself()
 
         | states.Finished.to(states.Pass, cond="is_pass")

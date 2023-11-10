@@ -11,17 +11,24 @@ while not isValidIP.match(ip):
     ip = input("Enter plc ip: ")
 
 plcDAO = PlcDAO(ip, port=502)
-while True:
-    try:
-        if plcDAO.can_ping():
-            plcStatus = plcDAO.get_status()
-            attributes = vars(plcStatus)
-            os.system("clear")
-            for attribute, value in attributes.items():
-                print(attribute, "=", value)
-            print(datetime.today())
-            time.sleep(2)
-        else:
-            print("Ping error")
-    except Exception as e:
-        print("Error: " + str(e))
+f = open(f"plclog_{ip}.txt", "w")
+try:
+    while True:
+        try:
+            msg = "Ping error"
+            if plcDAO.can_ping():
+                plcStatus = plcDAO.get_status()
+                attributes = vars(plcStatus)
+                msg = ""
+                for attribute, value in attributes.items():
+                    msg += f"{attribute} = {value}\n"
+                msg += str(datetime.today())
+                time.sleep(2)
+        except Exception as e:
+            msg = "Error: " + str(e)
+        finally:
+            result = f"{ '*' * 20}\n{msg}\n"
+            f.write(result)
+            print(result)
+except KeyboardInterrupt:
+    f.close()

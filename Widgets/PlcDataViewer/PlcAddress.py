@@ -1,9 +1,9 @@
 class PlcAdress:
     ADDR_MAC = 80  # D80-D91 MAC address
-    MAC_LEN = 11
+    MAC_LEN = 12
 
     ADDR_SN = 100  # D100—D116 Serial number
-    SN_LEN = 16
+    SN_LEN = 17
 
     ADDR_DEVICE_NO = 300  # D300 Test fixture number
     ADDR_MODE = 301  # D301 Test fixture automatic/manual mode 0 manual 1 automatic

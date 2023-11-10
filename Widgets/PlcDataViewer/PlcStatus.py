@@ -87,15 +87,15 @@ class PlcStatus:
 
     def is_board_out(self) -> bool:
         return (
-            self.fixture_status != FixturePlcStatus.REQUEST_BOARD_OUT
+            self.fixture_status != FixturePlcStatus.REQUEST_BOARD_OUT.value
             and not self.is_testing()
         )
 
     def is_testing(self) -> bool:
-        return self.fixture_status == FixturePlcStatus.TESTING
+        return self.fixture_status == FixturePlcStatus.TESTING.value
 
     def is_pass(self) -> bool:
-        return self.test_result == FixturePlcTestResult.PASS
+        return self.test_result == FixturePlcTestResult.PASS.value
 
     def is_failed(self) -> bool:
-        return self.test_result == FixturePlcTestResult.FAILED
+        return self.test_result == FixturePlcTestResult.FAILED.value

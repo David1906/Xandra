@@ -97,7 +97,7 @@ class MoboTestAnalyzer(TestAnalyzer):
         self._serialNumber = self._get_plc_status().sn
 
     def refresh_mac(self):
-        self._serialNumber = self._get_plc_status().mac
+        self._mac = self._get_plc_status().mac
 
     def refresh_test_paths(self):
         self._currentLogPath = (

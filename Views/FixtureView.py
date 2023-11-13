@@ -408,6 +408,7 @@ class FixtureView(QGroupBox):
         if testAnalysis.is_finished():
             test = self._fixtureController.parse_test(testAnalysis)
             self.add_test(test)
+            self.tempView.pause()
         elif testAnalysis.is_testing():
             self.fixture.testItem = testAnalysis.stepLabel
             self.bdgSerialNumber.setText(testAnalysis.serialNumber)

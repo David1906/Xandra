@@ -11,6 +11,15 @@ class FixturePlcTestResult(enum.Enum):
     def __init__(self, description: str):
         self.description = description
 
+    @staticmethod
+    def get_description(value: int):
+        description = ""
+        try:
+            description = FixturePlcTestResult(value).description
+        except:
+            description = "Unknown"
+        return f"({value}) {description}"
+
     UNKNOWN = "Unknown"
     PASS = "Pass"
     FAILED = "Failed"

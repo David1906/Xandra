@@ -144,7 +144,7 @@ class MoboTestAnalyzer(TestAnalyzer):
             return ""
 
     def is_finished(self) -> bool:
-        return not self._get_plc_status().is_testing()
+        return not self._get_plc_status().is_testing() or self._run_status_match("PASS|FAILED")
 
     def _is_popen_ok(self, cmd: str):
         try:
@@ -166,7 +166,7 @@ class MoboTestAnalyzer(TestAnalyzer):
             return ""
 
     def is_board_released(self) -> bool:
-        return self._get_plc_status().is_board_out()
+        return self._get_plc_status().is_board_released()
 
     def is_pass(self) -> bool:
         return self._get_plc_status().is_pass() or self._run_status_match("PASS")

@@ -20,6 +20,7 @@ class TestStateMachine(StateMachine):
         | states.Idle.to.itself(internal=True)
 
         | states.Initialized.to(states.PreTested)
+        | states.Initialized.to.itself(internal=True)
 
         | states.PreTested.to(states.Tested, cond="is_testing")
         | states.PreTested.to(states.PreTestFailed, cond="is_failed")

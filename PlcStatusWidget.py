@@ -17,11 +17,7 @@ try:
         try:
             msg = "Ping error"
             if plcDAO.can_ping():
-                plcStatus = plcDAO.get_status()
-                attributes = vars(plcStatus)
-                msg = ""
-                for attribute, value in attributes.items():
-                    msg += f"{attribute} = {value}\n"
+                msg = str(plcDAO.get_status())
                 msg += str(datetime.today())
         except Exception as e:
             msg = "Error: " + str(e)

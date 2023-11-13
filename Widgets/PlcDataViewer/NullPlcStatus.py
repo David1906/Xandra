@@ -24,7 +24,7 @@ class NullPlcStatus(PlcStatus):
     def is_board_loaded(self) -> bool:
         return False
 
-    def is_board_out(self) -> bool:
+    def is_board_released(self) -> bool:
         return True
 
     def is_testing(self) -> bool:

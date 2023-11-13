@@ -1,3 +1,4 @@
+from Core.Enums.BoardPlcStatus import BoardPlcStatus
 from Core.Enums.FixturePlcStatus import FixturePlcStatus
 from Core.Enums.FixturePlcTestResult import FixturePlcTestResult
 from Widgets.PlcDataViewer.PlcAddress import PlcAdress
@@ -85,11 +86,11 @@ class PlcStatus:
     def is_board_loaded(self) -> bool:
         return self.sn != self.EMPTY_STR and self.is_testing()
 
-    def is_board_out(self) -> bool:
-        return (
-            self.fixture_status != FixturePlcStatus.REQUEST_BOARD_OUT.value
-            and not self.is_testing()
-        )
+    def is_board_released(self) -> bool:
+        return self.board_status in [
+            BoardPlcStatus.TAU_RELEASED.value,
+            BoardPlcStatus.TAU_READY.value,
+        ]
 
     def is_testing(self) -> bool:
         return self.fixture_status == FixturePlcStatus.TESTING.value
@@ -99,3 +100,16 @@ class PlcStatus:
 
     def is_failed(self) -> bool:
         return self.test_result == FixturePlcTestResult.FAILED.value
+
+    def __str__(self):
+        msg = ""
+        attributes = vars(self)
+        for attribute, value in attributes.items():
+            if attribute == "board_status":
+                value = BoardPlcStatus.get_description(value)
+            elif attribute == "test_result":
+                value = FixturePlcTestResult.get_description(value)
+            elif attribute == "fixture_status":
+                value = FixturePlcStatus.get_description(value)
+            msg += f"{attribute} = {value}\n"
+        return msg

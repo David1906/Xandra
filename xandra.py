@@ -12,7 +12,7 @@ app = QApplication(sys.argv)
 
 
 def start():
-    os.environ["XANDRA_VERSION"] = "3.0.2 111323_dev"
+    os.environ["XANDRA_VERSION"] = "3.0.2 111323"
     os.environ["HALT"] = "Az3E4ur"
     QtExceptHook().enable()
     with open(PathHelper().get_root_path() + "/Static/styles.css", "r") as fh:

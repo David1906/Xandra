@@ -59,7 +59,7 @@ class PlcDAO:
             PlcAdress.CHUNK3_LEN,
         )
         plcStatus = PlcStatus()
-        plcStatus.set_data(rawData=chunk_1 + chunk_2 + chunk_3)
+        plcStatus.set_holding_registers(rawData=chunk_1 + chunk_2 + chunk_3)
         return plcStatus
 
     def can_ping(self) -> bool:

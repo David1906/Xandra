@@ -9,6 +9,7 @@ class PlcStatus:
     def __init__(self) -> None:
         self.mac = ""
         self.sn = ""
+        self.board_status = ""
         self.device_no = ""
         self.mode = ""
         self.heartbeat = ""
@@ -25,41 +26,40 @@ class PlcStatus:
         self.model_id = ""
         self.fixture_id = ""
 
-    def set_data(self, rawData: "list(int)"):
-        self.mac = self._raw_data_to_str(rawData, PlcAdress.ADDR_MAC, PlcAdress.MAC_LEN)
-        self.sn = self._raw_data_to_str(rawData, PlcAdress.ADDR_SN, PlcAdress.SN_LEN)
-        self.device_no = self._extract_single_address(rawData, PlcAdress.ADDR_DEVICE_NO)
-        self.mode = self._extract_single_address(rawData, PlcAdress.ADDR_MODE)
-        self.heartbeat = self._extract_single_address(rawData, PlcAdress.ADDR_HEARTBEAT)
-        self.test_no = self._extract_single_address(rawData, PlcAdress.ADDR_TEST_NO)
-        self.test_result = self._extract_single_address(
-            rawData, PlcAdress.ADDR_TEST_RESULT
+    def set_holding_registers(self, rawData: "list(int)"):
+        self.mac = self._raw_data_to_str(rawData, PlcAdress.MAC, PlcAdress.MAC_LEN)
+        self.sn = self._raw_data_to_str(rawData, PlcAdress.SN, PlcAdress.SN_LEN)
+        self.board_status = self._extract_single_address(
+            rawData, PlcAdress.BOARD_STATUS
         )
+        self.device_no = self._extract_single_address(rawData, PlcAdress.DEVICE_NO)
+        self.mode = self._extract_single_address(rawData, PlcAdress.MODE)
+        self.heartbeat = self._extract_single_address(rawData, PlcAdress.HEARTBEAT)
+        self.test_no = self._extract_single_address(rawData, PlcAdress.TEST_NO)
+        self.test_result = self._extract_single_address(rawData, PlcAdress.TEST_RESULT)
         self.request_mode = self._extract_single_address(
-            rawData, PlcAdress.ADDR_REQUEST_MODE
+            rawData, PlcAdress.REQUEST_MODE
         )
-        self.return_mode = self._extract_single_address(
-            rawData, PlcAdress.ADDR_RETURN_MODE
-        )
+        self.return_mode = self._extract_single_address(rawData, PlcAdress.RETURN_MODE)
         self.send_in_out_enable = self._extract_single_address(
-            rawData, PlcAdress.ADDR_SEND_IN_OUT_ENABLE
+            rawData, PlcAdress.SEND_IN_OUT_ENABLE
         )
         self.fixture_status = self._extract_single_address(
-            rawData, PlcAdress.ADDR_FIXTURE_STATUS
+            rawData, PlcAdress.FIXTURE_STATUS
         )
-        self.lifter = self._extract_single_address(rawData, PlcAdress.ADDR_LIFTER)
-        self.scan = self._extract_single_address(rawData, PlcAdress.ADDR_SCAN)
+        self.lifter = self._extract_single_address(rawData, PlcAdress.LIFTER)
+        self.scan = self._extract_single_address(rawData, PlcAdress.SCAN)
         self.fixture_error = self._extract_single_address(
-            rawData, PlcAdress.ADDR_FIXTURE_ERROR
+            rawData, PlcAdress.FIXTURE_ERROR
         )
         self.tccs_task_no = self._raw_data_to_str(
-            rawData, PlcAdress.ADDR_TCCS_TASK_NO, PlcAdress.TCCS_TASK_NO_LEN
+            rawData, PlcAdress.TCCS_TASK_NO, PlcAdress.TCCS_TASK_NO_LEN
         )
         self.model_id = self._raw_data_to_str(
-            rawData, PlcAdress.ADDR_MODEL_ID, PlcAdress.MODEL_ID_LEN
+            rawData, PlcAdress.MODEL_ID, PlcAdress.MODEL_ID_LEN
         )
         self.fixture_id = self._raw_data_to_str(
-            rawData, PlcAdress.ADDR_FIXTURE_ID, PlcAdress.FIXTURE_ID_LEN
+            rawData, PlcAdress.FIXTURE_ID, PlcAdress.FIXTURE_ID_LEN
         )
 
     def _raw_data_to_str(
@@ -76,7 +76,7 @@ class PlcStatus:
     def _extract_chunk(
         self, rawData: "list(int)", startAddr: int, len: int = 1
     ) -> "list(int)":
-        start = startAddr - PlcAdress.STARTADDR
+        start = startAddr - PlcAdress.START_ADDR
         return rawData[start : start + len]
 
     def _ascii_to_char(self, ascii: "list(int)"):

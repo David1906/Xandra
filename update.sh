@@ -24,3 +24,7 @@ ls -hls Resources
 LINE="export XANDRA_RESOURCES=$XANDRA_BASE_PATH/Resources"
 FILE="$HOME/.bash_aliases"
 grep -qF -- "$LINE" "$FILE" || sed -i "4 i $LINE" $FILE >/dev/null
+
+LINE="alias xandra-plc-status-widget='xandra-pyenv-activate && python PlcStatusWidget.py'"
+FILE="$HOME/.bash_aliases"
+grep -qF -- "$LINE" "$FILE" || sed -i "4 i $LINE" $FILE >/dev/null

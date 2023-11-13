@@ -329,6 +329,9 @@ Para agregar los alias de Xandra realice los siguientes pasos:
 
     # Alias to open docs
     alias xandra-docs='gio open $XANDRA_BASE_PATH/docs/index.html'
+
+    # Run Plc Status Widget
+    alias xandra-plc-status-widget='xandra-pyenv-activate && python PlcStatusWidget.py'
     ```
 
 * Guardar los cambios.

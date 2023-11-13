@@ -89,7 +89,8 @@ class PlcStatus:
     def is_board_released(self) -> bool:
         return self.board_status in [
             BoardPlcStatus.TAU_RELEASED.value,
-            BoardPlcStatus.TAU_READY.value,
+            BoardPlcStatus.UUT_UNLOADING.value,
+            BoardPlcStatus.TAU_UNLOADING.value,
         ]
 
     def is_testing(self) -> bool:

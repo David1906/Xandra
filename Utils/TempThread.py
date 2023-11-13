@@ -27,8 +27,9 @@ class TempThread(QtCore.QThread):
                     lastTemp = currentTemp
                     self.readed.emit(currentTemp)
                 time.sleep(self._interval)
-            except:
-                pass
+            except Exception as e:
+                self.readed.emit(currentTemp)
+                print("TempThread error: " + str(e))
 
     def _read_temp(self) -> float:
         try:

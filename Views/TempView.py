@@ -1,3 +1,4 @@
+from datetime import datetime
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtGui import QPixmap
 from threading import *
@@ -15,6 +16,7 @@ class TempView(QtWidgets.QWidget):
         self._init_ui()
         self._tempThread = TempThread(toolPath, bmcIp)
         self._tempThread.readed.connect(self._on_temp_readed)
+        self._tempThread.unavailable.connect(self._on_temp_unavailable)
         self._tempThread.start()
 
     def _init_ui(self):
@@ -37,12 +39,21 @@ class TempView(QtWidgets.QWidget):
         self.setLayout(layout)
 
     def _on_temp_readed(self, temp: float):
-        self.lblTemp.setText(f"{temp:+.1f}°C")
+        txt = f"{temp:+.1f}°C"
+        self.lblTemp.setText(txt)
+        self.setToolTip(f"[{datetime.today()}] MB0_DTS_TEMP: " + txt)
         self._update_color(temp)
+
+    def _on_temp_unavailable(self):
+        self.lblTemp.setText("--.-°C")
+        self.setToolTip(f"[{datetime.today()}] Unavailable")
+        self._update_color(None)
 
     def _update_color(self, currentTemp: float = 0):
         color = "#4AA3BA"
-        if self.TEMP_OK < currentTemp and currentTemp < self.TEMP_ERROR:
+        if currentTemp == None:
+            color = "#E5E6EB"
+        elif self.TEMP_OK < currentTemp and currentTemp < self.TEMP_ERROR:
             color = "#5DAE8B"
         elif currentTemp >= self.TEMP_ERROR:
             color = "#FF7676"
@@ -54,8 +65,7 @@ class TempView(QtWidgets.QWidget):
         )
 
     def start(self, toolPath: str = "", bmcIp: str = ""):
-        self.lblTemp.setText("--.-°C")
-        self._update_color(0)
+        self._on_temp_unavailable()
         self.show()
         self._tempThread.resume(toolPath, bmcIp)
 

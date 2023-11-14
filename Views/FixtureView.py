@@ -400,12 +400,12 @@ class FixtureView(QGroupBox):
     def _update_by_test_analysis(self, testAnalysis: TestAnalysis):
         if testAnalysis.status == TestStatus.Recovered:
             self.fixture.testTimer = testAnalysis.startDateTime
-        if testAnalysis.status == TestStatus.PreTested:
+        elif testAnalysis.status == TestStatus.PreTested:
             self._set_badges_visible(True)
         elif testAnalysis.status == TestStatus.Released:
             self._unlock()
             self.tempView.pause()
-        if testAnalysis.is_finished():
+        elif testAnalysis.is_finished():
             test = self._fixtureController.parse_test(testAnalysis)
             self.add_test(test)
             self.tempView.pause()

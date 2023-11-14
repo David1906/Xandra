@@ -8,6 +8,7 @@ import time
 
 class TempThread(QtCore.QThread):
     readed = pyqtSignal(float)
+    unavailable = pyqtSignal()
 
     def __init__(self, toolPath: str = "", bmcIp: str = "", interval: int = 3):
         super().__init__()
@@ -26,10 +27,11 @@ class TempThread(QtCore.QThread):
                 if currentTemp != lastTemp:
                     lastTemp = currentTemp
                     self.readed.emit(currentTemp)
-                time.sleep(self._interval)
             except Exception as e:
-                self.readed.emit(currentTemp)
+                self.unavailable.emit()
                 print("TempThread error: " + str(e))
+            finally:
+                time.sleep(self._interval)
 
     def _read_temp(self) -> float:
         try:
@@ -39,7 +41,7 @@ class TempThread(QtCore.QThread):
             )
             return float(currentTemp) / 1000
         except:
-            return 0.0
+            raise Exception("Unavailable")
 
     def resume(self, toolPath: str = "", bmcIp: str = ""):
         self._toolPath = toolPath

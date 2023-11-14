@@ -84,7 +84,11 @@ class PlcStatus:
         return [chr(character) for character in ascii]
 
     def is_board_loaded(self) -> bool:
-        return self.sn != self.EMPTY_STR and not self.is_board_released()
+        return (
+            self.sn != self.EMPTY_STR
+            and not self.is_board_released()
+            and self.fixture_status == FixturePlcStatus.TESTING.value
+        )
 
     def is_board_released(self) -> bool:
         return self.board_status in [

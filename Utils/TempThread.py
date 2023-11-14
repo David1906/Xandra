@@ -27,16 +27,15 @@ class TempThread(QtCore.QThread):
                 if currentTemp != lastTemp:
                     lastTemp = currentTemp
                     self.readed.emit(currentTemp)
+                time.sleep(self._interval)
             except Exception as e:
                 self.unavailable.emit()
                 print("TempThread error: " + str(e))
-            finally:
-                time.sleep(self._interval)
 
     def _read_temp(self) -> float:
         try:
             currentTemp = subprocess.getoutput(
-                "timeout 3s sh %s/Nitro/nitro-bmc -i %s sensors list |grep DTS|awk '{print $9}'"
+                "timeout 6s sh %s/Nitro/nitro-bmc -i %s sensors list |grep DTS|awk '{print $9}'"
                 % (self._toolPath, self._bmcIp)
             )
             return float(currentTemp) / 1000

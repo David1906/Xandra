@@ -36,24 +36,32 @@ class TestStateMachineObserver(QtCore.QObject):
             print(msg)
 
     def on_enter_Idle(self):
+        self._canCycle = False
         self.update.emit(TestAnalysis(TestStatus.Idle))
+        self._canCycle = True
 
     def on_enter_Recovered(self):
+        self._canCycle = False
         self._refresh_testAnalyzer()
         self.update.emit(
             TestAnalysis(
                 TestStatus.Recovered, startDateTime=self._testAnalyzer.get_start_time()
             )
         )
+        self._canCycle = True
 
     def on_enter_Initialized(self):
+        self._canCycle = False
         self._refresh_testAnalyzer()
         self._testAnalyzer.initialize_files()
+        self._canCycle = True
 
     def on_enter_PreTested(self):
+        self._canCycle = False
         self._emit_testAnalysis(
             "Pre-Test", TestStatus.PreTested, self._testAnalyzer.get_bmc_ip()
         )
+        self._canCycle = True
 
     def _refresh_testAnalyzer(self):
         self._canCycle = False
@@ -64,15 +72,21 @@ class TestStateMachineObserver(QtCore.QObject):
         self._canCycle = True
 
     def on_enter_PreTestFailed(self):
+        self._canCycle = False
         self._emit_testAnalysis("Pre-Test Failed")
+        self._canCycle = True
 
     def on_enter_Tested(self):
+        self._canCycle = False
         self._emit_testAnalysis(
             self._testAnalyzer.get_test_item(), bmcIp=self._testAnalyzer.get_bmc_ip()
         )
+        self._canCycle = True
 
     def on_enter_Finished(self):
+        self._canCycle = False
         self._emit_testAnalysis("Finished")
+        self._canCycle = True
 
     def on_enter_Pass(self):
         self._canCycle = False
@@ -87,7 +101,9 @@ class TestStateMachineObserver(QtCore.QObject):
 
 
     def on_exit_Released(self):
+        self._canCycle = False
         self.update.emit(TestAnalysis(TestStatus.Released))
+        self._canCycle = True
 
     def _emit_testAnalysis(
         self, stepLabel: str, status: TestStatus = TestStatus.Tested, bmcIp: str = ""

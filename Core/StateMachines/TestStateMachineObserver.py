@@ -20,6 +20,7 @@ class TestStateMachineObserver(QtCore.QObject):
         super().__init__(parent)
         self._testAnalyzer = testAnalyzer
         self._isTransition = False
+        self._canCycle = True
 
     def before_cycle(self, event: str, source: State, target: State, message: str = ""):
         self._isTransition = source.id != target.id
@@ -55,10 +56,12 @@ class TestStateMachineObserver(QtCore.QObject):
         )
 
     def _refresh_testAnalyzer(self):
+        self._canCycle = False
         self._testAnalyzer.refresh_serial_number()
         self._testAnalyzer.refresh_mac()
         self._testAnalyzer.refresh_test_paths()
         self._testAnalyzer.call_get_bmc_ip()
+        self._canCycle = True
 
     def on_enter_PreTestFailed(self):
         self._emit_testAnalysis("Pre-Test Failed")
@@ -72,10 +75,16 @@ class TestStateMachineObserver(QtCore.QObject):
         self._emit_testAnalysis("Finished")
 
     def on_enter_Pass(self):
+        self._canCycle = False
         self.update.emit(self._testAnalyzer.get_pass_test_analysis())
+        self._canCycle = True
+
 
     def on_enter_Failed(self):
+        self._canCycle = False
         self.update.emit(self._testAnalyzer.get_failed_test_analysis())
+        self._canCycle = True
+
 
     def on_exit_Released(self):
         self.update.emit(TestAnalysis(TestStatus.Released))
@@ -92,3 +101,6 @@ class TestStateMachineObserver(QtCore.QObject):
                 mac=self._testAnalyzer.get_mac(),
             )
         )
+
+    def can_cycle(self) -> bool:
+        return self._canCycle

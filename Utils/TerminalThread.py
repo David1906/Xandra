@@ -36,7 +36,7 @@ class TerminalThread(QtCore.QThread):
             self._threadEvent.wait()
             time.sleep(self._analysisInterval)
             try:
-                if self._sm != None:
+                if self._sm != None and self._terminalObserver.can_cycle():
                     self._sm.cycle()
             except Exception as e:
                 print("TerminalThread error: ", str(e))

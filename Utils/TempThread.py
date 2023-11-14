@@ -1,4 +1,3 @@
-import random
 import subprocess
 import threading
 from PyQt5 import QtCore
@@ -28,8 +27,7 @@ class TempThread(QtCore.QThread):
                     lastTemp = currentTemp
                     self.readed.emit(currentTemp)
             except Exception as e:
-                self.unavailable.emit()
-                print("TempThread error: " + str(e))
+                print(f"TempThread error: {self._bmcIp}" + str(e))
             finally:
                 time.sleep(self._interval)
 

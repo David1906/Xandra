@@ -16,7 +16,6 @@ class TestStateMachine(StateMachine):
         | states.Recovered.to(states.Idle)
 
         | states.Idle.to(states.Initialized, cond="is_board_loaded")
-        | states.Idle.to(states.Recovered, cond="is_testing")
         | states.Idle.to.itself(internal=True)
 
         | states.Initialized.to(states.PreTested)

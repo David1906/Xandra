@@ -30,7 +30,6 @@ class PlcDAO:
                 self._statusRetry = 0
             else:
                 self._statusRetry += 1
-            logging.error("PlcDAO - " + str(e))
             print("PlcDAO - " + str(e))
         return self._lastStatus
 

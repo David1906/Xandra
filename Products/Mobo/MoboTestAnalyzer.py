@@ -119,7 +119,7 @@ class MoboTestAnalyzer(TestAnalyzer):
         return dt
 
     def is_testing(self) -> bool:
-        return self._is_popen_ok(f'cat "{self._runStatusPath}" | grep -Poi "testing"')
+        return self._run_status_match("testing")
 
     def call_get_bmc_ip(self):
         try:
@@ -144,16 +144,9 @@ class MoboTestAnalyzer(TestAnalyzer):
             return ""
 
     def is_finished(self) -> bool:
-        return not self._get_plc_status().is_testing() or self._run_status_match("PASS|FAILED")
-
-    def _is_popen_ok(self, cmd: str):
-        try:
-            subprocess.check_call(
-                cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True
-            )
-            return True
-        except:
-            return False
+        return not self._get_plc_status().is_testing() or self._run_status_match(
+            "PASS|FAILED"
+        )
 
     def get_test_item(self) -> str:
         if not os.path.isfile(self._testItemPath):

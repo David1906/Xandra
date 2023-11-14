@@ -27,10 +27,11 @@ class TempThread(QtCore.QThread):
                 if currentTemp != lastTemp:
                     lastTemp = currentTemp
                     self.readed.emit(currentTemp)
-                time.sleep(self._interval)
             except Exception as e:
                 self.unavailable.emit()
                 print("TempThread error: " + str(e))
+            finally:
+                time.sleep(self._interval)
 
     def _read_temp(self) -> float:
         try:

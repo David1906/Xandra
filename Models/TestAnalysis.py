@@ -34,7 +34,7 @@ class TestAnalysis:
         self.mac = mac
 
     def is_testing(self) -> bool:
-        return self.status in [TestStatus.PreTested, TestStatus.Tested]
+        return self.status.is_testing()
 
     def is_pass(self) -> bool:
         return self.status == TestStatus.Pass

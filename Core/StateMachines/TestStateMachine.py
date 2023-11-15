@@ -11,7 +11,7 @@ class TestStateMachine(StateMachine):
     cycle = (
         states.Initial.to(states.Recovered, cond="can_recover")
         | states.Initial.to(states.Idle)
-        
+
         | states.Recovered.to(states.PreTested, cond="is_board_loaded")
         | states.Recovered.to(states.Tested, cond="is_testing")
         | states.Recovered.to(states.Idle)
@@ -72,11 +72,11 @@ class TestStateMachine(StateMachine):
     def is_finished(self):
         return self.testAnalyzer.is_finished()
 
-    def is_board_released(self):
-        return self.testAnalyzer.is_board_released()
-
     def is_pass(self):
         return self.testAnalyzer.is_pass()
 
     def is_failed(self):
         return self.testAnalyzer.is_failed()
+
+    def is_board_released(self):
+        return self.testAnalyzer.is_board_released()

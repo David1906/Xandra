@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from Core.Enums.TestStatus import TestStatus
 from datetime import datetime
 from Models.NullTestAnalysis import NullTestAnalysis
 from Models.TestAnalysis import TestAnalysis
@@ -18,10 +19,6 @@ class TestAnalyzer(ABC):
         pass
 
     @abstractmethod
-    def get_start_time(self) -> datetime:
-        pass
-
-    @abstractmethod
     def is_board_loaded(self) -> bool:
         pass
 
@@ -30,27 +27,11 @@ class TestAnalyzer(ABC):
         pass
 
     @abstractmethod
-    def refresh_serial_number(self) -> bool:
-        pass
-
-    @abstractmethod
-    def refresh_mac(self) -> bool:
-        pass
-
-    @abstractmethod
-    def refresh_test_paths(self) -> bool:
+    def refresh_board_data(self):
         pass
 
     @abstractmethod
     def is_testing(self) -> bool:
-        pass
-
-    @abstractmethod
-    def call_get_bmc_ip(self):
-        pass
-
-    @abstractmethod
-    def get_bmc_ip(self) -> str:
         pass
 
     @abstractmethod
@@ -62,10 +43,6 @@ class TestAnalyzer(ABC):
         pass
 
     @abstractmethod
-    def get_test_item(self) -> str:
-        pass
-
-    @abstractmethod
     def is_pass(self) -> bool:
         pass
 
@@ -74,25 +51,11 @@ class TestAnalyzer(ABC):
         pass
 
     @abstractmethod
-    def get_pass_test_analysis(self) -> TestAnalysis:
+    def get_test_analysis(
+        self, testStatus: TestStatus, stepLabel: str = None
+    ) -> TestAnalysis:
         pass
 
     @abstractmethod
-    def get_failed_test_analysis(self) -> TestAnalysis:
-        pass
-
-    @abstractmethod
-    def pause(self):
-        pass
-
-    @abstractmethod
-    def get_serial_number(self) -> str:
-        pass
-
-    @abstractmethod
-    def get_mac(self) -> str:
-        pass
-    
-    @abstractmethod
-    def get_fixture_ip(self)->str:
+    def get_fixture_ip(self) -> str:
         pass

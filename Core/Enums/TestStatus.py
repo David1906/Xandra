@@ -11,6 +11,12 @@ class TestStatus(enum.Enum):
     def __init__(self, description: str):
         self.description = description
 
+    def is_ended(self) -> bool:
+        return self.value > TestStatus.Tested.value
+
+    def is_testing(self) -> bool:
+        return self in [TestStatus.PreTested, TestStatus.Tested]
+
     Initial = "Initial"
     Recovered = "Recovered"
     Idle = "Idle"

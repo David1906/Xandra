@@ -19,18 +19,6 @@ class MoboTestAnalyzer(TestAnalyzer):
     TEST_ITEM_FILE = "test_item"
     LOG_FILE = "run_test.log"
     BMC_IP_FILE = "bmcip.txt"
-    BOARD_LOADED = "Get SN:"
-    BOARD_LOADED_REGEX = normalizeToRegex(BOARD_LOADED)
-    BOARD_TESTING = "Start testing board"
-    BOARD_TESTING_REGEX = normalizeToRegex(BOARD_TESTING)
-    BOARD_RELEASED = "Check Status (ToTCCS): 4"
-    BOARD_RELEASED_REGEX = normalizeToRegex(BOARD_RELEASED)
-    BOARD_SOCKET_EXCEPTIONS = "ERROR"
-    BOARD_SOCKET_EXCEPTIONS_REGEX = normalizeToRegex(BOARD_SOCKET_EXCEPTIONS)
-    RUN_TEST_FAILED = "Testing board FAIL"
-    RUN_TEST_FAILED_REGEX = normalizeToRegex(RUN_TEST_FAILED)
-    RUN_TEST_PASS = "Testing board PASS"
-    RUN_TEST_PASS_REGEX = normalizeToRegex(RUN_TEST_PASS)
 
     def __init__(self, fixture: Fixture, sessionId: str) -> None:
         super().__init__(sessionId)
@@ -65,40 +53,18 @@ class MoboTestAnalyzer(TestAnalyzer):
     def is_board_loaded(self) -> bool:
         return self._get_plc_status().is_board_loaded()
 
-    def _get_last_board_result(self):
-        regex = f"{self.BOARD_LOADED_REGEX}|{self.RUN_TEST_PASS_REGEX}|{self.RUN_TEST_FAILED_REGEX}"
-        return self._get_last_fixture_status(regex)
-
-    def _get_last_board_status(self, tail: int = 100) -> str:
-        regex = f"{self.BOARD_LOADED_REGEX}|{self.BOARD_TESTING_REGEX}"
-        regex += f"|{self.RUN_TEST_PASS_REGEX}|{self.RUN_TEST_FAILED_REGEX}"
-        regex += f"|{self.BOARD_RELEASED_REGEX}|{self.BOARD_SOCKET_EXCEPTIONS_REGEX}"
-        return self._get_last_fixture_status(regex, tail)
-
-    def _get_last_fixture_status(self, regex: str, tail: int = 100) -> str:
-        try:
-            return (
-                subprocess.getoutput(
-                    f'tail -n{tail} {self._fctHostLogDataPath}/"$(ls -1rt {self._fctHostLogDataPath}| tail -n1)" | tac | grep -Poia -m1 "{regex}"'
-                )
-                .strip()
-                .split("\n")[0]
-            )
-        except:
-            return ""
-
     def initialize_files(self):
-        for file in [self._runStatusPath, self._testItemPath]:
+        for file in [self._runStatusPath, self._testItemPath, self._startTimePath]:
             if os.path.isfile(file):
                 open(file, "w").close()
 
-    def refresh_serial_number(self):
+    def refresh_board_data(self):
         self._serialNumber = self._get_plc_status().sn
-
-    def refresh_mac(self):
         self._mac = self._get_plc_status().mac
+        self._refresh_test_paths()
+        self._call_get_bmc_ip()
 
-    def refresh_test_paths(self):
+    def _refresh_test_paths(self):
         self._currentLogPath = (
             f"{self._moboFctHostControlDAO.get_script_out_path()}/{self._serialNumber}"
         )
@@ -108,7 +74,20 @@ class MoboTestAnalyzer(TestAnalyzer):
         self._startTimePath = f"{self._currentLogPath}/{self.START_TIME_FILE}"
         self._bmcIpPath = f"{self._currentLogPath}/{self.BMC_IP_FILE}"
 
+    def _call_get_bmc_ip(self):
+        try:
+            subprocess.Popen(
+                f"{PathHelper().get_root_path()}/Resources/mobo/get_bmcip_onlyip.sh -s {self._serialNumber}",
+                stdin=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                shell=True,
+                cwd=self._moboFctHostControlDAO.get_script_fullpath(),
+            )
+        except:
+            pass
+
     def get_start_time(self) -> datetime:
+        # TODO Optimizar lectura de archivo
         startTime = subprocess.getoutput(
             f"cat {self._startTimePath} | awk '{{print $1}}'",
         )
@@ -121,18 +100,6 @@ class MoboTestAnalyzer(TestAnalyzer):
 
     def is_testing(self) -> bool:
         return self._run_status_match("testing")
-
-    def call_get_bmc_ip(self):
-        try:
-            subprocess.Popen(
-                f"{PathHelper().get_root_path()}/Resources/mobo/get_bmcip_onlyip.sh -s {self._serialNumber}",
-                stdin=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-                shell=True,
-                cwd=self._moboFctHostControlDAO.get_script_fullpath(),
-            )
-        except:
-            pass
 
     def get_bmc_ip(self) -> str:
         if not os.path.isfile(self._bmcIpPath):
@@ -179,45 +146,30 @@ class MoboTestAnalyzer(TestAnalyzer):
         except:
             return ""
 
-    def get_pass_test_analysis(self) -> TestAnalysis:
-        return TestAnalysis(
-            TestStatus.Pass,
-            logfile=self._get_logfile(),
+    def get_test_analysis(
+        self, testStatus: TestStatus, stepLabel: str = None
+    ) -> TestAnalysis:
+        # TODO optimizar lectura de datos
+        testAnalysis = TestAnalysis(
+            status=testStatus,
             serialNumber=self._serialNumber,
+            stepLabel=stepLabel if stepLabel != None else self.get_test_item(),
             startDateTime=self.get_start_time(),
             outLog=self._currentLogPath,
-            scriptVersion=self._moboFctHostControlDAO.get_script_version(),
         )
-
-    def get_failed_test_analysis(self) -> TestAnalysis:
-        return TestAnalysis(
-            status=TestStatus.Failed,
-            logfile=self._get_logfile(),
-            serialNumber=self._serialNumber,
-            stepLabel=self.get_test_item(),
-            startDateTime=self.get_start_time(),
-            outLog=self._currentLogPath,
-            scriptVersion=self._moboFctHostControlDAO.get_script_version(),
-        )
+        if testStatus.is_testing():
+            testAnalysis.bmcIp = self.get_bmc_ip()
+        elif testStatus.is_ended():
+            testAnalysis.logfile = self._get_logfile()
+            testAnalysis.scriptVersion = (
+                self._moboFctHostControlDAO.get_script_version()
+            )
+        return testAnalysis
 
     def _get_logfile(self):
         if not os.path.isfile(self._logFilePath):
             return ""
         return self._logFilePath
-
-    def pause(self):
-        subprocess.Popen(
-            f'echo "{datetime.today()}|ERROR|Xandra terminal stopped|" >> {self._fctHostLogDataPath}/"$(ls -1rt {self._fctHostLogDataPath}| tail -n1)"',
-            stdin=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            shell=True,
-        )
-
-    def get_serial_number(self) -> str:
-        return self._serialNumber
-
-    def get_mac(self) -> str:
-        return self._mac
 
     def get_fixture_ip(self) -> str:
         return self._fixture.ip

@@ -44,8 +44,6 @@ class TerminalThread(QtCore.QThread):
 
     def pause(self):
         self._threadEvent.clear()
-        if self._sm.current_state_value != TestStatus.Idle.value:
-            self._testAnalyzer.pause()
         self._sm = None
 
     def reset(self):

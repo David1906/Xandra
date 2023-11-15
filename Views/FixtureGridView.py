@@ -3,7 +3,7 @@ from Models.Fixture import Fixture
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout
 from Views.AuthView import AuthView
-from Views.FixtureView import FixtureView
+from Views.Fixture.FixtureView import FixtureView
 
 
 class FixtureGridView(QWidget):

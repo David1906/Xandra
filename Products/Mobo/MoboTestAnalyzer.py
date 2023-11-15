@@ -88,8 +88,9 @@ class MoboTestAnalyzer(TestAnalyzer):
             return ""
 
     def initialize_files(self):
-        open(self._runStatusPath, "w").close()
-        open(self._testItemPath, "w").close()
+        for file in [self._runStatusPath, self._testItemPath]:
+            if os.path.isfile(file):
+                open(file, "w").close()
 
     def refresh_serial_number(self):
         self._serialNumber = self._get_plc_status().sn

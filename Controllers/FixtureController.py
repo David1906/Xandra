@@ -101,5 +101,10 @@ class FixtureController:
     def get_fct_host_control_tool_path(self) -> int:
         return self._hostControl.get_tool_fullpath()
 
+    def get_version_root_path(self) -> int:
+        scriptPath = self._hostControl.get_script_fullpath()
+        appPathSplit = scriptPath.split("/")
+        return "/".join(appPathSplit[0:-1])
+
     def get_automatic_unlock(self) -> int:
         return self._mainConfigDAO.get_automatic_unlock()

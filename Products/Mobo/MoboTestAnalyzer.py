@@ -25,6 +25,8 @@ class MoboTestAnalyzer(TestAnalyzer):
         self._fixture = fixture
         self._serialNumber = ""
         self._mac = ""
+        self._bmcIp = ""
+        self._startTime = None
         self._currentLogPath = ""
         self._runStatusPath = ""
         self._testItemPath = ""
@@ -61,6 +63,8 @@ class MoboTestAnalyzer(TestAnalyzer):
     def refresh_board_data(self):
         self._serialNumber = self._get_plc_status().sn
         self._mac = self._get_plc_status().mac
+        self._startTime = None
+        self._bmcIp = None
         self._refresh_test_paths()
         self._call_get_bmc_ip()
 
@@ -86,45 +90,13 @@ class MoboTestAnalyzer(TestAnalyzer):
         except:
             pass
 
-    def get_start_time(self) -> datetime:
-        # TODO Optimizar lectura de archivo
-        startTime = subprocess.getoutput(
-            f"cat {self._startTimePath} | awk '{{print $1}}'",
-        )
-        dt = datetime.now()
-        try:
-            dt = datetime.strptime(startTime, "%Y%m%d_%H%M%S")
-        except:
-            pass
-        return dt
-
     def is_testing(self) -> bool:
         return self._run_status_match("testing")
-
-    def get_bmc_ip(self) -> str:
-        if not os.path.isfile(self._bmcIpPath):
-            return ""
-        try:
-            return subprocess.getoutput(
-                f"cat {self._bmcIpPath} | tail -1",
-            ).strip()
-        except:
-            return ""
 
     def is_finished(self) -> bool:
         return not self._get_plc_status().is_testing() or self._run_status_match(
             "PASS|FAILED"
         )
-
-    def get_test_item(self) -> str:
-        if not os.path.isfile(self._testItemPath):
-            return ""
-        try:
-            return subprocess.getoutput(
-                f"cat {self._testItemPath} | awk '{{print $1}}'",
-            )
-        except:
-            return ""
 
     def is_board_released(self) -> bool:
         return self._get_plc_status().is_board_released()
@@ -149,22 +121,58 @@ class MoboTestAnalyzer(TestAnalyzer):
     def get_test_analysis(
         self, testStatus: TestStatus, stepLabel: str = None
     ) -> TestAnalysis:
-        # TODO optimizar lectura de datos
         testAnalysis = TestAnalysis(
             status=testStatus,
             serialNumber=self._serialNumber,
-            stepLabel=stepLabel if stepLabel != None else self.get_test_item(),
-            startDateTime=self.get_start_time(),
+            mac=self._mac,
+            stepLabel=stepLabel if stepLabel != None else self._get_test_item(),
+            startDateTime=self._get_start_time(),
             outLog=self._currentLogPath,
         )
         if testStatus.is_testing():
-            testAnalysis.bmcIp = self.get_bmc_ip()
+            testAnalysis.bmcIp = self._get_bmc_ip()
         elif testStatus.is_ended():
             testAnalysis.logfile = self._get_logfile()
             testAnalysis.scriptVersion = (
                 self._moboFctHostControlDAO.get_script_version()
             )
         return testAnalysis
+
+    def _get_test_item(self) -> str:
+        if not os.path.isfile(self._testItemPath):
+            return ""
+        try:
+            return subprocess.getoutput(
+                f"cat {self._testItemPath} | awk '{{print $1}}'",
+            )
+        except:
+            return ""
+
+    def _get_start_time(self) -> datetime:
+        if self._startTime != None:
+            return self._startTime
+        try:
+            startTime = subprocess.getoutput(
+                f"cat {self._startTimePath} | awk '{{print $1}}'",
+            )
+            self._startTime = datetime.strptime(startTime, "%Y%m%d_%H%M%S")
+        except:
+            self._startTime = datetime.now()
+        return self._startTime
+
+    def _get_bmc_ip(self) -> str:
+        if self._bmcIp != None and self._bmcIp != "":
+            return self._bmcIp
+        try:
+            if os.path.isfile(self._bmcIpPath):
+                self._bmcIp = subprocess.getoutput(
+                    f"cat {self._bmcIpPath} | tail -1",
+                ).strip()
+            else:
+                self._bmcIp = ""
+        except:
+            self._bmcIp = ""
+        return self._bmcIp
 
     def _get_logfile(self):
         if not os.path.isfile(self._logFilePath):

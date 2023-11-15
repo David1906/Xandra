@@ -49,7 +49,7 @@ class TestAnalysis:
     def has_bmc_ip(self) -> bool:
         return self.bmcIp != ""
 
-    def is_finished(self):
+    def is_pass_or_fail(self):
         return self.status in [
             TestStatus.Pass,
             TestStatus.Failed,

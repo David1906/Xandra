@@ -52,7 +52,10 @@ class FixtureView(QGroupBox):
         self.statusChangeConnection = None
         self.updateMaintenanceConnection = None
         self.canBeUnlockedAtRelease = False
-        self.lastAnalysis = NullTestAnalysis()
+        self._lastAnalysis = NullTestAnalysis()
+        self._fctHostControlToolPath = (
+            self._fixtureController.get_fct_host_control_tool_path()
+        )
 
         self._init_ui()
 
@@ -204,11 +207,12 @@ class FixtureView(QGroupBox):
         footerLayout.addWidget(self.tempView, 0)
 
         self.bdgSerialNumber = BadgeView(_("Serial Number"), self, prefix="SN: ")
+        self.bdgSerialNumber.hide()
         footerLayout.addWidget(self.bdgSerialNumber, 0)
 
         self.bdgMac = BadgeView(_("Mac"), self, prefix="MAC: ")
+        self.bdgMac.hide()
         footerLayout.addWidget(self.bdgMac, 0)
-        self._set_badges_visible(False)
 
     def on_btnLastTests_clicked(self):
         self._lastLogsWindow = LastTestsWindow(
@@ -381,43 +385,43 @@ class FixtureView(QGroupBox):
     def _on_terminal_finished(self, exitStatus):
         self.fixture.isStarted = False
         self.fixture.isTesting = False
-        self.lastAnalysis = NullTestAnalysis()
+        self._lastAnalysis = NullTestAnalysis()
         self.tempView.pause()
         self.fixture.isStarted = False
         self._set_badges_visible(False)
 
     def on_terminal_change(self, testAnalysis: TestAnalysis):
-        if self.lastAnalysis.equals(testAnalysis):
+        if self._lastAnalysis.equals(testAnalysis):
             return
-        self.lastAnalysis = testAnalysis
-        if testAnalysis.has_bmc_ip() and not self.tempView.is_started():
-            self.tempView.start(
-                self._fixtureController.get_fct_host_control_tool_path(),
-                testAnalysis.bmcIp,
-            )
-        self._update_by_test_analysis(testAnalysis)
-
-    def _update_by_test_analysis(self, testAnalysis: TestAnalysis):
+        self._lastAnalysis = testAnalysis
         if testAnalysis.status == TestStatus.Recovered:
             self.fixture.testTimer = testAnalysis.startDateTime
-        elif testAnalysis.status == TestStatus.PreTested:
-            self._set_badges_visible(True)
         elif testAnalysis.status == TestStatus.Released:
             self._unlock()
-            self.tempView.pause()
-        elif testAnalysis.is_finished():
+        elif testAnalysis.is_pass_or_fail():
             test = self._fixtureController.parse_test(testAnalysis)
             self.add_test(test)
             self.tempView.pause()
         elif testAnalysis.is_testing():
             self.fixture.testItem = testAnalysis.stepLabel
-            self.bdgSerialNumber.setText(testAnalysis.serialNumber)
-            self.bdgMac.setText(testAnalysis.mac)
+            if testAnalysis.status == TestStatus.PreTested:
+                self.bdgSerialNumber.setText(testAnalysis.serialNumber)
+                self.bdgMac.setText(testAnalysis.mac)
+                self._try_start_temp_view(testAnalysis.bmcIp)
         self.fixture.isTesting = testAnalysis.is_testing()
+        self._set_badges_visible(self.fixture.isTesting)
+
+    def _try_start_temp_view(self, bmcIp: str):
+        if bmcIp != "" and bmcIp != None and not self.tempView.is_started():
+            self.tempView.start(
+                self._fctHostControlToolPath,
+                bmcIp,
+            )
 
     def _set_badges_visible(self, visibility: bool):
-        self.bdgSerialNumber.setVisible(visibility)
-        self.bdgMac.setVisible(visibility)
+        if self.bdgSerialNumber.isVisible() != visibility:
+            self.bdgSerialNumber.setVisible(visibility)
+            self.bdgMac.setVisible(visibility)
 
     def save_status(self):
         self.fixture.emit_status_change(force=True)

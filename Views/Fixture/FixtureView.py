@@ -371,10 +371,10 @@ class FixtureView(QGroupBox):
             self.fixture.testTimer = testAnalysis.startDateTime
         elif testAnalysis.status == TestStatus.Released:
             self._unlock()
+            self._footer.stop()
         elif testAnalysis.is_pass_or_fail():
             test = self._fixtureController.parse_test(testAnalysis)
             self.add_test(test)
-            self._footer.stop()
         elif testAnalysis.is_testing():
             self.fixture.testItem = testAnalysis.stepLabel
             self._footer.start_temp(self._fctHostControlToolPath, testAnalysis)

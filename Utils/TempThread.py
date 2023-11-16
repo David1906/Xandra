@@ -9,7 +9,7 @@ class TempThread(QtCore.QThread):
     readed = pyqtSignal(float)
     unavailable = pyqtSignal()
 
-    def __init__(self, toolPath: str = "", bmcIp: str = "", interval: int = 3):
+    def __init__(self, toolPath: str = "", bmcIp: str = "", interval: float = 1.5):
         super().__init__()
         self._toolPath = toolPath
         self._bmcIp = bmcIp

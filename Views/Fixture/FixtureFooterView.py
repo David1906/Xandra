@@ -41,6 +41,7 @@ class FixtureFooterView(QtWidgets.QFrame):
 
         self.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self._layout)
+        self.setStyleSheet("background:transparent;")
 
     def update_status(self, status: str, setTooltip: bool):
         self._bdgResult.setText(status)

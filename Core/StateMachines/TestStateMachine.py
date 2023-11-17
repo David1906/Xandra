@@ -1,82 +1,54 @@
+from typing import Any
 from Core.Enums.TestStatus import TestStatus
-from DataAccess.TestAnalyzer import TestAnalyzer
 from statemachine import StateMachine
 from statemachine.states import States
-from typing import Any
 
 
 class TestStateMachine(StateMachine):
-    states = States.from_enum(TestStatus, initial=TestStatus.Initial)
-    # fmt: off
-    cycle = (
-        states.Initial.to(states.Recovered, cond="can_recover")
-        | states.Initial.to(states.Idle)
+    states = States.from_enum(TestStatus, initial=TestStatus.Initialized)
 
-        | states.Recovered.to(states.PreTested, cond="is_board_loaded")
-        | states.Recovered.to(states.Tested, cond="is_testing")
-        | states.Recovered.to(states.Idle)
-
-        | states.Idle.to(states.Initialized, cond="is_board_loaded")
-        | states.Idle.to.itself(internal=True)
-
-        | states.Initialized.to(states.PreTested)
-        | states.Initialized.to.itself(internal=True)
-
-        | states.PreTested.to(states.Tested, cond="is_testing")
-        | states.PreTested.to(states.PreTestFailed, cond="is_failed")
-        | states.PreTested.to(states.PreTestFailed, cond="is_board_released")
-        | states.PreTested.to.itself()
-
-        | states.PreTestFailed.to(states.Released, cond="is_board_released")
-        | states.PreTestFailed.to.itself(internal=True)
-
-        | states.Tested.to(states.Finished, cond="is_finished")
-        | states.Tested.to.itself()
-
-        | states.Finished.to(states.Pass, cond="is_pass")
-        | states.Finished.to(states.Failed, cond="is_failed")
-        | states.Finished.to(states.Released, cond="is_board_released")
-        | states.Finished.to.itself(internal=True)
-
-        | states.Pass.to(states.Released)
-        | states.Failed.to(states.Released)
-
-        | states.Released.to(states.Idle, cond="is_board_released")
-        | states.Released.to.itself(internal=True)
+    idle = states.Initialized.to(states.Idle) | states.Idle.to.itself(internal=True)
+    loadboard = (
+        states.Idle.to(states.BoardLoaded)
+        | states.Initialized.to(states.BoardLoaded)
+        | states.BoardLoaded.to.itself(internal=True)
     )
-    # fmt: on
+    test = (
+        states.BoardLoaded.to(states.Tested)
+        | states.Initialized.to(states.Tested)
+        | states.Tested.to.itself()
+    )
+    finish = states.Tested.to(states.Finished) | states.Finished.to.itself(
+        internal=True
+    )
+    release = (
+        states.Finished.to(states.Idle)
+        | states.BoardLoaded.to(states.Idle)
+        | states.Tested.to(states.Idle)
+        | states.Idle.to.itself(internal=True)
+    )
 
-    def __init__(
-        self,
-        testAnalyzer: TestAnalyzer,
-        model: Any = None,
-        state_field: str = "state",
-        start_value: Any = None,
-        rtc: bool = True,
-        allow_event_without_transition: bool = False,
-    ):
-        super().__init__(
-            model, state_field, start_value, rtc, allow_event_without_transition
-        )
-        self.testAnalyzer = testAnalyzer
+    def can_load_board(self) -> bool:
+        return self.is_initialized() or self.is_idle()
 
-    def can_recover(self):
-        return self.testAnalyzer.can_recover()
+    def is_initialized(self) -> bool:
+        return self.current_state.value == TestStatus.Initialized.value
 
-    def is_board_loaded(self):
-        return self.testAnalyzer.is_board_loaded()
+    def is_idle(self) -> bool:
+        return self.current_state.value == TestStatus.Idle.value
 
-    def is_testing(self):
-        return self.testAnalyzer.is_testing()
+    def can_test(self) -> bool:
+        return self.is_initialized() or self.is_board_loaded()
 
-    def is_finished(self):
-        return self.testAnalyzer.is_finished()
+    def is_board_loaded(self) -> bool:
+        return self.current_state.value == TestStatus.BoardLoaded.value
 
-    def is_pass(self):
-        return self.testAnalyzer.is_pass()
+    def can_finish(self) -> bool:
+        return self.current_state.value == TestStatus.Tested.value
 
-    def is_failed(self):
-        return self.testAnalyzer.is_failed()
-
-    def is_board_released(self):
-        return self.testAnalyzer.is_board_released()
+    def can_release(self) -> bool:
+        return self.current_state.value in [
+            TestStatus.Finished.value,
+            TestStatus.Tested.value,
+            TestStatus.BoardLoaded.value,
+        ]

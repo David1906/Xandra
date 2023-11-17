@@ -18,7 +18,7 @@ class PlcDAO:
         self._statusRetry = 0
 
     def get_status_debounced(
-        self, seconds: float = 2.0, maxRetry: int = 3
+        self, seconds: float = 1.5, maxRetry: int = 3
     ) -> PlcStatus:
         try:
             if self.is_time_elapsed(seconds) or self._lastStatus == None:

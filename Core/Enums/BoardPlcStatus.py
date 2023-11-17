@@ -22,7 +22,7 @@ class BoardPlcStatus(enum.Enum):
 
     NONE = "None"
     UNKNOWN_1 = "Unknown"
-    UNKNOWN_2 = "Unknown"
+    REQUEST_UUT = "Request UUT"
     UUT_LOADING = "UUT Loading"
     TAU_READY = "TAU Ready"
     UUT_POWERING = "UUT Powering"

@@ -25,7 +25,7 @@ class TestStateMachineObserver(QtCore.QObject):
             self._log_transition(source, target)
 
     def _log_transition(self, source: State, target: State):
-        msg = f"\n[{datetime.today()}] {self._testAnalyzer.sessionId} from: {source.name} to: {target.name}"
+        msg = f"\n[{datetime.today()}] {self._testAnalyzer._sessionId} from: {source.name} to: {target.name}"
         f = open(f"state_machine_log_{self._testAnalyzer.get_fixture_ip()}.txt", "a")
         f.write(msg)
         f.close()

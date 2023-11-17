@@ -176,7 +176,12 @@ class FixtureView(QGroupBox):
             self.fixture, self._fixtureController.get_automatic_product_selection()
         )
         self.terminal.finished.connect(self._on_terminal_finished)
-        self.terminal.change.connect(self.on_terminal_change)
+        self.terminal.initialized.connect(self._on_terminal_initialized)
+        self.terminal.idle.connect(self._on_terminal_idle)
+        self.terminal.boardLoaded.connect(self._on_terminal_boardLoaded)
+        self.terminal.tested.connect(self._on_terminal_tested)
+        self.terminal.testFinished.connect(self._on_terminal_testFinished)
+
         if self.terminal.has_tmux_session():
             # FIXME terminal size self.start()
             pass
@@ -363,24 +368,29 @@ class FixtureView(QGroupBox):
         self.fixture.isStarted = False
         self._footer.stop()
 
-    def on_terminal_change(self, testAnalysis: TestAnalysis):
-        if self._lastAnalysis.equals(testAnalysis):
-            return
-        self._lastAnalysis = testAnalysis
-        if testAnalysis.status == TestStatus.Recovered:
-            self.fixture.testTimer = testAnalysis.startDateTime
-        elif testAnalysis.status == TestStatus.Released:
-            self._unlock()
-            self._footer.stop()
-        elif testAnalysis.is_pass_or_fail():
+    def _on_terminal_initialized(self):
+        pass
+
+    def _on_terminal_idle(self):
+        self._unlock()
+        self._footer.stop()
+
+    def _on_terminal_boardLoaded(self, testAnalysis: TestAnalysis):
+        self.fixture.testItem = "Pre-Test"
+        self.fixture.isTesting = True
+        self._footer.start(testAnalysis)
+
+    def _on_terminal_tested(self, testAnalysis: TestAnalysis):
+        self.fixture.testTimer = testAnalysis.startDateTime
+        self.fixture.testItem = testAnalysis.stepLabel
+        self._footer.start_temp(self._fctHostControlToolPath, testAnalysis)
+        self.fixture.isTesting = True
+
+    def _on_terminal_testFinished(self, testAnalysis: TestAnalysis):
+        if testAnalysis.is_pass_or_fail():
             test = self._fixtureController.parse_test(testAnalysis)
             self.add_test(test)
-        elif testAnalysis.is_testing():
-            self.fixture.testItem = testAnalysis.stepLabel
-            self._footer.start_temp(self._fctHostControlToolPath, testAnalysis)
-            if testAnalysis.status == TestStatus.PreTested:
-                self._footer.start(testAnalysis)
-        self.fixture.isTesting = testAnalysis.is_testing()
+        self.fixture.isTesting = False
 
     def save_status(self):
         self.fixture.emit_status_change(force=True)

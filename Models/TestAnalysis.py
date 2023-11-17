@@ -5,7 +5,7 @@ from datetime import datetime
 
 
 class TestAnalysis:
-    status = TestStatus.Initial
+    status = TestStatus.Initialized
     stepLabel = ""
     logfile = ""
     serialNumber = ""
@@ -22,6 +22,7 @@ class TestAnalysis:
         scriptVersion: str = "",
         bmcIp: str = "",
         mac: str = "",
+        result: bool = None,
     ) -> None:
         self.status = status
         self.stepLabel = stepLabel
@@ -32,12 +33,13 @@ class TestAnalysis:
         self.scriptVersion = scriptVersion
         self.bmcIp = bmcIp
         self.mac = mac
+        self.result = result
 
     def is_testing(self) -> bool:
-        return self.status.is_testing()
+        return self.status == TestStatus.Tested
 
     def is_pass(self) -> bool:
-        return self.status == TestStatus.Pass
+        return self.result
 
     def equals(self, other: TestAnalysis) -> bool:
         return (
@@ -50,10 +52,7 @@ class TestAnalysis:
         return self.bmcIp != ""
 
     def is_pass_or_fail(self):
-        return self.status in [
-            TestStatus.Pass,
-            TestStatus.Failed,
-        ]
+        return self.result != None
 
     def is_l6_initial_error(self) -> bool:
         return self._step_label_contains("l6_initial_status")

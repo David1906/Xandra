@@ -1,19 +1,23 @@
-from subprocess import call
-import subprocess
-from threading import Thread
-from time import sleep
-from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtCore import pyqtSignal
 from Models.Fixture import Fixture
 from Models.NullTestAnalysis import NullTestAnalysis
 from Models.TestAnalysis import TestAnalysis
-from Utils.TerminalThread import TerminalThread
+from Products.TestAnalyzerBuilder import TestAnalyzerBuilder
+from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtCore import pyqtSignal
+from subprocess import call
+from threading import Thread
+from time import sleep
+import subprocess
 
 
 class Terminal(QtWidgets.QFrame):
     AUTOMATIC_SELECTION_DELAY = 5
     finished = pyqtSignal(int)
-    change = pyqtSignal(TestAnalysis)
+    initialized = QtCore.pyqtSignal()
+    idle = QtCore.pyqtSignal()
+    boardLoaded = QtCore.pyqtSignal(TestAnalysis)
+    tested = QtCore.pyqtSignal(TestAnalysis)
+    testFinished = QtCore.pyqtSignal(TestAnalysis)
 
     def __init__(self, fixture: Fixture, automaticProductSelection: int = -1):
         super().__init__()
@@ -34,9 +38,14 @@ class Terminal(QtWidgets.QFrame):
             """
         )
 
-        self.terminalThread = TerminalThread(self._fixture, self.sessionId)
-        self.terminalThread.updated.connect(self._terminal_updated)
-        self.terminalThread.start(priority=QtCore.QThread.Priority.HighPriority)
+        self._testAnalyzer = TestAnalyzerBuilder().build_based_on_main_config(
+            self._fixture, self.sessionId
+        )
+        self._testAnalyzer.initialized.connect(self.initialized.emit)
+        self._testAnalyzer.idle.connect(self.idle.emit)
+        self._testAnalyzer.boardLoaded.connect(self.boardLoaded.emit)
+        self._testAnalyzer.tested.connect(self.tested.emit)
+        self._testAnalyzer.testFinished.connect(self.testFinished.emit)
 
     def start(self, args: "list[str]" = []):
         self.create_tmux_session(";".join(args))
@@ -56,7 +65,7 @@ class Terminal(QtWidgets.QFrame):
             f"TMUX='' tmux attach-session -t {self.sessionId};",
         ]
         self.process.start("xterm", fullArgs)
-        self.terminalThread.reset()
+        self._testAnalyzer.reset()
 
     def create_tmux_session(self, command: str):
         if not self.has_tmux_session():
@@ -118,7 +127,7 @@ class Terminal(QtWidgets.QFrame):
     def on_finished(self, exitCode, exitStatus):
         print("Finished ", self.sessionId, exitCode, exitStatus)
         self.lastAnalysis = NullTestAnalysis()
-        self.terminalThread.pause()
+        self._testAnalyzer.pause()
         self.finished.emit(exitCode)
 
     def Stop(self):

@@ -63,6 +63,7 @@ class TempView(QtWidgets.QWidget):
         self.lblIcon.setStyleSheet(
             f"background-color: {color};border-top-right-radius: 5px; border-bottom-right-radius: 5px;"
         )
+        self.setStyleSheet(f"background-color: {color};")
 
     def start(self, toolPath: str = "", bmcIp: str = ""):
         self._on_temp_unavailable()

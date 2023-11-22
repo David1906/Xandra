@@ -2,7 +2,6 @@ from Controllers.FixtureController import FixtureController
 from Core.Enums.FixtureMode import FixtureMode
 from Core.Enums.FixtureStatus import FixtureStatus
 from datetime import datetime
-from Core.Enums.TestStatus import TestStatus
 from Models.Fixture import Fixture
 from Models.Maintenance import Maintenance
 from Models.NullTestAnalysis import NullTestAnalysis
@@ -10,10 +9,8 @@ from Models.TestAnalysis import TestAnalysis
 from Models.Test import Test
 from PyQt5 import QtCore, QtGui, QtWidgets
 from Utils.PathHelper import PathHelper
-from Views.BadgeView import BadgeView
 from Views.Fixture.FixtureFooterView import FixtureFooterView
 from Views.FrameLayout import FrameLayout
-from Views.TempView import TempView
 from Views.Terminal import Terminal
 from Views.LastFailuresWindow import LastFailuresWindow
 from Views.LastTestsWindow import LastTestsWindow
@@ -64,14 +61,8 @@ class FixtureView(QGroupBox):
 
     def _init_ui(self):
         self.setObjectName("fixture")
-        gridLayout = QGridLayout()
-        gridLayout.setColumnStretch(0, 1)
-        gridLayout.setColumnStretch(1, 0)
-        gridLayout.setRowStretch(0, 1)
-        gridLayout.setRowStretch(1, 0)
-        gridLayout.setContentsMargins(5, 5, 5, 5)
-        self.setLayout(gridLayout)
 
+        # ************* Side *************
         sideGridLayout = QGridLayout()
         sideGridLayout.setRowStretch(0, 0)
         sideGridLayout.setRowStretch(1, 1)
@@ -82,7 +73,6 @@ class FixtureView(QGroupBox):
         sideFrame.setContentsMargins(0, 0, 0, 0)
         sideFrame.setLayout(sideGridLayout)
         self.sideFrameLayout.addWidget(sideFrame)
-        gridLayout.addWidget(self.sideFrameLayout, 0, 1, 1, 1)
 
         infoLayout = QVBoxLayout()
         sideGridLayout.addLayout(infoLayout, 0, 0)
@@ -161,6 +151,7 @@ class FixtureView(QGroupBox):
         self.btnLastFailures.clicked.connect(self.on_btnLastFailures_clicked)
         buttonsLayout.addWidget(self.btnLastFailures, 1, 1, 1, 1)
 
+        # ************* Maintenance *************
         self.btnMaintenanceLog = QPushButton()
         self.btnMaintenanceLog.setIcon(
             QtGui.QIcon(PathHelper().join_root_path("/Static/maintenance.png"))
@@ -185,7 +176,6 @@ class FixtureView(QGroupBox):
         if self.terminal.has_tmux_session():
             # FIXME terminal size self.start()
             pass
-        gridLayout.addWidget(self.terminal, 0, 0, 1, 1)
 
         # ************* Maintenance *************
         self.maintenanceView = MaintenanceView(
@@ -196,10 +186,22 @@ class FixtureView(QGroupBox):
             actions=self._fixtureController.get_maintenance_actions(),
         )
         self.maintenanceView.selected.connect(self._on_maintenance_selected)
-        gridLayout.addWidget(self.maintenanceView, 0, 0, 1, 1)
 
         # ************* Footer *************
         self._footer = FixtureFooterView(self)
+
+        # ************* Layout *************
+        gridLayout = QGridLayout()
+        gridLayout.setColumnStretch(0, 1)
+        gridLayout.setColumnStretch(1, 0)
+        gridLayout.setRowStretch(0, 1)
+        gridLayout.setRowStretch(1, 0)
+        gridLayout.setContentsMargins(5, 5, 5, 5)
+        self.setLayout(gridLayout)
+
+        gridLayout.addWidget(self.sideFrameLayout, 0, 1, 1, 1)
+        gridLayout.addWidget(self.terminal, 0, 0, 1, 1)
+        gridLayout.addWidget(self.maintenanceView, 0, 0, 1, 1)
         gridLayout.addWidget(self._footer, 1, 0, 1, 2)
 
     def on_btnLastTests_clicked(self):

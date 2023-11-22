@@ -1,7 +1,8 @@
-import subprocess
-import threading
+from DataAccess.FixtureTempDAO import FixtureTempDAO
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal
+import subprocess
+import threading
 import time
 
 
@@ -9,14 +10,22 @@ class TempThread(QtCore.QThread):
     readed = pyqtSignal(float)
     unavailable = pyqtSignal()
 
-    def __init__(self, toolPath: str = "", bmcIp: str = "", interval: float = 1.5):
+    def __init__(
+        self,
+        toolPath: str = "",
+        bmcIp: str = "",
+        interval: float = 1.5,
+        fixtureId: int = 0,
+    ):
         super().__init__()
         self._toolPath = toolPath
         self._bmcIp = bmcIp
+        self._fixtureId = fixtureId
         self._isStarted = False
         self._interval = interval
         self._threadEvent = threading.Event()
         self._lastTemp = 0.0
+        self._fixtureTempDAO = FixtureTempDAO()
 
     def run(self):
         while True:
@@ -24,6 +33,7 @@ class TempThread(QtCore.QThread):
             try:
                 self._threadEvent.wait()
                 temp = self._read_temp()
+                self._fixtureTempDAO.add(self._fixtureId, temp)
             except Exception as e:
                 temp = None
                 print(f"TempThread error: {self._bmcIp}" + str(e))
@@ -42,16 +52,17 @@ class TempThread(QtCore.QThread):
     def _read_temp(self) -> float:
         try:
             temp = subprocess.getoutput(
-                "timeout 6s sh %s/Nitro/nitro-bmc -i %s sensors list |grep DTS|awk '{print $9}'"
+                "timeout 10s sh %s/Nitro/nitro-bmc -i %s sensors list |grep DTS|awk '{print $9}'"
                 % (self._toolPath, self._bmcIp)
             )
             return float(temp) / 1000
         except:
             return None
 
-    def resume(self, toolPath: str = "", bmcIp: str = ""):
+    def resume(self, toolPath: str = "", bmcIp: str = "", fixtureId: int = 0):
         self._toolPath = toolPath
         self._bmcIp = bmcIp
+        self._fixtureId = fixtureId
         self._threadEvent.set()
         self._isStarted = True
 

@@ -25,7 +25,8 @@ from Models.DTO import (
     MaintenanceDTO,
     EmployeeDTO,
     SettingDTO,
-    CatalogItemDTO
+    CatalogItemDTO,
+    FixtureTempDTO,
 )
 from DataAccess.SqlAlchemyBase import Base
 

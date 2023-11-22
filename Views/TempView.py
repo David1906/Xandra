@@ -65,10 +65,10 @@ class TempView(QtWidgets.QWidget):
         )
         self.setStyleSheet(f"background-color: {color};")
 
-    def start(self, toolPath: str = "", bmcIp: str = ""):
+    def start(self, toolPath: str = "", bmcIp: str = "", fixtureId: int = 0):
         self._on_temp_unavailable()
         self.show()
-        self._tempThread.resume(toolPath, bmcIp)
+        self._tempThread.resume(toolPath, bmcIp, fixtureId)
 
     def pause(self):
         self._tempThread.pause()

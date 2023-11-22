@@ -52,3 +52,6 @@ class TestStateMachine(StateMachine):
             TestStatus.BoardLoaded.value,
             TestStatus.Initialized.value,
         ]
+
+    def is_initialized(self):
+        return self.current_state.value == TestStatus.Initialized.value

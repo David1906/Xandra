@@ -59,15 +59,18 @@ class MoboTestAnalyzer(TestAnalyzer):
         return False
 
     def get_event(self) -> TestEvent:
+        event = None
         if self._stateMachine.can_test() and self.is_testing():
-            return TestEvent.Test
-        if self._stateMachine.can_load_board() and self.is_board_loaded():
-            return TestEvent.LoadBoard
-        if self._stateMachine.can_finish() and self.is_finished():
-            return TestEvent.Finish
-        if self._stateMachine.can_idle() and self.is_board_released():
-            return TestEvent.Release
-        return TestEvent.Idle
+            event = TestEvent.Test
+        elif self._stateMachine.can_load_board() and self.is_board_loaded():
+            event = TestEvent.LoadBoard
+        elif self._stateMachine.can_finish() and self.is_finished():
+            event = TestEvent.Finish
+        elif self._stateMachine.can_idle() and self.is_board_released():
+            event = TestEvent.Release
+        elif self._stateMachine.is_initialized():
+            event = TestEvent.Idle
+        return event
 
     def is_board_loaded(self) -> bool:
         return self._get_plc_status().is_board_loaded()
@@ -147,7 +150,7 @@ class MoboTestAnalyzer(TestAnalyzer):
             startDateTime=self._get_start_time(),
             outLog=self._currentLogPath,
         )
-        if testStatus == TestStatus.Tested:
+        if testStatus in [TestStatus.BoardLoaded, TestStatus.Tested]:
             testAnalysis.bmcIp = self._get_bmc_ip()
         elif testStatus == TestStatus.Finished:
             testAnalysis.result = self._get_test_result()

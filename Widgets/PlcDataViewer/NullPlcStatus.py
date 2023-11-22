@@ -9,7 +9,7 @@ class NullPlcStatus(PlcStatus):
         return False
 
     def is_board_released(self) -> bool:
-        return True
+        return False
 
     def is_testing(self) -> bool:
         return False

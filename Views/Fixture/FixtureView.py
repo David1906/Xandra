@@ -380,13 +380,20 @@ class FixtureView(QGroupBox):
     def _on_terminal_boardLoaded(self, testAnalysis: TestAnalysis):
         self.fixture.testItem = "Pre-Test"
         self.fixture.isTesting = True
-        self._footer.start(testAnalysis)
+        self._footer.set_data(testAnalysis)
+        self._footer.set_badges_setVisible(True)
+        self._start_footer(testAnalysis)
 
     def _on_terminal_tested(self, testAnalysis: TestAnalysis):
         self.fixture.testTimer = testAnalysis.startDateTime
         self.fixture.testItem = testAnalysis.stepLabel
-        self._footer.start_temp(self._fctHostControlToolPath, testAnalysis)
         self.fixture.isTesting = True
+        self._start_footer(testAnalysis)
+
+    def _start_footer(self, testAnalysis: TestAnalysis):
+        self._footer.start_temp(
+            self._fctHostControlToolPath, testAnalysis, self.fixture.id
+        )
 
     def _on_terminal_testFinished(self, testAnalysis: TestAnalysis):
         if testAnalysis.is_pass_or_fail():

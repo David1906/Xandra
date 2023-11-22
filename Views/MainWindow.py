@@ -59,33 +59,44 @@ class MainWindow(QMainWindow):
 
         gridLayout = QGridLayout()
         gridLayout.setContentsMargins(0, 0, 0, 0)
+        gridLayout.setRowStretch(0, 1)
+        gridLayout.setRowStretch(1, 0)
 
         self.fixtureGridView = FixtureGridView()
+        self.fixtureGridView.setContentsMargins(0, 0, 0, 0)
         self.fixtureGridView.lock_changed.connect(self._on_lock_changed)
         self.fixtureGridView.config_change.connect(lambda event: self._update_texts())
-        gridLayout.addWidget(self.fixtureGridView, 0, 0, 99, 0)
+        gridLayout.addWidget(self.fixtureGridView, 0, 0, 1, 1)
 
         self.footer = QHBoxLayout()
-        self.footer.setContentsMargins(15, 0, 15, 15)
+        self.footer.setContentsMargins(15, 0, 15, 5)
         self.footer.setSizeConstraint(QtWidgets.QLayout.SetFixedSize)
         self.lblXandraVersion = QLabel()
         self.lblXandraVersion.setStyleSheet("color: #AFAFAF")
         self.footer.addWidget(self.lblXandraVersion, alignment=QtCore.Qt.AlignLeft)
 
         self.lblStatus = QLabel()
+        self.lblStatus.setContentsMargins(0, 0, 0, 0)
         self.lblStatus.setStyleSheet("color: #AFAFAF")
         self.footer.addWidget(self.lblStatus, alignment=QtCore.Qt.AlignCenter)
 
         self.lblScriptVersion = QLabel()
+        self.lblScriptVersion.setContentsMargins(0, 0, 0, 0)
         self.lblScriptVersion.setStyleSheet("color: #AFAFAF")
         self.footer.addWidget(self.lblScriptVersion, alignment=QtCore.Qt.AlignRight)
-        gridLayout.addLayout(self.footer, 100, 0, alignment=QtCore.Qt.AlignBottom)
+        gridLayout.addLayout(self.footer, 1, 0, 1, 1)
 
         widget = QWidget()
         widget.setContentsMargins(0, 0, 0, 0)
         widget.setLayout(gridLayout)
         self.setCentralWidget(widget)
-        self.setStyleSheet("background-color: #f8f8fa;")
+        self.setStyleSheet(
+            """
+            background-color: #f8f8fa; 
+            *:hover{
+                color: #ffffff;
+            }"""
+        )
 
     def _update_texts(self):
         self._update_ui_texts()

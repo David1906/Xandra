@@ -39,22 +39,22 @@ class MoboTestAnalyzer(TestAnalyzer):
         )
         self._plcDAO = PlcDAO(fixture.ip, fixture.port)
         self._lastPlcStatus: PlcStatus = NullPlcStatus()
-        self._lastRunStatus = ""
+        self._lastTestStatus = ""
 
     def is_changed(self) -> bool:
         plcStatus = self._get_plc_status()
         if (
             not self._lastPlcStatus.equals_statuses(plcStatus)
-            or self.is_run_status_changed()
+            or self.is_test_status_changed()
         ):
             self._lastPlcStatus = plcStatus
             return True
         return False
 
-    def is_run_status_changed(self):
-        runStatus = self._get_run_status_text()
-        if runStatus != self._lastRunStatus:
-            self._lastRunStatus = runStatus
+    def is_test_status_changed(self):
+        testStatus = self._get_run_status_text() + self._get_test_item()
+        if testStatus != self._lastTestStatus:
+            self._lastTestStatus = testStatus
             return True
         return False
 
@@ -65,7 +65,7 @@ class MoboTestAnalyzer(TestAnalyzer):
             return TestEvent.LoadBoard
         if self._stateMachine.can_finish() and self.is_finished():
             return TestEvent.Finish
-        if self._stateMachine.can_release() and self.is_board_released():
+        if self._stateMachine.can_idle() and self.is_board_released():
             return TestEvent.Release
         return TestEvent.Idle
 

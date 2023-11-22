@@ -23,32 +23,32 @@ class TestStateMachine(StateMachine):
     )
     release = (
         states.Finished.to(states.Idle)
+        | states.Initialized.to(states.Idle)
         | states.BoardLoaded.to(states.Idle)
         | states.Tested.to(states.Idle)
         | states.Idle.to.itself(internal=True)
     )
 
     def can_load_board(self) -> bool:
-        return self.is_initialized() or self.is_idle()
-
-    def is_initialized(self) -> bool:
-        return self.current_state.value == TestStatus.Initialized.value
-
-    def is_idle(self) -> bool:
-        return self.current_state.value == TestStatus.Idle.value
+        return self.current_state.value in [
+            TestStatus.Initialized.value,
+            TestStatus.Idle.value,
+        ]
 
     def can_test(self) -> bool:
-        return self.is_initialized() or self.is_board_loaded()
-
-    def is_board_loaded(self) -> bool:
-        return self.current_state.value == TestStatus.BoardLoaded.value
+        return self.current_state.value in [
+            TestStatus.Initialized.value,
+            TestStatus.BoardLoaded.value,
+            TestStatus.Tested.value,
+        ]
 
     def can_finish(self) -> bool:
         return self.current_state.value == TestStatus.Tested.value
 
-    def can_release(self) -> bool:
+    def can_idle(self) -> bool:
         return self.current_state.value in [
             TestStatus.Finished.value,
             TestStatus.Tested.value,
             TestStatus.BoardLoaded.value,
+            TestStatus.Initialized.value,
         ]

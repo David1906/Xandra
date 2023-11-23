@@ -13,7 +13,7 @@ from Utils.PathHelper import PathHelper
 
 
 class Commpy(QMainWindow):
-    def __init__(self, tmux: str, sn, directory: str, parent=None):
+    def __init__(self, tmux: str, sn, directory: str, fixtureId: int, parent=None):
         super(Commpy, self).__init__()
         loadUi("Widgets/Commpy/console_3.ui", self)
         self.process = QtCore.QProcess(self)
@@ -25,6 +25,7 @@ class Commpy(QMainWindow):
         subprocess.Popen(["tmux", "new", "-d", "-s", tmux])
         self.tmux = tmux
         self.sn = sn
+        self.fixtureId = fixtureId
         self.setWindowTitle(tmux.upper())
         self.process.start(
             "xterm",
@@ -71,6 +72,12 @@ class Commpy(QMainWindow):
         self.getip1_8.stateChanged.connect(lambda: self.egg_ip(1, 7))
         self.getip1_9.stateChanged.connect(lambda: self.egg_ip(1, 8))
         self.getip1_10.stateChanged.connect(lambda: self.egg_ip(1, 9))
+
+        # Seleccion automática de fixtura
+        if self.fixtureId == 1:
+            self.getip1.setChecked(True)
+        else:
+            getattr(self, f"getip1_{self.fixtureId}").setChecked(True)
 
         "# Aqui declaro a que widget redirigen los botones de la pagina advance de IPMIOL "
         self.bt_cycle.clicked.connect(
@@ -282,33 +289,39 @@ class Commpy(QMainWindow):
             )
         elif switch == "n1":
             os.system(
-                'tmux send-keys -t %s "sh %s/tool/Nitro/nitro-bmc -i %s %s" Enter'
-                % (self.tmux, self._directory, ip.rstrip(), arch_1)
+                'tmux send-keys -t %s "sh %s -i %s %s" Enter'
+                % (self.tmux, self._get_nitro_bmc_path(), ip.rstrip(), arch_1)
             )
         elif switch == "n2":
             cb = blue_label.text()
             cb = cb.rstrip()
             os.system(
-                'tmux send-keys -t %s "sh %s/tool/Nitro/nitro-bmc -i %s %s |grep %s" Enter'
-                % (self.tmux, self._directory, ip.rstrip(), arch_1, cb)
+                'tmux send-keys -t %s "sh %s -i %s %s |grep %s" Enter'
+                % (self.tmux, self._get_nitro_bmc_path(), ip.rstrip(), arch_1, cb)
             )
         elif switch == "n3":
             cb = blue_label.currentText()
             cb = cb[0:2]
             os.system(
-                'tmux send-keys -t %s "sh %s/tool/Nitro/nitro-bmc -i %s %s %s" Enter'
-                % (self.tmux, self._directory, ip.rstrip(), arch_1, cb)
+                'tmux send-keys -t %s "sh %s -i %s %s %s" Enter'
+                % (self.tmux, self._get_nitro_bmc_path(), ip.rstrip(), arch_1, cb)
             )
             time.sleep(2)
             os.system(
-                'tmux send-keys -t %s "sh %s/tool/Nitro/nitro-bmc -i %s sol activate -u admin -p admin" Enter'
-                % (self.tmux, self._directory, ip.rstrip())
+                'tmux send-keys -t %s "sh %s -i %s sol activate -u admin -p admin" Enter'
+                % (self.tmux, self._get_nitro_bmc_path(), ip.rstrip())
             )
         elif switch == "c":
             os.system(
                 'tmux send-keys -t %s "coap -O65001,0 -Y coaps+tcp://%s/%s" Enter'
                 % (self.tmux, self._directory, k2v4.rstrip())
             )
+
+    def _get_nitro_bmc_path(self):
+        path1 = "%s/tool/Nitro/1.0.353.0/nitro-bmc" % (self._directory)
+        if os.path.isfile(path1):
+            return path1
+        return "%s/tool/Nitro/nitro-bmc" % (self._directory)
 
     def fru_burn(self, arch, lb1, lb2, lb3, select):
         if select == "1":
@@ -353,6 +366,9 @@ class Commpy(QMainWindow):
             pybuton.clicked.connect(lambda checked, text=texto: self.sh(text))
             self.test_select.setCellWidget(tablerow, 1, pybuton)
             tablerow += 1
+        os.system(
+            "tmux send-keys -t %s cd %s/script/ Enter " % (self.tmux, self._directory)
+        )
 
     def nitro_5(self):
         print()

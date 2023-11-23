@@ -185,6 +185,7 @@ class FixtureView(QGroupBox):
                 f"commpy_{self.fixture.id}",
                 self._lastAnalysis.serialNumber,
                 self._fixtureController.get_version_root_path(),
+                self.fixture.id
             ).show()
         )
         buttonsLayout.addWidget(self.btnCommpy, 1, 4, 1, 1)

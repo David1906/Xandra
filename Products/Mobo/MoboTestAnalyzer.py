@@ -52,7 +52,9 @@ class MoboTestAnalyzer(TestAnalyzer):
         return False
 
     def is_test_status_changed(self):
-        testStatus = self._get_run_status_text() + self._get_test_item()
+        testStatus = (
+            self._get_run_status_text() + self._get_test_item() + self._get_bmc_ip()
+        )
         if testStatus != self._lastTestStatus:
             self._lastTestStatus = testStatus
             return True
@@ -194,6 +196,7 @@ class MoboTestAnalyzer(TestAnalyzer):
                 self._bmcIp = ""
         except:
             self._bmcIp = ""
+        print(f"{self._sessionId} bmcIp detected: {self._bmcIp}")
         return self._bmcIp
 
     def _get_test_result(self):

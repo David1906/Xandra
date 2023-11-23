@@ -93,6 +93,9 @@ class MoboTestAnalyzer(TestAnalyzer):
         self._initialize_files()
         self._refresh_board_data()
         self._call_get_bmc_ip()
+        print(
+            f"Initialize Test {self._sessionId}: sn:{self._serialNumber} mac: {self._mac} bmcIp:{self._bmcIp}"
+        )
 
     def _initialize_files(self):
         for file in [self._runStatusPath, self._testItemPath, self._startTimePath]:
@@ -196,7 +199,8 @@ class MoboTestAnalyzer(TestAnalyzer):
                 self._bmcIp = ""
         except:
             self._bmcIp = ""
-        print(f"{self._sessionId} bmcIp detected: {self._bmcIp}")
+        if self._bmcIp != None and self._bmcIp != "":
+            print(f"{self._sessionId} bmcIp detected: {self._bmcIp}")
         return self._bmcIp
 
     def _get_test_result(self):

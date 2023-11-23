@@ -36,13 +36,12 @@ class TempThread(QtCore.QThread):
             try:
                 self._threadEvent.wait()
                 temp = self._read_temp()
-            except Exception as e:
-                temp = None
-                print(f"TempThread error: {self._bmcIp}" + str(e))
-            finally:
+                self._emit_update_on_change(temp)
                 if self._persist:
                     self._fixtureTempDAO.add(self._fixtureId, temp or 0)
-                self._emit_update_on_change(temp)
+            except Exception as e:
+                print(f"TempThread error: {self._bmcIp}" + str(e))
+            finally:
                 time.sleep(self._interval)
 
     def _emit_update_on_change(self, temp: float):

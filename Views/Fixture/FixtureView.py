@@ -410,6 +410,7 @@ class FixtureView(QGroupBox):
         self._unlock()
 
     def _on_terminal_boardLoaded(self, testAnalysis: TestAnalysis):
+        self._lastAnalysis = testAnalysis
         self.fixture.testItem = "Pre-Test"
         self.fixture.isTesting = True
         self._start_footer(testAnalysis)
@@ -421,6 +422,7 @@ class FixtureView(QGroupBox):
         self._start_footer(testAnalysis)
 
     def _start_footer(self, testAnalysis: TestAnalysis):
+        self._lastAnalysis = testAnalysis
         self._footer.set_data(testAnalysis)
         self._footer.set_badges_setVisible(True)
         self._footer.start_temp(

@@ -45,11 +45,10 @@ class TestAnalyzer(QtCore.QThread):
         while True:
             try:
                 if self.is_changed():
-                    event = self.get_event().name.lower()
-                    print(
-                        f"TestAnalyzer {self._sessionId} from: {self._stateMachine.current_state.name} to: {event}"
-                    )
-                    self._stateMachine.send(event)
+                    event = self.get_event()
+                    if event != None:
+                        eventName = event.name.lower()
+                        self._stateMachine.send(eventName)
             except Exception as e:
                 print("TestAnalyzer error: ", str(e))
                 logging.error(str(e))

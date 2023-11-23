@@ -9,7 +9,7 @@ class TestStateMachineObserver:
         self._fixtureIp = fixtureIp
 
     def on_enter_state(self, event, state):
-        msg = f"\n[{datetime.today()}] {self._sessionId} from: {event} to: {state.name}"
+        msg = f"\n[{datetime.today()}] {self._sessionId} event: {event} to: {state.name}"
         f = open(f"state_machine_log_{self._fixtureIp}.txt", "a")
         f.write(msg)
         f.close()

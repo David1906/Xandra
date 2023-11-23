@@ -26,7 +26,6 @@ class TempThread(QtCore.QThread):
         self._isStarted = False
         self._persist = persist
         self._interval = interval
-        self._threadEvent = threading.Event()
         self._lastTemp = 0.0
         self._fixtureTempDAO = FixtureTempDAO()
 
@@ -34,11 +33,11 @@ class TempThread(QtCore.QThread):
         while True:
             temp = None
             try:
-                self._threadEvent.wait()
-                temp = self._read_temp()
-                self._emit_update_on_change(temp)
-                if self._persist:
-                    self._fixtureTempDAO.add(self._fixtureId, temp or 0)
+                if self._isStarted:
+                    temp = self._read_temp()
+                    self._emit_update_on_change(temp)
+                    if self._persist:
+                        self._fixtureTempDAO.add(self._fixtureId, temp or 0)
             except Exception as e:
                 print(f"TempThread error: {self._bmcIp}" + str(e))
             finally:
@@ -55,7 +54,7 @@ class TempThread(QtCore.QThread):
     def _read_temp(self) -> float:
         try:
             temp = subprocess.getoutput(
-                "timeout 10s sh %s/Nitro/nitro-bmc -i %s sensors list |grep DTS|awk '{print $9}'"
+                "timeout 10s sh %s/Nitro/1.0.929.0/nitro-bmc -i %s sensors list |grep DTS|awk '{print $9}'"
                 % (self._toolPath, self._bmcIp)
             )
             return float(temp) / 1000
@@ -63,16 +62,14 @@ class TempThread(QtCore.QThread):
             return None
 
     def resume(self, toolPath: str = "", bmcIp: str = "", fixtureId: int = 0):
-        print(f"fixtureId {fixtureId}: TempThread resumed")
+        print(f"fixtureId {fixtureId}: TempThread resumed {bmcIp} {toolPath}")
         self._toolPath = toolPath
         self._bmcIp = bmcIp
         self._fixtureId = fixtureId
-        self._threadEvent.set()
         self._isStarted = True
 
     def pause(self):
         print(f"fixtureId {self._fixtureId}: TempThread paused")
-        self._threadEvent.clear()
         self._isStarted = False
 
     def is_started(self) -> bool:

@@ -77,13 +77,10 @@ class TempView(QtWidgets.QWidget):
         return (
             bmcIp != ""
             and bmcIp != None
-            and (not self._is_started() or self._lastBmcIp != bmcIp)
+            and (not self._tempThread.is_started() or self._lastBmcIp != bmcIp)
         )
 
     def pause(self):
         self._tempThread.pause()
         self.hide()
         self.lblTemp.setText("")
-
-    def _is_started(self) -> bool:
-        return self._tempThread.is_started()

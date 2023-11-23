@@ -64,15 +64,7 @@ class FixtureFooterView(QtWidgets.QFrame):
         self._bdgMac.setText(testAnalysis.mac)
 
     def start_temp(self, toolPath: str, testAnalysis: TestAnalysis, fixtureId: int):
-        if self._can_start_temp_view(testAnalysis):
-            self._tempView.start(toolPath, testAnalysis.bmcIp, fixtureId)
-
-    def _can_start_temp_view(self, testAnalysis: TestAnalysis):
-        return (
-            testAnalysis.bmcIp != ""
-            and testAnalysis.bmcIp != None
-            and not self._tempView.is_started()
-        )
+        self._tempView.start(toolPath, testAnalysis.bmcIp, fixtureId)
 
     def stop(self):
         self.set_badges_setVisible(False)

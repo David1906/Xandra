@@ -71,7 +71,7 @@ class TempThread(QtCore.QThread):
         self._isStarted = True
 
     def pause(self):
-        print(f"fixtureId {self._fixtureId}: TempThread resumed")
+        print(f"fixtureId {self._fixtureId}: TempThread paused")
         self._threadEvent.clear()
         self._isStarted = False
 

@@ -17,6 +17,7 @@ class TempView(QtWidgets.QWidget):
         self._tempThread = TempThread(toolPath, bmcIp)
         self._tempThread.readed.connect(self._on_temp_readed)
         self._tempThread.unavailable.connect(self._on_temp_unavailable)
+        self._tempThread.pause()
         self._tempThread.start()
 
     def _init_ui(self):
@@ -66,14 +67,23 @@ class TempView(QtWidgets.QWidget):
         self.setStyleSheet(f"background-color: {color};")
 
     def start(self, toolPath: str = "", bmcIp: str = "", fixtureId: int = 0):
-        self._on_temp_unavailable()
-        self.show()
-        self._tempThread.resume(toolPath, bmcIp, fixtureId)
+        if self._can_start_temp_view(bmcIp):
+            self._lastBmcIp = bmcIp
+            self._on_temp_unavailable()
+            self.show()
+            self._tempThread.resume(toolPath, bmcIp, fixtureId)
+
+    def _can_start_temp_view(self, bmcIp: str):
+        return (
+            bmcIp != ""
+            and bmcIp != None
+            and (not self._is_started() or self._lastBmcIp != bmcIp)
+        )
 
     def pause(self):
         self._tempThread.pause()
         self.hide()
         self.lblTemp.setText("")
 
-    def is_started(self) -> bool:
+    def _is_started(self) -> bool:
         return self._tempThread.is_started()

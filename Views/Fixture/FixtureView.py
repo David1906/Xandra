@@ -29,6 +29,7 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
 )
 from Utils.Translator import Translator
+from Widgets.Commpy.Commpy import Commpy
 
 _ = Translator().gettext
 ngettext = Translator().ngettext
@@ -130,7 +131,7 @@ class FixtureView(QGroupBox):
         self.btnStart.setStyleSheet("font-weight: 500;")
         self.btnStart.setFixedHeight(50)
         self.btnStart.clicked.connect(self.on_btnStart_clicked)
-        buttonsLayout.addWidget(self.btnStart, 0, 0, 1, 4)
+        buttonsLayout.addWidget(self.btnStart, 0, 0, 1, 5)
 
         sideGridLayout.addLayout(buttonsLayout, 2, 0)
         self.btnLastTests = QPushButton()
@@ -172,6 +173,21 @@ class FixtureView(QGroupBox):
         self.btnTemp.setStyleSheet("font-size: 12px; font-weight: 300; padding: 3px;")
         self.btnTemp.clicked.connect(self.on_btnTemp_clicked)
         buttonsLayout.addWidget(self.btnTemp, 1, 3, 1, 1)
+
+        # ************* Commpy *************
+        self.btnCommpy = QPushButton()
+        self.btnCommpy.setIcon(
+            QtGui.QIcon(PathHelper().join_root_path("/Static/terminal.png"))
+        )
+        self.btnCommpy.setStyleSheet("font-size: 12px; font-weight: 300; padding: 3px;")
+        self.btnCommpy.clicked.connect(
+            lambda: Commpy(
+                f"commpy_{self.fixture.id}",
+                self._lastAnalysis.serialNumber,
+                self._fixtureController.get_version_root_path(),
+            ).show()
+        )
+        buttonsLayout.addWidget(self.btnCommpy, 1, 4, 1, 1)
 
         # ************* Maintenance *************
         self.maintenanceView = MaintenanceView(

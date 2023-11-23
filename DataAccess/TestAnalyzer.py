@@ -3,6 +3,7 @@ from Core.Enums.TestEvent import TestEvent
 from Core.Enums.TestStatus import TestStatus
 from Core.StateMachines.TestStateMachine import TestStateMachine
 from datetime import datetime
+from Core.StateMachines.TestStateMachineObserver import TestStateMachineObserver
 from Models.Fixture import Fixture
 from Models.NullTestAnalysis import NullTestAnalysis
 from Models.TestAnalysis import TestAnalysis
@@ -31,6 +32,10 @@ class TestAnalyzer(QtCore.QThread):
         self._threadEvent = threading.Event()
         self._stateMachine = TestStateMachine()
         self._stateMachine.add_observer(self)
+        self._stateMachineObserver = TestStateMachineObserver(
+            self._sessionId, self._fixture.ip
+        )
+        self._stateMachine.add_observer(self._stateMachineObserver)
         self._isStarted = False
 
     def run(self):
@@ -73,18 +78,6 @@ class TestAnalyzer(QtCore.QThread):
         self, testStatus: TestStatus, stepLabel: str = None
     ) -> TestAnalysis:
         pass
-
-    def before_cycle(self, event: str, source: State, target: State, message: str = ""):
-        if source.id != target.id:
-            self._log_transition(source, target)
-
-    def _log_transition(self, source: State, target: State):
-        msg = f"\n[{datetime.today()}] {self._sessionId} from: {source.name} to: {target.name}"
-        f = open(f"state_machine_log_{self._fixture.ip}.txt", "a")
-        f.write(msg)
-        f.close()
-        if os.environ.get("ENV") == "testing":
-            print(msg)
 
     def on_enter_Initialized(self):
         self.initialized.emit()

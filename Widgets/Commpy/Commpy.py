@@ -367,7 +367,7 @@ class Commpy(QMainWindow):
             self.test_select.setCellWidget(tablerow, 1, pybuton)
             tablerow += 1
         os.system(
-            "tmux send-keys -t %s cd %s/script/ Enter " % (self.tmux, self._directory)
+            'tmux send-keys -t %s "cd %s/script/" Enter ' % (self.tmux, self._directory)
         )
 
     def nitro_5(self):

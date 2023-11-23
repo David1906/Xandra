@@ -94,7 +94,7 @@ class FixtureTempWindow(QtWidgets.QWidget):
         gridLayout.addWidget(self.btnRefresh, 1, 1)
         self.setLayout(gridLayout)
 
-        self.setFixedWidth(700)
+        self.setFixedWidth(800)
         self.setFixedHeight(350)
 
     def restart(self, size):

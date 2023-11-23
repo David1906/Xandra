@@ -1,9 +1,8 @@
-import random
+import os
 from DataAccess.FixtureTempDAO import FixtureTempDAO
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal
 import subprocess
-import threading
 import time
 
 
@@ -54,12 +53,18 @@ class TempThread(QtCore.QThread):
     def _read_temp(self) -> float:
         try:
             temp = subprocess.getoutput(
-                "timeout 10s sh %s/Nitro/1.0.929.0/nitro-bmc -i %s sensors list |grep DTS|awk '{print $9}'"
+                "timeout 10s sh %s/Nitro/1.0.353.0/nitro-bmc -i %s sensors list |grep DTS|awk '{print $9}'"
                 % (self._toolPath, self._bmcIp)
             )
             return float(temp) / 1000
         except:
             return None
+
+    def _get_nitro_bmc_path(self):
+        path1 = "%s/Nitro/1.0.353.0/nitro-bmc" % (self._toolPath)
+        if os.path.isfile(path1):
+            return path1
+        return "%s/Nitro/nitro-bmc" % (self._toolPath)
 
     def resume(self, toolPath: str = "", bmcIp: str = "", fixtureId: int = 0):
         print(f"fixtureId {fixtureId}: TempThread resumed {bmcIp} {toolPath}")

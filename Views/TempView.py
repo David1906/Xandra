@@ -19,6 +19,7 @@ class TempView(QtWidgets.QWidget):
         self._tempThread.unavailable.connect(self._on_temp_unavailable)
         self._tempThread.pause()
         self._tempThread.start()
+        self._lastBmcIp = ""
 
     def _init_ui(self):
         layout = QtWidgets.QHBoxLayout(self)

@@ -30,31 +30,49 @@ class FixtureTempDAO:
             Session.remove()
 
     def find_last_24H(self, fixtureIp: str):
+        return self.find_last(fixtureIp, timedelta(days=1))
+
+    def find_last(
+        self, fixtureIp: str, timeDelta: timedelta, groupByMinute: bool = True
+    ):
         now = datetime.now()
-        return self.find(fixtureIp, now - timedelta(days=1), now)
+        return self.find(fixtureIp, now - timeDelta, now, groupByMinute)
 
     def find(
-        self, fixtureIp: str, start: datetime, end: datetime
+        self, fixtureIp: str, start: datetime, end: datetime, groupByMinute: bool = True
     ) -> "list[FixtureTempDTO]":
         session = Session()
-        records = session.execute(
-            db.text(
-                f"""
-                SELECT
-                    fixtureId,
-                    temp,
-                    timeStamp
-                FROM 
-                    fixture_temp
-                WHERE
-                    timeStampEnd BETWEEN '{start.strftime(FixtureTempDAO.SQL_DATE_FORMAT)}' AND '{end.strftime(FixtureTempDAO.SQL_DATE_FORMAT)}'
-                    AND fixtureId = '{fixtureIp}';"""
-            )
-        )
         temps = []
-        if records != None:
-            for record in records:
-                temp = float(record[1])
-                timestamp = datetime.strptime(record[2], format)
-                temps.append(FixtureTempDTO(temp=temp, timestamp=timestamp))
-        return temps
+        try:
+            records = session.execute(
+                db.text(
+                    f"""
+                    SELECT
+                        ROUND(AVG(temp), 2) as temp,
+                        DATE_FORMAT(MAX(timeStamp), '%Y-%c-%d %H:%i:{'00' if groupByMinute else '%S'}') as timeStamp
+                    FROM
+                        fixture_temp
+                    WHERE
+                        timeStamp BETWEEN '{start.strftime(FixtureTempDAO.SQL_DATE_FORMAT)}' AND '{end.strftime(FixtureTempDAO.SQL_DATE_FORMAT)}'
+                        AND fixtureId = '{fixtureIp}'
+                    GROUP BY YEAR(timeStamp), DAY(timeStamp), MONTH(timeStamp), HOUR(timeStamp), MINUTE(timeStamp){'' if groupByMinute else ', SECOND(timeStamp)'};
+                    """
+                )
+            )
+            if records != None:
+                for record in records:
+                    temps.append(
+                        FixtureTempDTO(
+                            temp=record[0],
+                            timeStamp=datetime.strptime(
+                                record[1], FixtureTempDAO.SQL_DATE_FORMAT
+                            ),
+                        )
+                    )
+        except Exception as e:
+            session.rollback()
+            print(str(e))
+        finally:
+            session.close()
+            Session.remove()
+            return temps

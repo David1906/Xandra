@@ -10,6 +10,7 @@ from Models.Test import Test
 from PyQt5 import QtCore, QtGui, QtWidgets
 from Utils.PathHelper import PathHelper
 from Views.Fixture.FixtureFooterView import FixtureFooterView
+from Views.FixtureTempWindow import FixtureTempWindow
 from Views.FrameLayout import FrameLayout
 from Views.Terminal import Terminal
 from Views.LastFailuresWindow import LastFailuresWindow
@@ -41,6 +42,7 @@ class FixtureView(QGroupBox):
 
         self._fixture: Fixture = fixture
         self._lastLogsWindow = None
+        self._fixtureTempWindow = None
         self._fixtureController = FixtureController()
         self.forceTraceabilityEnabled = False
         self.unlocked = None
@@ -128,7 +130,7 @@ class FixtureView(QGroupBox):
         self.btnStart.setStyleSheet("font-weight: 500;")
         self.btnStart.setFixedHeight(50)
         self.btnStart.clicked.connect(self.on_btnStart_clicked)
-        buttonsLayout.addWidget(self.btnStart, 0, 0, 1, 3)
+        buttonsLayout.addWidget(self.btnStart, 0, 0, 1, 4)
 
         sideGridLayout.addLayout(buttonsLayout, 2, 0)
         self.btnLastTests = QPushButton()
@@ -136,14 +138,14 @@ class FixtureView(QGroupBox):
             "font-size: 12px; font-weight: 300; padding: 3px;"
         )
         self.btnLastTests.setIcon(
-            QtGui.QIcon(PathHelper().join_root_path("/Static/report.png"))
+            QtGui.QIcon(PathHelper().join_root_path("/Static/history.svg"))
         )
         self.btnLastTests.clicked.connect(self.on_btnLastTests_clicked)
         buttonsLayout.addWidget(self.btnLastTests, 1, 0, 1, 1)
 
         self.btnLastFailures = QPushButton()
         self.btnLastFailures.setIcon(
-            QtGui.QIcon(PathHelper().join_root_path("/Static/error.png"))
+            QtGui.QIcon(PathHelper().join_root_path("/Static/alert-circle-outline.svg"))
         )
         self.btnLastFailures.setStyleSheet(
             "font-size: 12px; font-weight: 300; padding: 3px;"
@@ -154,13 +156,22 @@ class FixtureView(QGroupBox):
         # ************* Maintenance *************
         self.btnMaintenanceLog = QPushButton()
         self.btnMaintenanceLog.setIcon(
-            QtGui.QIcon(PathHelper().join_root_path("/Static/maintenance.png"))
+            QtGui.QIcon(PathHelper().join_root_path("/Static/wrench-clock.svg"))
         )
         self.btnMaintenanceLog.setStyleSheet(
             "font-size: 12px; font-weight: 300; padding: 3px;"
         )
         self.btnMaintenanceLog.clicked.connect(self.on_btnMaintenanceLog_clicked)
         buttonsLayout.addWidget(self.btnMaintenanceLog, 1, 2, 1, 1)
+
+        # ************* Temperature *************
+        self.btnTemp = QPushButton()
+        self.btnTemp.setIcon(
+            QtGui.QIcon(PathHelper().join_root_path("/Static/temperature-celsius.svg"))
+        )
+        self.btnTemp.setStyleSheet("font-size: 12px; font-weight: 300; padding: 3px;")
+        self.btnTemp.clicked.connect(self.on_btnTemp_clicked)
+        buttonsLayout.addWidget(self.btnTemp, 1, 3, 1, 1)
 
         # ************* Terminal *************
         self.terminal = Terminal(
@@ -209,6 +220,10 @@ class FixtureView(QGroupBox):
             self.fixture.ip, showRetest=self.swRetestMode.getChecked()
         )
         self._lastLogsWindow.showMaximized()
+
+    def on_btnTemp_clicked(self):
+        self._fixtureTempWindow = FixtureTempWindow(self.fixture.id)
+        self._fixtureTempWindow.show()
 
     def on_btnLastFailures_clicked(self):
         self._lastLogsWindow = LastFailuresWindow(
@@ -288,6 +303,7 @@ class FixtureView(QGroupBox):
         self.btnLastTests.setToolTip(_("Last Tests"))
         self.btnLastFailures.setToolTip(_("Last Failures"))
         self.btnMaintenanceLog.setToolTip(_("Maintenance"))
+        self.btnTemp.setToolTip(_("Temperatures"))
         self.maintenanceView._update_texts()
 
     def _update_status(self):

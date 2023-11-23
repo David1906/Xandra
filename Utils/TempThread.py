@@ -1,3 +1,4 @@
+import random
 from DataAccess.FixtureTempDAO import FixtureTempDAO
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal
@@ -14,14 +15,16 @@ class TempThread(QtCore.QThread):
         self,
         toolPath: str = "",
         bmcIp: str = "",
-        interval: float = 1.5,
+        interval: float = 2.5,
         fixtureId: int = 0,
+        persist: bool = True,
     ):
         super().__init__()
         self._toolPath = toolPath
         self._bmcIp = bmcIp
         self._fixtureId = fixtureId
         self._isStarted = False
+        self._persist = persist
         self._interval = interval
         self._threadEvent = threading.Event()
         self._lastTemp = 0.0
@@ -33,11 +36,12 @@ class TempThread(QtCore.QThread):
             try:
                 self._threadEvent.wait()
                 temp = self._read_temp()
-                self._fixtureTempDAO.add(self._fixtureId, temp)
             except Exception as e:
                 temp = None
                 print(f"TempThread error: {self._bmcIp}" + str(e))
             finally:
+                if self._persist:
+                    self._fixtureTempDAO.add(self._fixtureId, temp or 0)
                 self._emit_update_on_change(temp)
                 time.sleep(self._interval)
 

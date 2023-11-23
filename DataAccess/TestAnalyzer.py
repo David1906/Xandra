@@ -42,11 +42,11 @@ class TestAnalyzer(QtCore.QThread):
                 if self.is_changed():
                     event = self.get_event().name.lower()
                     print(
-                        f"TestAnalyzer changed {self._sessionId} {event}, cuurent state: {self._stateMachine.current_state.name}"
+                        f"TestAnalyzer {self._sessionId} from: {self._stateMachine.current_state.name} to: {event}"
                     )
                     self._stateMachine.send(event)
             except Exception as e:
-                print("TerminalThread error: ", str(e))
+                print("TestAnalyzer error: ", str(e))
                 logging.error(str(e))
             finally:
                 self._threadEvent.wait()

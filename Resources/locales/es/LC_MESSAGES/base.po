@@ -397,3 +397,18 @@ msgstr "&Contraer todas las configuraciones de fixtura"
 
 msgid "E&xpand all fixture configs"
 msgstr "E&xpandir todas las configuraciones de fixtura"
+
+msgid "Temperature - Fixture {0}"
+msgstr "Temperatura - Fixtura {0}"
+
+msgid "Fixture Temperatures"
+msgstr "Temperaturas de fixtura"
+
+msgid "Temperatures"
+msgstr "Temperaturas"
+
+msgid "Time"
+msgstr "Tiempo"
+
+msgid "Temperature °C"
+msgstr "Temperatura °C"

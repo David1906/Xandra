@@ -63,6 +63,7 @@ class TempThread(QtCore.QThread):
             return None
 
     def resume(self, toolPath: str = "", bmcIp: str = "", fixtureId: int = 0):
+        print(f"fixtureId {fixtureId}: TempThread resumed")
         self._toolPath = toolPath
         self._bmcIp = bmcIp
         self._fixtureId = fixtureId
@@ -70,6 +71,7 @@ class TempThread(QtCore.QThread):
         self._isStarted = True
 
     def pause(self):
+        print(f"fixtureId {self._fixtureId}: TempThread resumed")
         self._threadEvent.clear()
         self._isStarted = False
 

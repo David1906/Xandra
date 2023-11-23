@@ -386,14 +386,12 @@ class FixtureView(QGroupBox):
         self.fixture.isTesting = False
         self._lastAnalysis = NullTestAnalysis()
         self.fixture.isStarted = False
-        self._footer.stop()
 
     def _on_terminal_initialized(self):
         pass
 
     def _on_terminal_idle(self):
         self._unlock()
-        self._footer.stop()
 
     def _on_terminal_boardLoaded(self, testAnalysis: TestAnalysis):
         self.fixture.testItem = "Pre-Test"

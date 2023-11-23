@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import (
     QMessageBox,
     QCompleter,
     QShortcut,
+    QFrame,
 )
 from PyQt5 import QtCore
 from PyQt5.QtGui import QKeySequence, QRegExpValidator
@@ -20,7 +21,7 @@ from Controllers.MaintenanceController import MaintenanceController
 _ = Translator().gettext
 
 
-class MaintenanceView(QWidget):
+class MaintenanceView(QFrame):
     MIN_EMP_LEN = 6
     MAX_DESCRIPTION_LEN = 255
     selected = QtCore.pyqtSignal(Maintenance)
@@ -51,6 +52,7 @@ class MaintenanceView(QWidget):
 
     def _init_ui(self):
         layout = QGridLayout()
+
         self.setLayout(layout)
 
         self.lblInstruction = QLabel()
@@ -96,6 +98,17 @@ class MaintenanceView(QWidget):
         self.btnOk = QPushButton()
         self.btnOk.clicked.connect(self._save)
         layout.addWidget(self.btnOk, 8, 0, 1, 3, QtCore.Qt.AlignCenter)
+
+        self.setStyleSheet(
+            """
+            MaintenanceView{  
+               border: 1px solid #c0c2ce;
+               background-color: #f8f8fa;
+               border-radius: 3px;
+            }
+            """
+        )
+        self.setContentsMargins(0, 0, 0, 0)
 
     def _update_texts(self):
         self.lblInstruction.setText(

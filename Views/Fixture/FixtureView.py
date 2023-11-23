@@ -173,6 +173,16 @@ class FixtureView(QGroupBox):
         self.btnTemp.clicked.connect(self.on_btnTemp_clicked)
         buttonsLayout.addWidget(self.btnTemp, 1, 3, 1, 1)
 
+        # ************* Maintenance *************
+        self.maintenanceView = MaintenanceView(
+            self,
+            self.fixture.id,
+            self.fixture.ip,
+            items=self._fixtureController.get_maintenance_parts(),
+            actions=self._fixtureController.get_maintenance_actions(),
+        )
+        self.maintenanceView.selected.connect(self._on_maintenance_selected)
+
         # ************* Terminal *************
         self.terminal = Terminal(
             self.fixture, self._fixtureController.get_automatic_product_selection()
@@ -188,16 +198,6 @@ class FixtureView(QGroupBox):
             # FIXME terminal size self.start()
             pass
 
-        # ************* Maintenance *************
-        self.maintenanceView = MaintenanceView(
-            self,
-            self.fixture.id,
-            self.fixture.ip,
-            items=self._fixtureController.get_maintenance_parts(),
-            actions=self._fixtureController.get_maintenance_actions(),
-        )
-        self.maintenanceView.selected.connect(self._on_maintenance_selected)
-
         # ************* Footer *************
         self._footer = FixtureFooterView(self)
 
@@ -208,12 +208,13 @@ class FixtureView(QGroupBox):
         gridLayout.setRowStretch(0, 1)
         gridLayout.setRowStretch(1, 0)
         gridLayout.setContentsMargins(5, 5, 5, 5)
-        self.setLayout(gridLayout)
 
         gridLayout.addWidget(self.sideFrameLayout, 0, 1, 1, 1)
         gridLayout.addWidget(self.terminal, 0, 0, 1, 1)
         gridLayout.addWidget(self.maintenanceView, 0, 0, 1, 1)
         gridLayout.addWidget(self._footer, 1, 0, 1, 2)
+
+        self.setLayout(gridLayout)
 
     def on_btnLastTests_clicked(self):
         self._lastLogsWindow = LastTestsWindow(
@@ -278,6 +279,7 @@ class FixtureView(QGroupBox):
         self._update_btn_start()
         self._update_sw_traceability_enabled()
         self.maintenanceView.setVisible(self.fixture.needs_maintenance())
+        self.terminal.setVisible(not self.fixture.needs_maintenance())
         self.setStyleSheet(
             f"""
             QGroupBox#fixture{{

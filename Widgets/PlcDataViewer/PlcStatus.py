@@ -1,3 +1,4 @@
+from __future__ import annotations
 from Core.Enums.BoardPlcStatus import BoardPlcStatus
 from Core.Enums.FixturePlcStatus import FixturePlcStatus
 from Core.Enums.FixturePlcTestResult import FixturePlcTestResult
@@ -84,21 +85,22 @@ class PlcStatus:
         return [chr(character) for character in ascii]
 
     def is_board_loaded(self) -> bool:
-        return (
-            self.sn != self.EMPTY_STR
-            and not self.is_board_released()
-            and self.fixture_status == FixturePlcStatus.TESTING.value
-        )
+        return self.sn != self.EMPTY_STR and self.board_status in [
+            BoardPlcStatus.TAU_READY.value,
+            BoardPlcStatus.UUT_POWERING.value,
+            BoardPlcStatus.UUT_POWERED.value,
+        ]
 
     def is_board_released(self) -> bool:
         return self.board_status in [
+            BoardPlcStatus.NONE.value,
             BoardPlcStatus.TAU_RELEASED.value,
             BoardPlcStatus.UUT_UNLOADING.value,
             BoardPlcStatus.TAU_UNLOADING.value,
         ]
 
     def is_testing(self) -> bool:
-        return self.fixture_status == FixturePlcStatus.TESTING.value
+        return self.board_status == BoardPlcStatus.UUT_POWERED.value
 
     def is_pass(self) -> bool:
         return self.test_result == FixturePlcTestResult.PASS.value
@@ -118,3 +120,9 @@ class PlcStatus:
                 value = FixturePlcStatus.get_description(value)
             msg += f"{attribute} = {value}\n"
         return msg
+
+    def equals_statuses(self, other: PlcStatus):
+        return (
+            self.board_status == other.board_status
+            and self.fixture_status == other.fixture_status
+        )

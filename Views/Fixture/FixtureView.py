@@ -2,7 +2,6 @@ from Controllers.FixtureController import FixtureController
 from Core.Enums.FixtureMode import FixtureMode
 from Core.Enums.FixtureStatus import FixtureStatus
 from datetime import datetime
-from Core.Enums.TestStatus import TestStatus
 from Models.Fixture import Fixture
 from Models.Maintenance import Maintenance
 from Models.NullTestAnalysis import NullTestAnalysis
@@ -10,10 +9,9 @@ from Models.TestAnalysis import TestAnalysis
 from Models.Test import Test
 from PyQt5 import QtCore, QtGui, QtWidgets
 from Utils.PathHelper import PathHelper
-from Views.BadgeView import BadgeView
 from Views.Fixture.FixtureFooterView import FixtureFooterView
+from Views.FixtureTempWindow import FixtureTempWindow
 from Views.FrameLayout import FrameLayout
-from Views.TempView import TempView
 from Views.Terminal import Terminal
 from Views.LastFailuresWindow import LastFailuresWindow
 from Views.LastTestsWindow import LastTestsWindow
@@ -31,6 +29,7 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
 )
 from Utils.Translator import Translator
+from Widgets.Commpy.Commpy import Commpy
 
 _ = Translator().gettext
 ngettext = Translator().ngettext
@@ -44,6 +43,7 @@ class FixtureView(QGroupBox):
 
         self._fixture: Fixture = fixture
         self._lastLogsWindow = None
+        self._fixtureTempWindow = None
         self._fixtureController = FixtureController()
         self.forceTraceabilityEnabled = False
         self.unlocked = None
@@ -64,14 +64,8 @@ class FixtureView(QGroupBox):
 
     def _init_ui(self):
         self.setObjectName("fixture")
-        gridLayout = QGridLayout()
-        gridLayout.setColumnStretch(0, 1)
-        gridLayout.setColumnStretch(1, 0)
-        gridLayout.setRowStretch(0, 1)
-        gridLayout.setRowStretch(1, 0)
-        gridLayout.setContentsMargins(5, 5, 5, 5)
-        self.setLayout(gridLayout)
 
+        # ************* Side *************
         sideGridLayout = QGridLayout()
         sideGridLayout.setRowStretch(0, 0)
         sideGridLayout.setRowStretch(1, 1)
@@ -82,7 +76,6 @@ class FixtureView(QGroupBox):
         sideFrame.setContentsMargins(0, 0, 0, 0)
         sideFrame.setLayout(sideGridLayout)
         self.sideFrameLayout.addWidget(sideFrame)
-        gridLayout.addWidget(self.sideFrameLayout, 0, 1, 1, 1)
 
         infoLayout = QVBoxLayout()
         sideGridLayout.addLayout(infoLayout, 0, 0)
@@ -138,7 +131,7 @@ class FixtureView(QGroupBox):
         self.btnStart.setStyleSheet("font-weight: 500;")
         self.btnStart.setFixedHeight(50)
         self.btnStart.clicked.connect(self.on_btnStart_clicked)
-        buttonsLayout.addWidget(self.btnStart, 0, 0, 1, 3)
+        buttonsLayout.addWidget(self.btnStart, 0, 0, 1, 5)
 
         sideGridLayout.addLayout(buttonsLayout, 2, 0)
         self.btnLastTests = QPushButton()
@@ -146,14 +139,14 @@ class FixtureView(QGroupBox):
             "font-size: 12px; font-weight: 300; padding: 3px;"
         )
         self.btnLastTests.setIcon(
-            QtGui.QIcon(PathHelper().join_root_path("/Static/report.png"))
+            QtGui.QIcon(PathHelper().join_root_path("/Static/history.svg"))
         )
         self.btnLastTests.clicked.connect(self.on_btnLastTests_clicked)
         buttonsLayout.addWidget(self.btnLastTests, 1, 0, 1, 1)
 
         self.btnLastFailures = QPushButton()
         self.btnLastFailures.setIcon(
-            QtGui.QIcon(PathHelper().join_root_path("/Static/error.png"))
+            QtGui.QIcon(PathHelper().join_root_path("/Static/alert-circle-outline.svg"))
         )
         self.btnLastFailures.setStyleSheet(
             "font-size: 12px; font-weight: 300; padding: 3px;"
@@ -161,9 +154,10 @@ class FixtureView(QGroupBox):
         self.btnLastFailures.clicked.connect(self.on_btnLastFailures_clicked)
         buttonsLayout.addWidget(self.btnLastFailures, 1, 1, 1, 1)
 
+        # ************* Maintenance *************
         self.btnMaintenanceLog = QPushButton()
         self.btnMaintenanceLog.setIcon(
-            QtGui.QIcon(PathHelper().join_root_path("/Static/maintenance.png"))
+            QtGui.QIcon(PathHelper().join_root_path("/Static/wrench-clock.svg"))
         )
         self.btnMaintenanceLog.setStyleSheet(
             "font-size: 12px; font-weight: 300; padding: 3px;"
@@ -171,16 +165,30 @@ class FixtureView(QGroupBox):
         self.btnMaintenanceLog.clicked.connect(self.on_btnMaintenanceLog_clicked)
         buttonsLayout.addWidget(self.btnMaintenanceLog, 1, 2, 1, 1)
 
-        # ************* Terminal *************
-        self.terminal = Terminal(
-            self.fixture, self._fixtureController.get_automatic_product_selection()
+        # ************* Temperature *************
+        self.btnTemp = QPushButton()
+        self.btnTemp.setIcon(
+            QtGui.QIcon(PathHelper().join_root_path("/Static/temperature-celsius.svg"))
         )
-        self.terminal.finished.connect(self._on_terminal_finished)
-        self.terminal.change.connect(self.on_terminal_change)
-        if self.terminal.has_tmux_session():
-            # FIXME terminal size self.start()
-            pass
-        gridLayout.addWidget(self.terminal, 0, 0, 1, 1)
+        self.btnTemp.setStyleSheet("font-size: 12px; font-weight: 300; padding: 3px;")
+        self.btnTemp.clicked.connect(self.on_btnTemp_clicked)
+        buttonsLayout.addWidget(self.btnTemp, 1, 3, 1, 1)
+
+        # ************* Commpy *************
+        self.btnCommpy = QPushButton()
+        self.btnCommpy.setIcon(
+            QtGui.QIcon(PathHelper().join_root_path("/Static/terminal.png"))
+        )
+        self.btnCommpy.setStyleSheet("font-size: 12px; font-weight: 300; padding: 3px;")
+        self.btnCommpy.clicked.connect(
+            lambda: Commpy(
+                f"commpy_{self.fixture.id}",
+                self._lastAnalysis.serialNumber,
+                self._fixtureController.get_version_root_path(),
+                self.fixture.id
+            ).show()
+        )
+        buttonsLayout.addWidget(self.btnCommpy, 1, 4, 1, 1)
 
         # ************* Maintenance *************
         self.maintenanceView = MaintenanceView(
@@ -191,17 +199,49 @@ class FixtureView(QGroupBox):
             actions=self._fixtureController.get_maintenance_actions(),
         )
         self.maintenanceView.selected.connect(self._on_maintenance_selected)
-        gridLayout.addWidget(self.maintenanceView, 0, 0, 1, 1)
+
+        # ************* Terminal *************
+        self.terminal = Terminal(
+            self.fixture, self._fixtureController.get_automatic_product_selection()
+        )
+        self.terminal.finished.connect(self._on_terminal_finished)
+        self.terminal.initialized.connect(self._on_terminal_initialized)
+        self.terminal.idle.connect(self._on_terminal_idle)
+        self.terminal.boardLoaded.connect(self._on_terminal_boardLoaded)
+        self.terminal.tested.connect(self._on_terminal_tested)
+        self.terminal.testFinished.connect(self._on_terminal_testFinished)
+
+        if self.terminal.has_tmux_session():
+            # FIXME terminal size self.start()
+            pass
 
         # ************* Footer *************
         self._footer = FixtureFooterView(self)
+
+        # ************* Layout *************
+        gridLayout = QGridLayout()
+        gridLayout.setColumnStretch(0, 1)
+        gridLayout.setColumnStretch(1, 0)
+        gridLayout.setRowStretch(0, 1)
+        gridLayout.setRowStretch(1, 0)
+        gridLayout.setContentsMargins(5, 5, 5, 5)
+
+        gridLayout.addWidget(self.sideFrameLayout, 0, 1, 1, 1)
+        gridLayout.addWidget(self.terminal, 0, 0, 1, 1)
+        gridLayout.addWidget(self.maintenanceView, 0, 0, 1, 1)
         gridLayout.addWidget(self._footer, 1, 0, 1, 2)
+
+        self.setLayout(gridLayout)
 
     def on_btnLastTests_clicked(self):
         self._lastLogsWindow = LastTestsWindow(
             self.fixture.ip, showRetest=self.swRetestMode.getChecked()
         )
         self._lastLogsWindow.showMaximized()
+
+    def on_btnTemp_clicked(self):
+        self._fixtureTempWindow = FixtureTempWindow(self.fixture.id)
+        self._fixtureTempWindow.show()
 
     def on_btnLastFailures_clicked(self):
         self._lastLogsWindow = LastFailuresWindow(
@@ -256,6 +296,7 @@ class FixtureView(QGroupBox):
         self._update_btn_start()
         self._update_sw_traceability_enabled()
         self.maintenanceView.setVisible(self.fixture.needs_maintenance())
+        self.terminal.setVisible(not self.fixture.needs_maintenance())
         self.setStyleSheet(
             f"""
             QGroupBox#fixture{{
@@ -281,6 +322,8 @@ class FixtureView(QGroupBox):
         self.btnLastTests.setToolTip(_("Last Tests"))
         self.btnLastFailures.setToolTip(_("Last Failures"))
         self.btnMaintenanceLog.setToolTip(_("Maintenance"))
+        self.btnTemp.setToolTip(_("Temperatures"))
+        self.btnCommpy.setToolTip(_("Commpy Console"))
         self.maintenanceView._update_texts()
 
     def _update_status(self):
@@ -361,26 +404,38 @@ class FixtureView(QGroupBox):
         self.fixture.isTesting = False
         self._lastAnalysis = NullTestAnalysis()
         self.fixture.isStarted = False
-        self._footer.stop()
 
-    def on_terminal_change(self, testAnalysis: TestAnalysis):
-        if self._lastAnalysis.equals(testAnalysis):
-            return
+    def _on_terminal_initialized(self):
+        pass
+
+    def _on_terminal_idle(self):
+        self._unlock()
+
+    def _on_terminal_boardLoaded(self, testAnalysis: TestAnalysis):
         self._lastAnalysis = testAnalysis
-        if testAnalysis.status == TestStatus.Recovered:
-            self.fixture.testTimer = testAnalysis.startDateTime
-        elif testAnalysis.status == TestStatus.Released:
-            self._unlock()
-            self._footer.stop()
-        elif testAnalysis.is_pass_or_fail():
+        self.fixture.testItem = "Pre-Test"
+        self.fixture.isTesting = True
+        self._start_footer(testAnalysis)
+
+    def _on_terminal_tested(self, testAnalysis: TestAnalysis):
+        self.fixture.testTimer = testAnalysis.startDateTime
+        self.fixture.testItem = testAnalysis.stepLabel
+        self.fixture.isTesting = True
+        self._start_footer(testAnalysis)
+
+    def _start_footer(self, testAnalysis: TestAnalysis):
+        self._lastAnalysis = testAnalysis
+        self._footer.set_data(testAnalysis)
+        self._footer.set_badges_setVisible(True)
+        self._footer.start_temp(
+            self._fctHostControlToolPath, testAnalysis, self.fixture.id
+        )
+
+    def _on_terminal_testFinished(self, testAnalysis: TestAnalysis):
+        if testAnalysis.is_pass_or_fail():
             test = self._fixtureController.parse_test(testAnalysis)
             self.add_test(test)
-        elif testAnalysis.is_testing():
-            self.fixture.testItem = testAnalysis.stepLabel
-            self._footer.start_temp(self._fctHostControlToolPath, testAnalysis)
-            if testAnalysis.status == TestStatus.PreTested:
-                self._footer.start(testAnalysis)
-        self.fixture.isTesting = testAnalysis.is_testing()
+        self.fixture.isTesting = False
 
     def save_status(self):
         self.fixture.emit_status_change(force=True)

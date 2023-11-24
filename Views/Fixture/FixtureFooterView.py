@@ -59,24 +59,12 @@ class FixtureFooterView(QtWidgets.QFrame):
             color = "#C44D56"
         return color
 
-    def start(self, testAnalysis: TestAnalysis):
+    def set_data(self, testAnalysis: TestAnalysis):
         self._bdgSerialNumber.setText(testAnalysis.serialNumber)
         self._bdgMac.setText(testAnalysis.mac)
-        self.set_badges_setVisible(True)
 
-    def start_temp(self, toolPath: str, testAnalysis: TestAnalysis):
-        if self._can_start_temp_view(testAnalysis):
-            self._tempView.start(
-                toolPath,
-                testAnalysis.bmcIp,
-            )
-
-    def _can_start_temp_view(self, testAnalysis: TestAnalysis):
-        return (
-            testAnalysis.bmcIp != ""
-            and testAnalysis.bmcIp != None
-            and not self._tempView.is_started()
-        )
+    def start_temp(self, toolPath: str, testAnalysis: TestAnalysis, fixtureId: int):
+        self._tempView.start(toolPath, testAnalysis.bmcIp, fixtureId)
 
     def stop(self):
         self.set_badges_setVisible(False)

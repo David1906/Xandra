@@ -1,4 +1,4 @@
-import re
+from Core.Enums.TestEvent import TestEvent
 from Core.Enums.TestStatus import TestStatus
 from DataAccess.TestAnalyzer import TestAnalyzer
 from datetime import datetime
@@ -6,10 +6,11 @@ from Models.Fixture import Fixture
 from Models.TestAnalysis import TestAnalysis
 from Products.Mobo.MoboFctHostControlDAO import MoboFctHostControlDAO
 from Utils.PathHelper import PathHelper
-from Utils.TextNormalizer import normalizeToRegex
+from Widgets.PlcDataViewer.NullPlcStatus import NullPlcStatus
 from Widgets.PlcDataViewer.PlcDAO import PlcDAO
 from Widgets.PlcDataViewer.PlcStatus import PlcStatus
 import os
+import re
 import subprocess
 
 
@@ -21,11 +22,7 @@ class MoboTestAnalyzer(TestAnalyzer):
     BMC_IP_FILE = "bmcip.txt"
 
     def __init__(self, fixture: Fixture, sessionId: str) -> None:
-        super().__init__(sessionId)
-        self._fixture = fixture
-        self._serialNumber = ""
-        self._mac = ""
-        self._bmcIp = ""
+        super().__init__(fixture, sessionId)
         self._startTime = None
         self._currentLogPath = ""
         self._runStatusPath = ""
@@ -38,35 +35,76 @@ class MoboTestAnalyzer(TestAnalyzer):
             self._moboFctHostControlDAO.get_fct_host_log_data_fullpath(self._fixture.id)
         )
         self._plcDAO = PlcDAO(fixture.ip, fixture.port)
+        self._lastPlcStatus: PlcStatus = NullPlcStatus()
+        self._lastTestStatus = ""
 
-    def can_recover(self) -> bool:
-        self._debug_thread()
-        return self._get_plc_status().is_board_loaded()
+    def is_changed(self) -> bool:
+        plcStatus = self._get_plc_status()
+        if (
+            not self._lastPlcStatus.equals_statuses(plcStatus)
+            or self.is_test_status_changed()
+        ):
+            self._lastPlcStatus = plcStatus
+            return True
+        return False
 
-    def _debug_thread(self, sessionId: str = "console_1"):
-        if os.environ.get("ENV") == "testing" and self.sessionId == sessionId:
-            import debugpy
+    def is_test_status_changed(self):
+        testStatus = (
+            self._get_run_status_text() + self._get_test_item() + self._get_bmc_ip()
+        )
+        if testStatus != self._lastTestStatus:
+            self._lastTestStatus = testStatus
+            return True
+        return False
 
-            debugpy.debug_this_thread()
-
-    def _get_plc_status(self) -> PlcStatus:
-        return self._plcDAO.get_status_debounced()
+    def get_event(self) -> TestEvent:
+        event = None
+        if self._stateMachine.can_test() and self.is_testing():
+            event = TestEvent.Test
+        elif self._stateMachine.can_load_board() and self.is_board_loaded():
+            event = TestEvent.LoadBoard
+        elif self._stateMachine.can_finish() and self.is_finished():
+            event = TestEvent.Finish
+        elif self._stateMachine.is_initialized():
+            event = TestEvent.Idle
+        if self._stateMachine.can_idle() and self.is_board_released():
+            event = TestEvent.Release
+        return event
 
     def is_board_loaded(self) -> bool:
         return self._get_plc_status().is_board_loaded()
 
-    def initialize_files(self):
+    def is_testing(self) -> bool:
+        return self._run_status_match("testing") and self._get_plc_status().is_testing()
+
+    def is_finished(self) -> bool:
+        return self._is_pass() or self._is_failed()
+
+    def is_board_released(self) -> bool:
+        return self._get_plc_status().is_board_released()
+
+    def _get_plc_status(self) -> PlcStatus:
+        return self._plcDAO.get_status_debounced()
+
+    def initialize_test(self):
+        self._initialize_files()
+        self._refresh_board_data()
+        self._call_get_bmc_ip()
+        print(
+            f"Initialize Test {self._sessionId}: sn:{self._serialNumber} mac: {self._mac} bmcIp:{self._bmcIp}"
+        )
+
+    def _initialize_files(self):
         for file in [self._runStatusPath, self._testItemPath, self._startTimePath]:
             if os.path.isfile(file):
                 open(file, "w").close()
 
-    def refresh_board_data(self):
+    def _refresh_board_data(self):
         self._serialNumber = self._get_plc_status().sn
         self._mac = self._get_plc_status().mac
         self._startTime = None
         self._bmcIp = None
         self._refresh_test_paths()
-        self._call_get_bmc_ip()
 
     def _refresh_test_paths(self):
         self._currentLogPath = (
@@ -90,27 +128,12 @@ class MoboTestAnalyzer(TestAnalyzer):
         except:
             pass
 
-    def is_testing(self) -> bool:
-        return self._run_status_match("testing")
-
-    def is_finished(self) -> bool:
-        return not self._get_plc_status().is_testing() or self._run_status_match(
-            "PASS|FAILED"
-        )
-
-    def is_board_released(self) -> bool:
-        return self._get_plc_status().is_board_released()
-
-    def is_pass(self) -> bool:
-        return self._get_plc_status().is_pass() or self._run_status_match("PASS")
-
-    def is_failed(self) -> bool:
-        return self._get_plc_status().is_failed() or self._run_status_match("FAILED")
-
     def _run_status_match(self, text: str) -> bool:
         return re.match(text, self._get_run_status_text(), re.IGNORECASE) != None
 
     def _get_run_status_text(self) -> str:
+        if not os.path.isfile(self._runStatusPath):
+            return ""
         try:
             return subprocess.getoutput(
                 f"cat {self._runStatusPath} | awk '{{print $1}}'"
@@ -129,9 +152,10 @@ class MoboTestAnalyzer(TestAnalyzer):
             startDateTime=self._get_start_time(),
             outLog=self._currentLogPath,
         )
-        if testStatus.is_testing():
+        if testStatus in [TestStatus.BoardLoaded, TestStatus.Tested]:
             testAnalysis.bmcIp = self._get_bmc_ip()
-        elif testStatus.is_ended():
+        elif testStatus == TestStatus.Finished:
+            testAnalysis.result = self._get_test_result()
             testAnalysis.logfile = self._get_logfile()
             testAnalysis.scriptVersion = (
                 self._moboFctHostControlDAO.get_script_version()
@@ -153,7 +177,7 @@ class MoboTestAnalyzer(TestAnalyzer):
             return self._startTime
         try:
             startTime = subprocess.getoutput(
-                f"cat {self._startTimePath} | awk '{{print $1}}'",
+                f"timeout 1s cat {self._startTimePath} | awk '{{print $1}}'",
             )
             self._startTime = datetime.strptime(startTime, "%Y%m%d_%H%M%S")
         except:
@@ -161,23 +185,33 @@ class MoboTestAnalyzer(TestAnalyzer):
         return self._startTime
 
     def _get_bmc_ip(self) -> str:
-        if self._bmcIp != None and self._bmcIp != "":
-            return self._bmcIp
+        bmcIp = ""
         try:
             if os.path.isfile(self._bmcIpPath):
-                self._bmcIp = subprocess.getoutput(
+                bmcIp = subprocess.getoutput(
                     f"cat {self._bmcIpPath} | tail -1",
                 ).strip()
-            else:
-                self._bmcIp = ""
         except:
-            self._bmcIp = ""
-        return self._bmcIp
+            pass
+        if self._bmcIp != bmcIp:
+            print(f"{self._sessionId} bmcIp detected: {bmcIp}")
+            self._bmcIp = bmcIp
+        return bmcIp
+
+    def _get_test_result(self):
+        if self._is_pass():
+            return True
+        elif self._is_failed():
+            return False
+        return None
+
+    def _is_pass(self) -> bool:
+        return self._get_plc_status().is_pass() or self._run_status_match("PASS")
+
+    def _is_failed(self) -> bool:
+        return self._get_plc_status().is_failed() or self._run_status_match("FAILED")
 
     def _get_logfile(self):
         if not os.path.isfile(self._logFilePath):
             return ""
         return self._logFilePath
-
-    def get_fixture_ip(self) -> str:
-        return self._fixture.ip

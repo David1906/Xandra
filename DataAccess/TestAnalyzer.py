@@ -92,9 +92,6 @@ class TestAnalyzer(QtCore.QThread):
             self._stateMachine._graph().write_png("./docs/assets/images/sm.png")
 
     def on_enter_Idle(self):
-        self._serialNumber = ""
-        self._mac = ""
-        self._bmcIp = ""
         self.idle.emit()
 
     def on_enter_BoardLoaded(self):

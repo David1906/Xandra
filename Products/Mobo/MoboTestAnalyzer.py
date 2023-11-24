@@ -1,4 +1,3 @@
-import re
 from Core.Enums.TestEvent import TestEvent
 from Core.Enums.TestStatus import TestStatus
 from DataAccess.TestAnalyzer import TestAnalyzer
@@ -11,6 +10,7 @@ from Widgets.PlcDataViewer.NullPlcStatus import NullPlcStatus
 from Widgets.PlcDataViewer.PlcDAO import PlcDAO
 from Widgets.PlcDataViewer.PlcStatus import PlcStatus
 import os
+import re
 import subprocess
 
 
@@ -185,21 +185,17 @@ class MoboTestAnalyzer(TestAnalyzer):
         return self._startTime
 
     def _get_bmc_ip(self) -> str:
+        bmcIp = ""
         try:
-            bmcIP = ""
             if os.path.isfile(self._bmcIpPath):
-                bmcIP = subprocess.getoutput(
+                bmcIp = subprocess.getoutput(
                     f"cat {self._bmcIpPath} | tail -1",
                 ).strip()
-            else:
-                bmcIP = ""
         except:
-            bmcIp = ""
-
-        if self._bmcIp != bmcIP:
-            self._bmcIp = bmcIP
-            print(f"{self._sessionId} bmcIp detected: {self._bmcIp}")
-
+            pass
+        if self._bmcIp != bmcIp:
+            print(f"{self._sessionId} bmcIp detected: {bmcIp}")
+            self._bmcIp = bmcIp
         return bmcIp
 
     def _get_test_result(self):

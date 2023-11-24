@@ -23,9 +23,6 @@ class MoboTestAnalyzer(TestAnalyzer):
 
     def __init__(self, fixture: Fixture, sessionId: str) -> None:
         super().__init__(fixture, sessionId)
-        self._serialNumber = ""
-        self._mac = ""
-        self._bmcIp = ""
         self._startTime = None
         self._currentLogPath = ""
         self._runStatusPath = ""
@@ -68,10 +65,10 @@ class MoboTestAnalyzer(TestAnalyzer):
             event = TestEvent.LoadBoard
         elif self._stateMachine.can_finish() and self.is_finished():
             event = TestEvent.Finish
-        elif self._stateMachine.can_idle() and self.is_board_released():
-            event = TestEvent.Release
         elif self._stateMachine.is_initialized():
             event = TestEvent.Idle
+        if self._stateMachine.can_idle() and self.is_board_released():
+            event = TestEvent.Release
         return event
 
     def is_board_loaded(self) -> bool:
@@ -188,20 +185,22 @@ class MoboTestAnalyzer(TestAnalyzer):
         return self._startTime
 
     def _get_bmc_ip(self) -> str:
-        if self._bmcIp != None and self._bmcIp != "":
-            return self._bmcIp
         try:
+            bmcIP = ""
             if os.path.isfile(self._bmcIpPath):
-                self._bmcIp = subprocess.getoutput(
+                bmcIP = subprocess.getoutput(
                     f"cat {self._bmcIpPath} | tail -1",
                 ).strip()
             else:
-                self._bmcIp = ""
+                bmcIP = ""
         except:
-            self._bmcIp = ""
-        if self._bmcIp != None and self._bmcIp != "":
+            bmcIp = ""
+
+        if self._bmcIp != bmcIP:
+            self._bmcIp = bmcIP
             print(f"{self._sessionId} bmcIp detected: {self._bmcIp}")
-        return self._bmcIp
+
+        return bmcIp
 
     def _get_test_result(self):
         if self._is_pass():

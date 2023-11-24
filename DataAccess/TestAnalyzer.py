@@ -25,6 +25,9 @@ class TestAnalyzer(QtCore.QThread):
 
     def __init__(self, fixture: Fixture, sessionId: str) -> None:
         super().__init__()
+        self._serialNumber = ""
+        self._mac = ""
+        self._bmcIp = ""
         self._fixture = fixture
         self._sessionId = sessionId
         self._analysisInterval = randint(700, 900) / 1000
@@ -89,6 +92,9 @@ class TestAnalyzer(QtCore.QThread):
             self._stateMachine._graph().write_png("./docs/assets/images/sm.png")
 
     def on_enter_Idle(self):
+        self._serialNumber = ""
+        self._mac = ""
+        self._bmcIp = ""
         self.idle.emit()
 
     def on_enter_BoardLoaded(self):

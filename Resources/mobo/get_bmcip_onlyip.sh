@@ -54,8 +54,8 @@ get_bmc_mac(){
     if [[ -f "${LOGPATH}/${SN}/bmcmac.txt" ]];then
         bmcmac=`cat ${LOGPATH}/${SN}/bmcmac.txt`
         
-    else 
-        echo "No BMC MAC FILE" | tee ${LOGFILE}
+    #else 
+    #    echo "No BMC MAC FILE" | tee ${LOGFILE}
     fi 
 	
 
@@ -77,7 +77,7 @@ get_bmc_mac(){
         fi 
 	#break
     else 
-	echo -e "The Mac Address length is $mac_len"
+	#echo -e "The Mac Address length is $mac_len"
     fi
     #done
 }
@@ -99,7 +99,7 @@ get_ip_from_dhcp(){
         bmcip=`arp -n | grep -i ${bmcmac,,} | awk '{print $1}'`
     fi
 
-    echo ${bmcip}
+    #echo ${bmcip}
     export bmcip
     echo ${bmcip} > ${LOGFILETXT}
     echo ${bmcip} > ${LOGFILE}

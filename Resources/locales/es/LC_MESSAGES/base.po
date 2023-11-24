@@ -412,3 +412,6 @@ msgstr "Tiempo"
 
 msgid "Temperature °C"
 msgstr "Temperatura °C"
+
+msgid "Commpy Console"
+msgstr "Consola Commpy"

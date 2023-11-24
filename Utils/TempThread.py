@@ -67,14 +67,12 @@ class TempThread(QtCore.QThread):
         return "%s/Nitro/nitro-bmc" % (self._toolPath)
 
     def resume(self, toolPath: str = "", bmcIp: str = "", fixtureId: int = 0):
-        print(f"fixtureId {fixtureId}: TempThread resumed {bmcIp} {toolPath}")
         self._toolPath = toolPath
         self._bmcIp = bmcIp
         self._fixtureId = fixtureId
         self._isStarted = True
 
     def pause(self):
-        print(f"fixtureId {self._fixtureId}: TempThread paused")
         self._isStarted = False
 
     def is_started(self) -> bool:

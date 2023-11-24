@@ -323,6 +323,7 @@ class FixtureView(QGroupBox):
         self.btnLastFailures.setToolTip(_("Last Failures"))
         self.btnMaintenanceLog.setToolTip(_("Maintenance"))
         self.btnTemp.setToolTip(_("Temperatures"))
+        self.btnCommpy.setToolTip(_("Commpy Console"))
         self.maintenanceView._update_texts()
 
     def _update_status(self):

@@ -862,6 +862,20 @@ MariaDB [(none)]&gt;
 <p>Salir de la consola MariaDB escriba el comando:
     <div class="highlight"><pre><span></span><code><span class="nb">exit</span>
 </code></pre></div></p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Si deseas generar una autolimpieza semanal en la base de datos, ingresa los siguietes comandos al terminar por completo xandra y haber corrido el comando <strong>xandra-update</strong>.</p>
+<div class="highlight"><pre><span></span><code><span class="w">    </span>mysql
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="w">    </span>use<span class="w"> </span>xandra_dbo<span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="w">    </span>CREATE<span class="w"> </span>EVENT<span class="w"> </span>clear_xandra_dbo_temp
+<span class="w">    </span>ON<span class="w"> </span>SCHEDULE
+<span class="w">        </span>EVERY<span class="w"> </span><span class="m">1</span><span class="w"> </span>WEEK
+<span class="w">    </span>DO
+<span class="w">        </span>DELETE<span class="w"> </span>FROM<span class="w"> </span>xandra_dbo.fixture_temp<span class="w"> </span>WHERE<span class="w"> </span>timeStamp<span class="w"> </span>&lt;<span class="w"> </span>DATE_SUB<span class="o">(</span>NOW<span class="o">()</span>,<span class="w"> </span>INTERVAL<span class="w"> </span><span class="m">2</span><span class="w"> </span>MONTH<span class="o">)</span><span class="p">;;</span>
+</code></pre></div>
+</div>
 </li>
 </ul>
 <h2 id="instalar-dependencias-del-sistema">Instalar dependencias del sistema</h2>

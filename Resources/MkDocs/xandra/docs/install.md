@@ -224,10 +224,34 @@ Para crear la base de datos `xandra_dbo` dentro de `MySQL` ejecute los siguiente
 
         Query OK, 1 row affected (0.039 sec)
 
+
 * Salir de la consola MariaDB escriba el comando:
     ``` shell
     exit
     ```
+
+    !!! tip
+        Si deseas generar una autolimpieza semanal en la base de datos, ingresa los siguietes comandos al terminar de instalar por completo xandra y haber ejecutado el comando **xandra-update**.
+
+        ``` shell
+        mysql
+        ```
+
+        ``` shell
+        use xandra_dbo;
+        ```
+
+        ``` shell
+        CREATE EVENT clear_xandra_dbo_temp
+        ON SCHEDULE
+            EVERY 1 WEEK
+        DO
+            DELETE FROM xandra_dbo.fixture_temp WHERE timeStamp < DATE_SUB(NOW(), INTERVAL 2 MONTH);
+        ```
+        
+        ``` shell
+        exit
+        ```
 
 ## Instalar dependencias del sistema
 

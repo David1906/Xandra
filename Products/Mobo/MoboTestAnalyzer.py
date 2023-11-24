@@ -67,7 +67,7 @@ class MoboTestAnalyzer(TestAnalyzer):
             event = TestEvent.Finish
         elif self._stateMachine.is_initialized():
             event = TestEvent.Idle
-        if self._stateMachine.can_idle() and self.is_board_released():
+        elif self._stateMachine.can_idle() and self.is_board_released():
             event = TestEvent.Release
         return event
 

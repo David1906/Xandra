@@ -242,13 +242,32 @@ Para crear la base de datos `xandra_dbo` dentro de `MySQL` ejecute los siguiente
         ```
 
         ``` shell
-        CREATE EVENT clear_xandra_dbo_temp
+        delimiter |
+        ```
+
+        ``` shell       
+
+        CREATE PROCEDURE clear_xandra_logs_tables()
+        BEGIN
+
+            DELETE FROM xandra_dbo.fixture_temp WHERE timeStamp < DATE_SUB(NOW(), INTERVAL 1 WEEK);
+            DELETE FROM xandra_dbo.fixture_status_logs WHERE timeStampEnd < DATE_SUB(NOW(), INTERVAL 1 YEAR);
+
+        END | 
+        ```
+
+        ``` shell
+        delimiter ;
+        ```
+        
+        ``` shell
+        CREATE EVENT clear_xandra_dbo
         ON SCHEDULE
             EVERY 1 WEEK
         DO
-            DELETE FROM xandra_dbo.fixture_temp WHERE timeStamp < DATE_SUB(NOW(), INTERVAL 2 MONTH);
+            CALL clear_xandra_logs_tables();
         ```
-        
+
         ``` shell
         exit
         ```

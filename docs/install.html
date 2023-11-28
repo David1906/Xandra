@@ -864,16 +864,30 @@ MariaDB [(none)]&gt;
 </code></pre></div></p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>Si deseas generar una autolimpieza semanal en la base de datos, ingresa los siguietes comandos al terminar por completo xandra y haber corrido el comando <strong>xandra-update</strong>.</p>
-<div class="highlight"><pre><span></span><code><span class="w">    </span>mysql
+<p>Si deseas generar una autolimpieza semanal en la base de datos, ingresa los siguietes comandos al terminar de instalar por completo xandra y haber ejecutado el comando <strong>xandra-update</strong>.</p>
+<div class="highlight"><pre><span></span><code>mysql
 </code></pre></div>
-<div class="highlight"><pre><span></span><code><span class="w">    </span>use<span class="w"> </span>xandra_dbo<span class="p">;</span>
+<div class="highlight"><pre><span></span><code>use<span class="w"> </span>xandra_dbo<span class="p">;</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code><span class="w">    </span>CREATE<span class="w"> </span>EVENT<span class="w"> </span>clear_xandra_dbo_temp
-<span class="w">    </span>ON<span class="w"> </span>SCHEDULE
-<span class="w">        </span>EVERY<span class="w"> </span><span class="m">1</span><span class="w"> </span>WEEK
-<span class="w">    </span>DO
-<span class="w">        </span>DELETE<span class="w"> </span>FROM<span class="w"> </span>xandra_dbo.fixture_temp<span class="w"> </span>WHERE<span class="w"> </span>timeStamp<span class="w"> </span>&lt;<span class="w"> </span>DATE_SUB<span class="o">(</span>NOW<span class="o">()</span>,<span class="w"> </span>INTERVAL<span class="w"> </span><span class="m">2</span><span class="w"> </span>MONTH<span class="o">)</span><span class="p">;;</span>
+<div class="highlight"><pre><span></span><code>delimiter<span class="w"> </span><span class="p">|</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>CREATE<span class="w"> </span>PROCEDURE<span class="w"> </span>clear_xandra_logs_tables<span class="o">()</span>
+BEGIN
+
+<span class="w">    </span>DELETE<span class="w"> </span>FROM<span class="w"> </span>xandra_dbo.fixture_temp<span class="w"> </span>WHERE<span class="w"> </span>timeStamp<span class="w"> </span>&lt;<span class="w"> </span>DATE_SUB<span class="o">(</span>NOW<span class="o">()</span>,<span class="w"> </span>INTERVAL<span class="w"> </span><span class="m">1</span><span class="w"> </span>WEEK<span class="o">)</span><span class="p">;</span>
+<span class="w">    </span>DELETE<span class="w"> </span>FROM<span class="w"> </span>xandra_dbo.fixture_status_logs<span class="w"> </span>WHERE<span class="w"> </span>timeStampEnd<span class="w"> </span>&lt;<span class="w"> </span>DATE_SUB<span class="o">(</span>NOW<span class="o">()</span>,<span class="w"> </span>INTERVAL<span class="w"> </span><span class="m">1</span><span class="w"> </span>YEAR<span class="o">)</span><span class="p">;</span>
+
+END<span class="w"> </span><span class="p">|</span><span class="w"> </span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>delimiter<span class="w"> </span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>CREATE<span class="w"> </span>EVENT<span class="w"> </span>clear_xandra_dbo
+ON<span class="w"> </span>SCHEDULE
+<span class="w">    </span>EVERY<span class="w"> </span><span class="m">1</span><span class="w"> </span>WEEK
+DO
+<span class="w">    </span>CALL<span class="w"> </span>clear_xandra_logs_tables<span class="o">()</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="nb">exit</span>
 </code></pre></div>
 </div>
 </li>
